@@ -1,0 +1,348 @@
+<div>
+	<p-toolbar>
+		<div class="ui-g ui-g-12 ui-g-nopad">
+			<div class="ui-g-12 ui-md-7  pt-3 pl-3">
+				<label class="col-sm-7 font-weight-bold text-primary">GESTION DES MEMBRES DE COMMISSION</label>
+			</div>
+			<div class="ui-g-12 ui-md-5 p-2">
+				<div class="float-right">
+					<button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_MEMBRES_DE_COMMISSION_ADD'" type="button" pButton
+					        class="ui-button-secondary text-primary"
+					        icon="fa fa-plus" label="Ajouter un membre de commision"
+					        (click)="showDialogToAddTypeMembreNew()" [disabled]="!avisDac">
+					</button>
+					<button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_MEMBRES_DE_COMMISSION_DELETE'" type="button"
+					        pButton class="ui-button-secondary text-danger"
+					        [disabled]="membreCommissions?.length < 1 "
+					        icon="fa fa-times" label="Supprimer membre commision" (click)="supprimer()">
+					</button>
+				</div>
+			</div>
+		</div>
+	</p-toolbar>
+	<br/>
+	<div class="ui-toolbar-group-left">
+		<div class="ui-g ui-g-12 ui-g-nopad pb-3">
+			<div class="ui-inputgroup mr-1">
+				<span class="ui-inputgroup-addon"><span class="font-weight-bold">Avis DAC</span></span>
+				<p-dropdown [options]="avisDacs" [(ngModel)]="avisDac"
+				            placeholder="Selectionner un avis DAC"
+				            [style]="{'width': '250px'}" filter="filter" name="avisDac"
+				            showClear="showClear" optionLabel="nomAvisDac" required [disabled]="!exercice"
+				            (onChange)="loadTypeCommission()">
+				</p-dropdown>
+			</div>
+			<div class="ui-inputgroup mr-1">
+				<span class="ui-inputgroup-addon"><span class="font-weight-bold">Commission</span></span>
+				<p-dropdown [options]="typeCommission2" [(ngModel)]="typeCommission1"
+				            placeholder="Selectionner un type de commission" [disabled]="!avisDac"
+				            [style]="{'width': '270px'}" filter="filter" name="typeCommission"
+				            showClear="showClear" optionLabel="libelle"
+				            (onChange)="loadMembreCommissionByTypeAndAvisDac()"
+				>
+				</p-dropdown>
+			</div>
+		</div>
+	</div>
+	<div class="ui-toolbar-group-right">
+		<div class="text-right">
+			<input type="text" pInputText size="50" placeholder="Rechercher un membre commission"
+			       (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+			<button type="button" pButton icon="fa fa-refresh" label="Actualiser"
+			        [ngbTooltip]="'Raffraichir'"
+			        [placement]="'top'" (click)="loadAll()">
+			</button>
+		</div>
+	</div>
+	<div class="table-responsive mt-1">
+		<p-table #dataTable [value]="membreCommissionsTableau" [(selection)]="membreCommisionSelected" dataKey="id"
+		         [paginator]="true" [rows]="20"
+		         [globalFilterFields]="['poste','referenceArrete' ,'prenom', 'membre.prenom','membre.nom']">
+			<ng-template pTemplate="header">
+				<tr>
+					<th style="width: 3em">
+						<p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+					</th>
+					<th scope="col">Nom Membre
+
+					</th>
+					<th scope="col">Prénom Membre
+
+					</th>
+
+					<th scope="col"><span>Reference arreté</span>
+
+					</th>
+					<th scope="col"><span>Poste</span>
+
+					</th>
+					<th scope="col"><span>Direction</span>
+
+					</th>
+					<th style="width: 18em">Actions</th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-membreComiss let-columns="columns" let-rowIndex="rowIndex"
+			             let-expanded="expanded">
+				<tr [pSelectableRow]="membreComiss" class="ui-widget-header">
+					<td>
+						<p-tableCheckbox [value]="membreComiss"></p-tableCheckbox>
+					</td>
+					<td>{{membreComiss.membre.nom}}</td>
+					<td>{{membreComiss.membre.prenom}}</td>
+					<td>{{membreComiss.referenceArrete}}</td>
+					<td>{{membreComiss.poste}}</td>
+					<td>{{findUniteById(membreComiss.membre.directionId).abbreviation}}</td>
+					<td class="text-right" style="width: 18em">
+						<div class="btn-group">
+							<button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_MEMBRES_DE_COMMISSION_EDIT'"
+							        type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning"
+							        label="Modifier" (click)="showDialogToAddTypeMembreModif(membreComiss)">
+							</button>
+
+							<button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_MEMBRES_DE_COMMISSION_DELETE'"
+							        type="button" label="Supprimer" class="ui-button-secondary text-danger"
+							        pButton icon="fa fa-remove" (click)="deleteComission(membreComiss)">
+							</button>
+						</div>
+					</td>
+				</tr>
+			</ng-template>
+
+			<ng-template pTemplate="emptymessage" let-columns>
+				<tr>
+					<td colspan="7" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"><span
+							class="text-danger"> Aucun Membre de Commission trouvé ! </span></td>
+				</tr>
+			</ng-template>
+		</p-table>
+
+	</div>
+	<div>
+		<p-dialog header="Création/Ajout d'un membre de commission" [(visible)]="display" [modal]="true"
+		          [responsive]="true"
+		          (onHide)="fermerFormulaire()"
+		          [style]="{width: '70%', minWidth: '100px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+			<div class="container">
+				<form name="editForm" role="form" novalidate #editForm="ngForm">
+					<div class="ui-dialog-content" style="height: 500px">
+						<div class="container">
+							<div class="row">
+								<div class="col-sm-4">
+									<div class="form-group">
+										<label class="form-control-label">Avis du DAC</label>
+										<p-dropdown [options]="avisDacs" [(ngModel)]="avisDac"
+										            placeholder="Selectionner un avis DAC"
+										            [style]="{'width': '320px'}" filter="filter" name="avisDac1"
+										            showClear="showClear" optionLabel="nomAvisDac"
+										            (onChange)="loadTypeCommission()" required>
+										</p-dropdown>
+									</div>
+								</div>
+
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label class="form-control-label">Type de commission</label>
+                                            <select class="form-control" name="libelle" id="field_libelle"
+                                                    [(ngModel)]="typeCommission.libelle"  required>
+                                                <option value="Commission CAM">Commission CAM</option>
+                                                <option value="Sous Commission Technique">Sous Commission Technique</option>
+                                            </select>
+                                        </div>
+                                    </div>
+							</div>
+							<div class="row">
+								<div class="col-sm-4">
+									<div class="form-group">
+										<label class="form-control-label" for="field_referenceArrete">Reference
+											arreté</label>
+										<input type="text" style="width: 600px" class="form-control"
+										       name="referenceArrete" id="field_referenceArrete"
+										       [(ngModel)]="typeCommission.referenceArrete" required/>
+
+									</div>
+								</div>
+								<div class="col-sm-12 text-right add mb-3">
+									<button class="ui-button-secondary text-primary" label="Ajouter un membre"
+									        type="button" pButton
+									        (click)="addMembre(null)" icon="fa fa-plus">
+									</button>
+								</div>
+								<div class="col-sm-12">
+									<p-table [value]="membres" [(selection)]="typeCommission.membres" dataKey="id">
+										<ng-template pTemplate="header" let-columns>
+											<tr>
+												<th scope="col">
+												</th>
+												<th scope="col">Nom
+													<fa-icon [icon]="'sort'"></fa-icon>
+												</th>
+												<th scope="col">Prénom
+													<fa-icon [icon]="'sort'"></fa-icon>
+												</th>
+												<th scope="col">Mail
+													<fa-icon [icon]="'sort'"></fa-icon>
+												</th>
+												<th scope="col">Télephone
+													<fa-icon [icon]="'sort'"></fa-icon>
+												</th>
+												<th scope="col">Poste</th>
+												<th scope="col">Unite Administrative</th>
+											</tr>
+										</ng-template>
+										<ng-template pTemplate="body" let-membr>
+											<tr>
+												<td>
+													<p-tableCheckbox
+															[value]="membr" (click)="onclik(membr)">
+													</p-tableCheckbox>
+												</td>
+												<td>{{membr.nom}}</td>
+												<td>{{membr.prenom}}</td>
+												<td>{{membr.email}}</td>
+												<td>{{membr.telephone}}</td>
+												<td width="80">
+													<select class="form-control" name={{membr.id}} id={{membr.id}}
+													        [disabled]="!membr.cases" [(ngModel)]="membr.post" required>
+														<option [value]="post" *ngFor="let post of postes">{{post}}
+														</option>
+													</select>
+												</td>
+												<td>{{findUniteById(membr?.directionId)?.abbreviation}}</td>
+											</tr>
+										</ng-template>
+									</p-table>
+								</div>
+							</div>
+						</div>
+					</div>
+					<p-footer>
+						<div class="text-center mt-2">
+							<button type="button" pButton class="ui-button-secondary text-danger" icon="fa fa-ban"
+							        (click)="fermerFormulaire()" label="Fermer">
+							</button>
+							<button type="button" pButton (click)="saveMembreCommission()" [disabled]="editForm.invalid"
+							        icon="fa fa-save" class="ui-button-secondary text-primary" label="Enregistrer">
+							</button>
+						</div>
+					</p-footer>
+				</form>
+			</div>
+		</p-dialog>
+
+		<p-dialog header="Ajouter un membre" [(visible)]="displayLigne" [modal]="true" [responsive]="true"
+		          (onHide)="annulerMembre()"
+		          [style]="{width: '30%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+			<form name="editForm" role="form" novalidate #editForm1="ngForm">
+				<div>
+					<jhi-alert-error></jhi-alert-error>
+					<div class="form-group">
+						<label class="form-control-label" for="field_nom">Nom </label>
+						<input type="text" pInputText class="form-control" name="nom" id="field_nom"
+						       [(ngModel)]="membre.nom" required/>
+					</div>
+					<div class="form-group">
+						<label class="form-control-label" for="field_prenom">Prénom </label>
+						<input type="text" pInputText class="form-control" name="prenom" id="field_prenom"
+						       [(ngModel)]="membre.prenom" required/>
+					</div>
+					<div class="form-group">
+						<label class="form-control-label" for="field_email">Mail </label>
+						<input type="email" pInputText class="form-control" name="email" id="field_email"
+						       [(ngModel)]="membre.email"/>
+					</div>
+					<div class="form-group">
+						<label class="form-control-label" for="field_telephone">Téléphone </label>
+						<input type="text" pInputText class="form-control" name="telephone" id="field_telephone"
+						       [(ngModel)]="membre.telephone" required/>
+					</div>
+					<div class="form-group">
+						<label class="form-control-label" for="field_uniteadministrative">Unité Administrative</label>
+						<p-dropdown [options]="dropDownuniteadministratives" [(ngModel)]="membre.directionId"
+						            [style]="{'width': '100%'}" filter="filter" placeholder="Choisir un type commission"
+						            name="uniteadministrative" showClear="showClear" id="field_uniteadministrative">
+						</p-dropdown>
+						<!--<select class="form-control" id="field_uniteadministrative" name="uniteadministrative" [(ngModel)]="membre.directionId" required>
+							<option [ngValue]="null">...</option>
+							<option [ngValue]="uniteAdministrativeOpen.id" *ngFor="let uniteAdministrativeOpen of uniteadministratives">{{uniteAdministrativeOpen.abbreviation}}</option>
+						</select>-->
+					</div>
+				</div>
+			</form>
+
+			<p-footer>
+				<div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+					<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+					        label="Fermer" (click)='annulerMembre()'>
+					</button>
+					<button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+					        [disabled]="editForm1.invalid || isSaving"
+					        (click)='saveMembre()' class="ui-button-secondary text-info">
+					</button>
+				</div>
+			</p-footer>
+		</p-dialog>
+		<p-dialog header="Suppression des membres commission" [(visible)]="displayDelete" [modal]="true"
+		          [responsive]="true"
+		          (onHide)="annulerDel()"
+		          [style]="{width: '50%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+			<div class="row">
+				<span class="delete-text">{{deteteTexte}}</span>
+			</div>
+			<hr>
+			<p-table [value]="membreCommisionSelected" dataKey="id">
+				<ng-template pTemplate="header" let-lingeBudgetaire>
+					<tr>
+						<th scope="col">Nom Membre
+							<fa-icon [icon]="'sort'"></fa-icon>
+						</th>
+						<th scope="col">Prenom Membre
+							<fa-icon [icon]="'sort'"></fa-icon>
+						</th>
+						<th scope="col">Reference Arreté
+							<fa-icon [icon]="'sort'"></fa-icon>
+						</th>
+						<th scope="col"><span>Poste</span>
+							<fa-icon [icon]="'sort'"></fa-icon>
+						</th>
+
+
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-membreCommission let-columns="columns">
+					<tr>
+						<td>{{membreCommission.membre.nom}}</td>
+						<td>{{membreCommission.membre.prenom}}</td>
+
+						<td>{{membreCommission.referenceArrete}}</td>
+						<td>{{membreCommission.poste}}</td>
+
+					</tr>
+				</ng-template>
+			</p-table>
+			<p-footer>
+				<div class="ui-dialog-buttonpane ui-helper-clearfix">
+					<button type="button" pButton class="ui-button-secondary text-danger" (click)="annulerDel()"
+					        icon="fa fa-times" label="Annuler">
+					</button>
+					<button type="button" pButton class="ui-button-secondary text-primary"
+					        [disabled]="membreCommisionSelected?.length <= 0 "
+					        icon="fa fa-plus" label="Confirmer" (click)="confirmerDelete()">
+					</button>
+				</div>
+			</p-footer>
+		</p-dialog>
+	</div>
+</div>
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+	<p-footer>
+		<button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+		        (click)="cd.reject()"></button>
+		<button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI"
+		        (click)="cd.accept()"></button>
+	</p-footer>
+</p-confirmDialog>
+<p-toast key="myKey1" position="top-center"></p-toast>
+<p-toast key="myKey2" position="top-center"></p-toast>

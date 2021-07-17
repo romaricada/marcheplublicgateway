@@ -1,0 +1,38 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmPpmActivite": {
+      "home": {
+        "title": "Ppm Activites",
+        "createLabel": "Create a new Ppm Activite",
+        "createOrEditLabel": "Create or edit a Ppm Activite",
+        "notFound": "No Ppm Activites found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Ppm Activite {{ id }}?"
+      },
+      "detail": {
+        "title": "Ppm Activite"
+      },
+      "montantDepenseEngageNonLiquide": "Montant Depense Engage Non Liquide",
+      "creditDisponible": "Credit Disponible",
+      "periodeLancementAppel": "Periode Lancement Appel",
+      "periodeRemiseOffre": "Periode Remise Offre",
+      "tempsNecessaireEvaluationOffre": "Temps Necessaire Evaluation Offre",
+      "dateProblableDemaragePrestation": "Date Problable Demarage Prestation",
+      "delaiExecutionPrevu": "Delai Execution Prevu",
+      "dateButtoire": "Date Buttoire",
+      "deleted": "Deleted",
+      "etapeActivitePpms": "Etape Activite Ppms",
+      "ppm": "Ppm",
+      "activite": "Activite",
+      "sourceFinancement": "Source Financement"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmPpmActivite": {
+      "created": "A new Ppm Activite is created with identifier {{ param }}",
+      "updated": "A Ppm Activite is updated with identifier {{ param }}",
+      "deleted": "A Ppm Activite is deleted with identifier {{ param }}"
+    }
+  }
+}

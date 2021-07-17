@@ -1,0 +1,33 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceexecutionAvenant": {
+      "home": {
+        "title": "Avenants",
+        "createLabel": "Créer un nouveau Avenant",
+        "createOrEditLabel": "Créer ou éditer un Avenant",
+        "notFound": "Aucun Avenant trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Avenant {{ id }} ?"
+      },
+      "detail": {
+        "title": "Avenant"
+      },
+      "reference": "Reference",
+      "motif": "Motif",
+      "montant": "Montant",
+      "temps": "Temps",
+      "date": "Date",
+      "deleted": "Deleted",
+      "contrat": "Contrat",
+      "typeAvenant": "Type Avenant"
+    }
+  },
+  "microserviceexecutionApp": {
+    "microserviceexecutionAvenant": {
+      "created": "Un nouveau Avenant a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Avenant avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Avenant avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

@@ -1,0 +1,288 @@
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES LIGNES BUDGETAIRES</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <p-splitButton id="splitbutton" [disabled]="exercice==null" [model]="items" icon="fa fa-download" label="Import-Export"></p-splitButton>
+                    <button type="button" pButton class="ui-button-secondary text-primary" icon="fa fa-plus" label="Ligne Budget" (click)="add(null)">
+                    </button>
+                    <button type="button" pButton class="ui-button-secondary text-danger" [disabled]="ligneSelect.length<1" icon="fa fa-times" label="Supprimer lignes budgets" (click)="supprimer()">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <p-toast key="myKey1" position="top-center"></p-toast>
+    <div>
+        <p-table #dataTable [globalFilterFields]="['annee', 'budget', 'ligneCredit', 'section', 'montantEstime', 'programme', 'action', 'chapitre', 'activite', 'article', 'paragraphe']" [value]="ligneBudgetaires" [(selection)]="ligneSelect" dataKey="id" [paginator]="true"
+            [rows]="20" [responsive]="true">
+            <ng-template pTemplate="caption">
+                <div class="p-grid row">
+                 <!--<<div class="mr-2 ml-2 pt-1 text-left">
+                        <p-dropdown [options]="exercices" optionLabel="annee" [filter]="true" [(ngModel)]="exercice" placeholder="selectionner un exercice" (onChange)="loadAll()" [resetFilterOnHide]='true' [style]="{'width':'15em'}">
+                        </p-dropdown>
+                    </div>-->
+
+                    <!--<div class="mr-auto pt-1 text-left">
+                        <p-dropdown [options]="typeAeCps" [filter]="true" optionLabel="libelle"
+                                    [(ngModel)]="type" [disabled]="!exercice"
+                                    placeholder="selectionner AE ou CP" (onChange)="loadAll()"
+                                    [resetFilterOnHide]='true' [style]="{'width':'15em'}">
+                        </p-dropdown>
+                    </div>-->
+                    <div class="col-sm-10 pt-1 text-right">
+                        <input type="text" pInputText size="50" placeholder="Rechercher une ligne budgetaire" (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                        <button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'" [placement]="'top'" (click)="ngOnInit()">
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th style="width: 3em">
+                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                    </th>
+                    <!--<th>Exercice</th>-->
+                    <th>Budget</th>
+                    <th>Section</th>
+                    <th>Programme</th>
+                    <th>Action</th>
+                    <th>Chapitre</th>
+                    <th>Activité</th>
+                    <th>Article</th>
+                    <th>Paragraphe</th>
+                    <th>Dotation Corrigée CP</th>
+                    <th>Dotation Corrigée AE</th>
+                    <th style="width: 13em;">Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-ligneBudgetaire let-columns="columns">
+                <tr [pSelectableRow]="ligneBudgetaire">
+                    <td>
+                        <p-tableCheckbox [value]="ligneBudgetaire"></p-tableCheckbox>
+                    </td>
+                    <td>{{ligneBudgetaire.budget}}</td>
+                    <td>{{ligneBudgetaire.section}}</td>
+                    <td>{{ligneBudgetaire.programme}}</td>
+                    <td>{{ligneBudgetaire.action}}</td>
+                    <td>{{ligneBudgetaire.chapitre}}</td>
+                    <td>{{ligneBudgetaire.activite}}</td>
+                    <td>{{ligneBudgetaire.article}}</td>
+                    <td>{{ligneBudgetaire.paragraphe}}</td>
+                    <td>{{ligneBudgetaire.dotCorCP | formatTableValue:'number': true}}</td>
+                    <td>{{ligneBudgetaire.dotCorAE | formatTableValue:'number': true}}</td>
+                    <td class="text-right" style="width: 13em;">
+                        <div class="btn-group">
+                            <button type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning" label="Modif" (click)="add(ligneBudgetaire)">
+                            </button>
+
+                            <button type="button" label="Suppr" class="ui-button-secondary text-danger" pButton icon="fa fa-remove" (click)="supprimerElement(ligneBudgetaire)">
+                            </button>
+
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-columns>
+
+                <tr>
+                    <td colspan="12" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"> <span class="text-danger"> Aucune ligne budgétaire trouvée ! </span> </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <p-dialog header="Ajouter/modifier une ligne budgetaire" [(visible)]="displayAdd" [modal]="true" [responsive]="true" (onHide)="previousState()" [style]="{width: '80%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate  #editForm="ngForm">
+            <jhi-alert-error></jhi-alert-error>
+
+            <fieldset class="scheduler-border">
+                <legend class="scheduler-border">Ligne Budgétaire</legend>
+                <div class="row">
+                    <div class="form-group col-sm-4">
+                        <label class="form-control-label" for="field_section">Section</label>
+                        <input type="number" class="form-control" name="section" id="field_section" [value]="23" disabled="disabled"/>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <label class="form-control-label" for="field_exercice">Exercice budgétaire</label>
+                        <select class="form-control" id="field_exercice" name="exercice" [(ngModel)]="ligneBudgetaire.exerciceId" required>
+                                <option [ngValue]="null">...</option>
+                                <option [ngValue]="exerciceOption.id" *ngFor="let exerciceOption of exercices">{{exerciceOption.annee}}</option>
+                            </select>
+                    </div>
+                   <!-- <div class="form-group col-sm-4">
+                        <label class="form-control-label" for="field_programme">Programme</label>
+                        <input type="text" class="form-control" name="programme" id="field_programme" [(ngModel)]="ligneBudgetaire.programme" required/>
+                    </div>-->
+
+
+                    <div class="form-group col-sm-4">
+                        <label class="form-control-label" for="field_programme">Programme</label>
+                        <select class="form-control" name="programme" id="field_programme"
+                                [(ngModel)]="ligneBudgetaire.programme"  required>
+                            <option value="058">058</option>
+                            <option value="059">059</option>
+                            <option value="060">060</option>
+                            <option value="061">061</option>
+                            <option value="126">126</option>
+                            <option value="127">127</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-sm-4">
+                        <label class="form-control-label" for="field_action">Action</label>
+                        <input type="text" class="form-control" name="action" id="field_action" [(ngModel)]="ligneBudgetaire.action"
+                               *ngIf="ligneBudgetaire.programme"
+                               (blur)="verifyAction()" required/>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <label class="form-control-label" for="field_chapitre">Chapitre</label>
+                        <input type="text" class="form-control" name="chapitre" id="field_chapitre" [(ngModel)]="ligneBudgetaire.chapitre"
+                               (blur)="verifyChapitre()" required/>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <label class="form-control-label" for="field_activite">Activité</label>
+                        <input type="text" class="form-control" name="activite" id="field_activite" [(ngModel)]="ligneBudgetaire.activite"
+                               (blur)="verifyActivite()" required/>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <label class="form-control-label" for="field_article">Article</label>
+                        <input type="text" class="form-control" name="article" id="field_article" [(ngModel)]="ligneBudgetaire.article"
+                               (blur)="verifyArticle()" required/>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <label class="form-control-label" for="field_paragraphe">Paragraphe</label>
+                        <input type="text" class="form-control" name="paragraphe" id="field_paragraphe" [(ngModel)]="ligneBudgetaire.paragraphe"
+                               (blur)="verifyParagraphe()" required/>
+                    </div>
+                  <!--  <div class="form-group col-sm-4">
+                        <label class="form-control-label" for="field_budget">Budget</label>
+                        <input type="text" class="form-control" name="budget" id="field_budget" [(ngModel)]="ligneBudgetaire.budget" required/>
+                    </div>-->
+
+                    <div class="form-group col-sm-4">
+                        <label class="form-control-label" for="field_budget">Budget</label>
+                        <select class="form-control" name="budget" id="field_budget"
+                                [(ngModel)]="ligneBudgetaire.budget"  required>
+                            <option value="ETAT">ETAT</option>
+                            <option value="CAST-FSDEB">CAST-FSDEB</option>
+                            <option value="CAST CANTINE SCOLAIRE DU SECONDAIRE">CAST CANTINE SCOLAIRE DU SECONDAIRE</option>
+                            <option value="DON PROJET">DON PROJET</option>
+                        </select>
+                    </div>
+
+
+                </div>
+            </fieldset>
+            <hr>
+            <fieldset class="scheduler-border">
+                <legend class="scheduler-border">Dotations</legend>
+                <div class="row">
+
+                    <div class="form-group col-sm-6">
+                        <label class="form-control-label" >Dotation AE Initiale</label>
+                        <p-spinner [(ngModel)]="ligneBudgetaire.dotInitAE" [formatInput]="true" thosandSeparator="," id="field_dotInitAE"
+                                   name="dotInitAE" decimalSeparator="." (change)="verifier()" required></p-spinner>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label class="form-control-label">Dotation CP Initiale</label>
+                        <p-spinner [(ngModel)]="ligneBudgetaire.dotInitCP" [formatInput]="true" thosandSeparator="," id="field_dotInitCP"
+                                   name="dotInitCP" decimalSeparator="." (change)="verifier()" required></p-spinner>
+                    </div>
+
+                    <div class="form-group col-sm-6">
+                        <label class="form-control-label">Dotation AE Corrigée</label>
+                        <p-spinner [(ngModel)]="ligneBudgetaire.dotCorAE" [formatInput]="true" thosandSeparator="," id="field_dotCorAE"
+                                   name="dotCorAE" decimalSeparator="." (change)="verifier()" required></p-spinner>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label class="form-control-label">Dotation CP Corrigée</label>
+                        <p-spinner [(ngModel)]="ligneBudgetaire.dotCorCP" [formatInput]="true" thosandSeparator="," id="field_dotCorCP"
+                                   name="dotCorCP" decimalSeparator="." (change)="verifier()" required></p-spinner>
+                    </div>
+                </div>
+            </fieldset>
+
+        </form>
+        <p-footer style="text-align: center;">
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger" label="Annuler" (click)='annulle()'>
+                </button>
+                <button type="button" pButton icon="fa fa-check" label="Enregistrer" (click)="save()" class="ui-button-secondary text-info" [disabled]="editForm.form.invalid || isSaving">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+    <p-dialog header="Supprimer" [(visible)]="displaySuppri" [modal]="true" [responsive]="true" (onHide)="annulle()" [style]="{width: '60%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <h5>Voulez-vous vraiment supprimer ces lignes budgetaires ?</h5>
+        <p-table [value]="ligneSelect" dataKey="id">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>Exercice budgétaire</th>
+                    <th>Budget</th>
+                    <th>Ligne crédit</th>
+                    <!-- <th>AE/CP</th>
+                    <th>Montant estimé</th> -->
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-ligneBudgetaire let-columns="columns">
+                <tr>
+                    <td>{{ligneBudgetaire.annee}}</td>
+                    <td>{{ligneBudgetaire.budget}}</td>
+                    <td>{{ligneBudgetaire.ligneCredit}}</td>
+                    <!-- <td>{{ligneBudgetaire.aecp}}</td>
+                    <td>{{ligneBudgetaire.montantEstime}}</td> -->
+
+                </tr>
+            </ng-template>
+        </p-table>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger" label="Fermer" (click)='annulle()'>
+                </button>
+                <button type="button" pButton icon="fa fa-check" label="Confirmer" (click)="deleteAll(ligneSelect)" class="ui-button-secondary text-info">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+    <p-dialog header="Importation du budget" [(visible)]="display" [style]="{width: '600px', height: '200px'}">
+        <div class="form-group">
+            <p-dropdown [options]="uniteadministratives" [(ngModel)]="uniteAdministrative" placeholder="Selectionner une unité administrative" id="field_uniteAdministrative" [style]="{'width': '100%'}" filter="filter" name="uniteAdministrative" showClear="showClear"
+                optionLabel="abbreviation" (onChange)="filterData()">
+            </p-dropdown>
+        </div>
+        <form name="editForm" role="form" novalidate #editForm="ngForm">
+            <div class="ui-dialog-content">
+                <div class="form-group">
+                    <label>Fichier excel</label>
+                    <input type="file" name="file" class="form-control" [accept]="'.xlsx' || '.xls'" class="form-control" (change)="setFileData($event)" required>
+                </div>
+            </div>
+            <br>
+            <p-footer>
+                <span class="float-left"><img *ngIf="isSaving" src="../../../../content/images/ajax-loader.gif"/></span>
+                <span class="float-right">
+                    <button type="button" class="ui-button-secondary text-danger" pButton icon="fa fa-close"
+                            (click)="closeModal()" label="Fermer"></button>
+                    <button type="button" class="ui-button-secondary text-dark" pButton icon="fa fa-check"
+                            [disabled]="!isReloade" (click)="saveImportation()" label="Ecraser"></button>
+                    <button type="button" class="ui-button-secondary text-primary" pButton icon="fa fa-download"
+                            (click)="importData()" label="Importer"
+                            [disabled]="editForm.form.invalid || isSaving || isReloade"></button>
+                </span>
+            </p-footer>
+        </form>
+    </p-dialog>
+    <p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+        <p-footer>
+            <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON" (click)="cd.reject()"></button>
+            <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI" (click)="cd.accept()"></button>
+        </p-footer>
+    </p-confirmDialog>
+    <p-toast [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+</div>

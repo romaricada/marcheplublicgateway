@@ -1,0 +1,32 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceexecutionStatutExecution": {
+      "home": {
+        "title": "Statut Executions",
+        "createLabel": "Create a new Statut Execution",
+        "createOrEditLabel": "Create or edit a Statut Execution",
+        "notFound": "No Statut Executions found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Statut Execution {{ id }}?"
+      },
+      "detail": {
+        "title": "Statut Execution"
+      },
+      "motif": "Motif",
+      "suspendu": "Suspendu",
+      "reprise": "Reprise",
+      "dateSuspendu": "Date Suspendu",
+      "dateReprise": "Date Reprise",
+      "deleted": "Deleted",
+      "contrat": "Contrat"
+    }
+  },
+  "microserviceexecutionApp": {
+    "microserviceexecutionStatutExecution": {
+      "created": "A new Statut Execution is created with identifier {{ param }}",
+      "updated": "A Statut Execution is updated with identifier {{ param }}",
+      "deleted": "A Statut Execution is deleted with identifier {{ param }}"
+    }
+  }
+}

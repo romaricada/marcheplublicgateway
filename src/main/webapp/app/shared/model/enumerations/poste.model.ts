@@ -1,0 +1,6 @@
+export const enum Poste {
+  PRESIDENT = 'PRESIDENT',
+  RAPPORTEUR = 'RAPPORTEUR',
+  MEMBRE = 'MEMBRE',
+  OBSERVATEUR = 'OBSERVATEUR'
+}

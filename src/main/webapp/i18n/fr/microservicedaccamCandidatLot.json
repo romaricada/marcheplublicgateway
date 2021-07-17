@@ -1,0 +1,39 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamCandidatLot": {
+      "home": {
+        "title": "CandidatLots",
+        "createLabel": "Créer un nouveau Candidat Lot",
+        "createOrEditLabel": "Créer ou éditer un Candidat Lot",
+        "notFound": "Aucun Candidat Lot trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Candidat Lot {{ id }} ?"
+      },
+      "detail": {
+        "title": "Candidat Lot"
+      },
+      "estCandidat": "Est Candidat",
+      "soumissionnaire": "Soumissionnaire",
+      "attributaire": "Attributaire",
+      "titulaire": "Titulaire",
+      "montant": "Montant",
+      "dossierPaye": "Dossier Paye",
+      "nombrePoint": "Nombre Point",
+      "deleted": "Deleted",
+      "pieceCandidats": "Piece Candidats",
+      "lot": "Lot",
+      "candidat": "Candidat",
+      "deliberation": "Deliberation",
+      "depouillement": "Depouillement",
+      "reclamation": "Reclamation"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamCandidatLot": {
+      "created": "Un nouveau Candidat Lot a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Candidat Lot avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Candidat Lot avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

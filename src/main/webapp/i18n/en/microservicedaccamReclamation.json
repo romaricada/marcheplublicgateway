@@ -1,0 +1,30 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamReclamation": {
+      "home": {
+        "title": "Reclamations",
+        "createLabel": "Create a new Reclamation",
+        "createOrEditLabel": "Create or edit a Reclamation",
+        "notFound": "No Reclamations found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Reclamation {{ id }}?"
+      },
+      "detail": {
+        "title": "Reclamation"
+      },
+      "date": "Date",
+      "motif": "Motif",
+      "deleted": "Deleted",
+      "candidatLots": "Candidat Lots",
+      "decisions": "Decisions"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamReclamation": {
+      "created": "A new Reclamation is created with identifier {{ param }}",
+      "updated": "A Reclamation is updated with identifier {{ param }}",
+      "deleted": "A Reclamation is deleted with identifier {{ param }}"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmActeur": {
+      "home": {
+        "title": "Acteurs",
+        "createLabel": "Create a new Acteur",
+        "createOrEditLabel": "Create or edit a Acteur",
+        "notFound": "No Acteurs found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Acteur {{ id }}?"
+      },
+      "detail": {
+        "title": "Acteur"
+      },
+      "libelle": "Libelle",
+      "deleted": "Deleted",
+      "referentielDelais": "Referentiel Delais"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmActeur": {
+      "created": "A new Acteur is created with identifier {{ param }}",
+      "updated": "A Acteur is updated with identifier {{ param }}",
+      "deleted": "A Acteur is deleted with identifier {{ param }}"
+    }
+  }
+}

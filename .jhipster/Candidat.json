@@ -1,0 +1,49 @@
+{
+    "name": "Candidat",
+    "fields": [
+        {
+            "fieldName": "nomStructure",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "adresse",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "email",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "deleted",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "candidatLot",
+            "otherEntityRelationshipName": "candidat",
+            "relationshipName": "candidatLots"
+        }
+    ],
+    "changelogDate": "20200526162323",
+    "entityTableName": "candidat",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "clientRootFolder": "",
+    "applications": [
+        "marchepublicgateway"
+    ],
+    "skipServer": true,
+    "microserviceName": "microservicedaccam"
+}

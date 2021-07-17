@@ -1,0 +1,31 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmLigneBudgetaire": {
+      "home": {
+        "title": "LigneBudgetaires",
+        "createLabel": "Créer un nouveau Ligne Budgetaire",
+        "createOrEditLabel": "Créer ou éditer un Ligne Budgetaire",
+        "notFound": "Aucun Ligne Budgetaire trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Ligne Budgetaire {{ id }} ?"
+      },
+      "detail": {
+        "title": "Ligne Budgetaire"
+      },
+      "budget": "Budget",
+      "ligneCredit": "Ligne Credit",
+      "aecp": "Aecp",
+      "montantEstime": "Montant Estime",
+      "deleted": "Deleted",
+      "besoins": "Besoins"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmLigneBudgetaire": {
+      "created": "Un nouveau Ligne Budgetaire a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Ligne Budgetaire avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Ligne Budgetaire avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

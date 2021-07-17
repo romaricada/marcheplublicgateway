@@ -1,0 +1,220 @@
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES MESSAGES D'ALERTES</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button pButton class="ui-button-secondary text-primary" (onChange)="onTabChange($event)" (click)="add(null)"
+                            icon="fa fa-plus" label="Ajouter un message d'alerte">
+                    </button>
+                    <button
+                            class="ui-button-secondary text-danger"
+                            icon="fa fa-times" (click)="supprimer()"
+                            label="Supprimer message d'alerte" pButton>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <div class="header-position">
+        <p-tabView (onChange)="onTabChange($event)">
+            <p-tabPanel  [selected]="true" header="Délai">
+                <div class="col-sm-12 my-header-content">
+                    <div class="table-responsive">
+                        <p-table  [(selection)]="delaiSelected"
+                                 [paginator]="true"
+                                 [responsive]="true" [rows]="20" [value]="delaiMessages" aria-describedby="page-heading"
+                                 class="table table-striped" dataKey="id"
+                                 selectionMode="single">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width: 3em">
+                                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                    </th>
+                                    <th>Temps Alerte</th>
+                                    <th >Actions</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template let-delaiMessage pTemplate="body">
+                                <tr>
+                                    <td style="width: 3em">
+                                        <p-tableCheckbox [value]="delaiMessage"></p-tableCheckbox>
+                                    </td>
+                                    <td>{{delaiMessage.tempsAlerte }}</td>
+
+                                    <td class="text-right">
+                                        <div class="btn-group">
+
+                                            <button class="ui-button-secondary text-warning"
+                                                    icon="fa fa-edit"
+                                                    label="Modifier" pButton (click)="add(delaiMessage)"
+                                                    type="button">
+                                            </button>
+                                            <button  class="ui-button-secondary text-danger"
+                                                    icon="fa fa-remove" (click)="deleteType(delaiMessage)"
+                                                    label="Supprimer" pButton type="button">
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td align="center" colspan="3"><span
+                                        class="text-danger"> Aucune donnée trouvée ! </span></td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </p-tabPanel>
+            <p-tabPanel  header="Message">
+                            <div class="col-sm-12 my-header-content">
+                                <div class="table-responsive">
+                                    <p-table
+                                             [paginator]="true"
+                                             [rows]="20" [value]="delaiMessages1" aria-describedby="page-heading"
+                                             class="table table-striped" dataKey="id">
+                                        <ng-template pTemplate="caption">
+                                            <span>Liste des messages</span>
+                                        </ng-template>
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th style="width: 3em">
+                                                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                                </th>
+                                                <th>Type Message</th>
+                                                <th>Message</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template let-delaiMessage pTemplate="body">
+                                            <tr>
+                                                <td style="width: 3em">
+                                                    <p-tableCheckbox [value]="delaiMessage"></p-tableCheckbox>
+                                                </td>
+                                                <td>
+                                                <span *ngIf="delaiMessage.typeMessage =='ALERTEDEBUT'">ALERTE DEBUT TÂCHE </span>
+                                                <span *ngIf="delaiMessage.typeMessage =='ALERTEEXECUTION'">ALERTE EXECUTION TÂCHE</span>
+                                                <span *ngIf="delaiMessage.typeMessage =='ALERTEFIN'">ALERTE FIN TÂCHE</span>
+                                                </td>
+                                                <td>
+                                                    <div [innerHTML]="delaiMessage.message"></div>
+                                                </td>
+                                                <td class="text-right">
+                                                    <div class="btn-group">
+
+                                                        <button class="ui-button-secondary text-warning"
+                                                                icon="fa fa-edit"
+                                                                label="Modifier" pButton  (onChange)="onTabChange($event)" (click)="add(delaiMessage)"
+                                                                type="button">
+                                                        </button>
+                                                        <button  class="ui-button-secondary text-danger"
+                                                                 icon="fa fa-remove" (click)="deletemessage(delaiMessage)"
+                                                                 label="Supprimer" pButton type="button">
+                                                        </button>
+                                                    </div>
+
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template let-columns pTemplate="emptymessage">
+                                            <tr>
+                                                <td align="center" colspan="4"><span
+                                                    class="text-danger"> Aucune donnée trouvée ! </span></td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                </div>
+                            </div>
+                        </p-tabPanel>
+        </p-tabView>
+    </div>
+ </div>
+<p-dialog header="Ajouter un delai" [(visible)]="display" [modal]="true" [responsive]="true" (onHide)="annuler()"
+          [style]="{width: '40%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+    <form name="editeForm" role="form" novalidate #editeForm="ngForm">
+        <div class="ui-dialog-content">
+
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-control-label" for="field_tempsAlerte">Temps d'alerte</label>
+                    <input type="number" class="form-control" name="tempsAlerte" id="field_tempsAlerte"
+                           [(ngModel)]="delaiMessage.tempsAlerte" required/>
+                </div>
+            </div>
+            </div>
+
+    </form>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)='annuler()'></button>
+            <button type="button" pButton icon="fa fa-save" label="Enregistrer"
+                    [disabled]="editeForm.invalid || isSaving"
+                    (click)='save1()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+
+</p-dialog>
+<p-dialog header="Ajouter un message" [(visible)]="display1" [modal]="true" [responsive]="true" (onHide)="annuler()"
+          [style]="{width: '40%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+    <form name="editForm" role="form" novalidate #editForm="ngForm">
+        <div class="ui-dialog-content">
+            <div class="col-sm-12">
+            <div class="form-group">
+                <label class="form-control-label" for="field_typeMessage">Type de Message</label>
+                <select class="form-control" name="type_typeMessage" id="field_typeMessage"
+                        [(ngModel)]="delaiMessage.typeMessage" required>
+                    <option value="ALERTEDEBUT">ALERTE DEBUT</option>
+                    <option value="ALERTEEXECUTION">ALERTE EXECUTION</option>
+                    <option value="ALERTEFIN">ALERTE FIN</option>
+                </select>
+            </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="form-inline">
+                    <p-toggleButton onLabel="Cacher la description" offLabel="Ajouté un message" onIcon="fa fa-minus" id="ifdef" name="ifdef" offIcon="fa fa-plus" iconPos="left" [(ngModel)]="ifDescrib">
+                    </p-toggleButton>
+                </div>
+                <div *ngIf="ifDescrib">
+                    <p-editor name="desc" id="description" [(ngModel)]="delaiMessage.message" [style]="{'height':'150px'}">
+                        <p-header>
+                                        <span class="ql-formats">
+                                                    <button class="ql-bold" aria-label="Bold"></button>
+                                                    <button class="ql-italic" aria-label="Italic"></button>
+                                                    <button class="ql-underline" aria-label="Underline"></button>
+                                                </span>
+                        </p-header>
+                    </p-editor>
+                </div>
+            </div>
+            </div>
+
+    </form>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)='annuler()'></button>
+            <button type="button" pButton icon="fa fa-save" label="Enregistrer"
+                    [disabled]="editForm.invalid || isSaving"
+                    (click)='save()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+
+</p-dialog>
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+                (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI"
+                (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+<p-toast key="myKey1" position="top-center"></p-toast>

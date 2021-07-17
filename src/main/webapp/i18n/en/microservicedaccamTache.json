@@ -1,0 +1,31 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamTache": {
+      "home": {
+        "title": "Taches",
+        "createLabel": "Create a new Tache",
+        "createOrEditLabel": "Create or edit a Tache",
+        "notFound": "No Taches found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Tache {{ id }}?"
+      },
+      "detail": {
+        "title": "Tache"
+      },
+      "libelle": "Libelle",
+      "dateCreation": "Date Creation",
+      "deleted": "Deleted",
+      "tacheWorkflows": "Tache Workflows",
+      "tacheEtapes": "Tache Etapes",
+      "membreCommissions": "Membre Commissions"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamTache": {
+      "created": "A new Tache is created with identifier {{ param }}",
+      "updated": "A Tache is updated with identifier {{ param }}",
+      "deleted": "A Tache is deleted with identifier {{ param }}"
+    }
+  }
+}

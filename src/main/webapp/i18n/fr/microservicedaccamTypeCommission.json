@@ -1,0 +1,28 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamTypeCommission": {
+      "home": {
+        "title": "TypeCommissions",
+        "createLabel": "Créer un nouveau Type Commission",
+        "createOrEditLabel": "Créer ou éditer un Type Commission",
+        "notFound": "Aucun Type Commission trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Type Commission {{ id }} ?"
+      },
+      "detail": {
+        "title": "Type Commission"
+      },
+      "libelle": "Libelle",
+      "deleted": "Deleted",
+      "commissions": "Commissions"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamTypeCommission": {
+      "created": "Un nouveau Type Commission a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Type Commission avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Type Commission avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

@@ -1,0 +1,218 @@
+
+
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES ADADADDAD</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button type="button" pButton class="ui-button-secondary text-primary"
+                            icon="fa fa-plus" label="Ajouter une caution" [disabled]="lot===null"
+                            (click)="add(null)">
+                    </button>
+                    <button type="button" pButton class="ui-button-secondary text-danger"
+                            [disabled]="cautionSelected?.length<1"
+                            icon="fa fa-times" label="Supprimer des cautions" (click)="supprimer()">
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <br>
+    <div class="p-grid row">
+        <div class="float-left">
+            <p-dropdown [options]="exercices" [(ngModel)]="exercice" placeholder="Selectionner un exercice"
+                        [style]="{'width': '250px'}" filter="filter"
+                        showClear="showClear" optionLabel="annee" (onChange)="loadExercicice()" required></p-dropdown>
+
+            <p-dropdown [options]="activites" [(ngModel)]="activite"
+                        placeholder="Selectionner une activitée" [style]="{'width': '320px'}"
+                        filter="filter"
+                        showClear="showClear" optionLabel="nomActivite" [disabled]="exercice===null"
+                        (onChange)="loadActivite()" required></p-dropdown>
+
+            <p-dropdown [options]="lots" [(ngModel)]="lot"
+                        placeholder="Selectionner un lot" [style]="{'width': '320px'}"
+                        filter="filter"
+                        showClear="showClear" optionLabel="libelle" [disabled]="activite===null"
+                        (onChange)="loadCautionByLot()" required></p-dropdown>
+        </div>
+        <div class="col-sm-6 pt-1 text-right">
+            <input type="text" pInputText size="50" placeholder="Rechercher une caution"
+                   (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+            <button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+                    [placement]="'top'" (click)="loadAll()">
+            </button>
+        </div>
+    </div>
+    <br/>
+    <p-table #dataTable [responsive]="true" [value]="cautions" [(selection)]="cautionSelected" dataKey="id"
+             [globalFilterFields]="['libelle', 'montant' , 'validite' , 'lotId','typeCautionId']" [paginator]="true" rows="20">
+
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th style="width: 3em">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th >Caution</th>
+                <th >Montant</th>
+                <th  >Validité</th>
+                <th >Type</th>
+
+                <th width="20%" class="text-center">Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-caution let-columns="columns">
+            <tr [pSelectableRow]="caution">
+                <td>
+                    <p-tableCheckbox [value]="caution"></p-tableCheckbox>
+                </td>
+                <td>{{caution.libelle}}</td>
+                <td>{{caution.montant}}</td>
+                <td>{{caution.validite}}</td>
+                <td>{{caution.typeCaution?.libelle}}</td>
+
+                <td width="20%" class="text-center">
+
+                    <button type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning"
+                            label="Modifier" [disabled]="lot==null" (click)="add(caution)">
+                    </button>
+
+                    <button type="button" label="Supprimer" class="ui-button-secondary text-danger"
+                            pButton icon="fa fa-remove" (click)="deleteCaution(caution)">
+                    </button>
+                </td>
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr> <td colspan="6" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"> <span class="text-danger"> Aucune caution  trouvée ! </span> </td> </tr>
+        </ng-template>
+
+    </p-table>
+</div>
+<p-dialog header="Ajouter une caution" [(visible)]="display" [modal]="true" [responsive]="true" (onHide)="annuler()"
+          [style]="{width: '40%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+        <div class="ui-dialog-content">
+            <div class="row">
+                <div class="col-sm-8">
+                    <div class="form-group" *ngIf="caution.id!==undefined" >
+                        <label class="form-control-label"  for="field_lot">Lot</label>
+                        <select class="form-control" id="field_lot" name="lot" [(ngModel)]="caution.lotId"  required>
+
+                            <option selected *ngFor="let lotOption of lots" [ngValue]="lotOption.id">{{lotOption.libelle}}</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-sm-4" *ngIf="!ajout">
+                    <div class="form-group" >
+                        <label class="form-control-label">Type de caution</label>
+                        <select class="form-control" id="field_typeCaution" name="typeCaution" [(ngModel)]="caution.typeCautionId"  required>
+                            <option selected *ngFor="let lotOption of typeCautions" [ngValue]="lotOption.id">{{lotOption.libelle}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-4" *ngIf="ajout">
+                    <div class="form-group">
+                        <label class="form-control-label">Type de caution</label>
+                        <input [(ngModel)]="caution.typeCaution.libelle" name="libelle" type="text" required
+                               style="width: 100%; height: 35px;">
+                    </div>
+                </div>
+                <button
+                    style="margin-left: -15px; background-color: green; height: 35px; margin-top: 30px"
+                    type="button" (click)="ajouter()" class="btn btn-primary btn-sm">
+                    <fa-icon [icon]="'plus'"></fa-icon>
+                </button>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_montant">Montant</label>
+                        <input type="text" class="form-control" name="montant" id="field_montant"
+                               [(ngModel)]="caution.montant" required/>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_libelle">libelle</label>
+                        <input type="text" class="form-control" name="libelle" id="field_libelle"
+                               [(ngModel)]="caution.libelle" required/>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_validite">Validité</label>
+                        <input type="text" class="form-control" name="validite" id="field_validite"
+                               [(ngModel)]="caution.validite" required/>
+                    </div>
+                </div>
+
+            </div>
+
+            </div>
+    </form>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)='annuler()'></button>
+            <button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+                    [disabled]="editForm.invalid || isSaving"
+                     class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+
+</p-dialog>
+<p-dialog header="supprimer une caution" [(visible)]="displayDelete" [modal]="true" [responsive]="true" (onHide)="annuler()"
+          [style]="{width: '50%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+    <p-table [value]="cautionSelected" dataKey="id" >
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th >Caution</th>
+                <th >Montant</th>
+                <th  >Validité</th>
+                <th >Type caution</th>
+                <th >Lot</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-caution let-columns="columns">
+            <tr>
+                <td>{{caution.libelle}}</td>
+                <td>{{caution.montant}}</td>
+                <td>{{caution.validite}}</td>
+                <td>{{caution.lotId}}</td>
+                <td>{{caution.typeCautionId}}</td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-info"
+                    label="Fermer" (click)='annuler()'>
+            </button>
+
+            <button type="button" pButton icon="fa fa-times"  class="ui-button-secondary text-danger" label="Confirmer"
+                    [disabled]="editForm.valid || isSaving" (click)="deleteAll()" >
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON" (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI" (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+<p-toast key="myKey1" position="top-center"></p-toast>
+<p-toast key="myKey2" position="top-center"></p-toast>

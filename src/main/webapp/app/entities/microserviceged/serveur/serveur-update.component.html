@@ -1,0 +1,72 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+            <h2 id="jhi-serveur-heading" jhiTranslate="marchepublicgatewayApp.microservicegedServeur.home.createOrEditLabel">Create or edit a Serveur</h2>
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+                <div class="form-group" [hidden]="!editForm.get('id').value">
+                    <label for="id" jhiTranslate="global.field.id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" formControlName="id"
+                        readonly />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="marchepublicgatewayApp.microservicegedServeur.adresse" for="field_adresse">Adresse</label>
+                    <input type="text" class="form-control" name="adresse" id="field_adresse"
+                           formControlName="adresse"/>
+                    <div *ngIf="editForm.get('adresse').invalid && (editForm.get('adresse').dirty || editForm.get('adresse').touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('adresse').errors.required" jhiTranslate="entity.validation.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="marchepublicgatewayApp.microservicegedServeur.port" for="field_port">Port</label>
+                    <input type="number" class="form-control" name="port" id="field_port"
+                           formControlName="port"/>
+                    <div *ngIf="editForm.get('port').invalid && (editForm.get('port').dirty || editForm.get('port').touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('port').errors.required" jhiTranslate="entity.validation.required">
+                        This field is required.
+                        </small>
+                        <small class="form-text text-danger"
+                            [hidden]="!editForm.get('port')?.errors?.number" jhiTranslate="entity.validation.number">
+                            This field should be a number.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="marchepublicgatewayApp.microservicegedServeur.nomServeur" for="field_nomServeur">Nom Serveur</label>
+                    <input type="text" class="form-control" name="nomServeur" id="field_nomServeur"
+                           formControlName="nomServeur"/>
+                    <div *ngIf="editForm.get('nomServeur').invalid && (editForm.get('nomServeur').dirty || editForm.get('nomServeur').touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('nomServeur').errors.required" jhiTranslate="entity.validation.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="marchepublicgatewayApp.microservicegedServeur.deleted" for="field_deleted">Deleted</label>
+                    <input type="checkbox" class="form-control" name="deleted" id="field_deleted"
+                           formControlName="deleted"/>
+                    <div *ngIf="editForm.get('deleted').invalid && (editForm.get('deleted').dirty || editForm.get('deleted').touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('deleted').errors.required" jhiTranslate="entity.validation.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+
+            </div>
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                    <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+                </button>
+                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

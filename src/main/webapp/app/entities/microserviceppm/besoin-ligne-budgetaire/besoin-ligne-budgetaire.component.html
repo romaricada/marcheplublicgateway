@@ -1,0 +1,84 @@
+<div>
+    <h2 id="page-heading">
+        <span jhiTranslate="marchepublicgatewayApp.microserviceppmBesoinLigneBudgetaire.home.title">Besoin Ligne Budgetaires</span>
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-besoin-ligne-budgetaire" [routerLink]="['/besoin-ligne-budgetaire/new']">
+            <fa-icon [icon]="'plus'"></fa-icon>
+            <span  jhiTranslate="marchepublicgatewayApp.microserviceppmBesoinLigneBudgetaire.home.createLabel">
+            Create a new Besoin Ligne Budgetaire
+            </span>
+        </button>
+    </h2>
+    <jhi-alert-error></jhi-alert-error>
+    <jhi-alert></jhi-alert>
+    <br/>
+    <div class="alert alert-warning" *ngIf="besoinLigneBudgetaires?.length === 0">
+        <span jhiTranslate="marchepublicgatewayApp.microserviceppmBesoinLigneBudgetaire.home.notFound">No besoinLigneBudgetaires found</span>
+    </div>
+    <div class="table-responsive" *ngIf="besoinLigneBudgetaires?.length > 0">
+        <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+            <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
+            <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="deleted"><span jhiTranslate="marchepublicgatewayApp.microserviceppmBesoinLigneBudgetaire.deleted">Deleted</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="ligneBudget.id"><span jhiTranslate="marchepublicgatewayApp.microserviceppmBesoinLigneBudgetaire.ligneBudget">Ligne Budget</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="besoin.id"><span jhiTranslate="marchepublicgatewayApp.microserviceppmBesoinLigneBudgetaire.besoin">Besoin</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="activite.id"><span jhiTranslate="marchepublicgatewayApp.microserviceppmBesoinLigneBudgetaire.activite">Activite</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let besoinLigneBudgetaire of besoinLigneBudgetaires ;trackBy: trackId">
+                <td><a [routerLink]="['/besoin-ligne-budgetaire', besoinLigneBudgetaire.id, 'view' ]">{{besoinLigneBudgetaire.id}}</a></td>
+                <td>{{besoinLigneBudgetaire.deleted}}</td>
+                <td>
+                    <div *ngIf="besoinLigneBudgetaire.ligneBudget">
+                        <a [routerLink]="['/ligne-budgetaire', besoinLigneBudgetaire.ligneBudget?.id, 'view' ]" >{{besoinLigneBudgetaire.ligneBudget?.id}}</a>
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="besoinLigneBudgetaire.besoin">
+                        <a [routerLink]="['/besoin', besoinLigneBudgetaire.besoin?.id, 'view' ]" >{{besoinLigneBudgetaire.besoin?.id}}</a>
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="besoinLigneBudgetaire.activite">
+                        <a [routerLink]="['/activite', besoinLigneBudgetaire.activite?.id, 'view' ]" >{{besoinLigneBudgetaire.activite?.id}}</a>
+                    </div>
+                </td>
+                <td class="text-right">
+                    <div class="btn-group">
+                        <button type="submit"
+                                [routerLink]="['/besoin-ligne-budgetaire', besoinLigneBudgetaire.id, 'view' ]"
+                                class="btn btn-info btn-sm">
+                            <fa-icon [icon]="'eye'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/besoin-ligne-budgetaire', besoinLigneBudgetaire.id, 'edit']"
+                                class="btn btn-primary btn-sm">
+                            <fa-icon [icon]="'pencil-alt'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/besoin-ligne-budgetaire', { outlets: { popup: besoinLigneBudgetaire.id + '/delete'} }]"
+                                replaceUrl="true"
+                                queryParamsHandling="merge"
+                                class="btn btn-danger btn-sm">
+                            <fa-icon [icon]="'times'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div [hidden]="besoinLigneBudgetaires?.length === 0">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+        </div>
+    </div>
+</div>

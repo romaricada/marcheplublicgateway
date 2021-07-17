@@ -1,0 +1,104 @@
+<div>
+	<jhi-index-controle-financier></jhi-index-controle-financier>
+	<div class="entete">
+		<p-toolbar>
+			<div class="ui-g ui-g-12 ui-g-nopad">
+				<div class="ui-g-12 ui-md-7  pt-3 pl-3">
+					<label class="col-sm-7 font-weight-bold text-primary">CONTRÔLE FINANCIER</label>
+				</div>
+				<div class="ui-g-12 ui-md-5 p-2">
+					<div class="float-right">
+						<button type="button" pButton icon="fa fa-eye" label="Voir le contrat"
+						        class="ui-button-secondary text-info"
+						        [routerLink]="['/elab-contrat', contrat.id, 'view' ]"
+						        [disabled]="contrat?.id === undefined">
+						</button>
+						<button type="button" pButton class="ui-button-secondary text-primary"
+						        icon="fa fa-copy" label="Rétrograder" (click)="onRetrograde()" [disabled]="engagementsToTransfert?.length === 0">
+						</button>
+						<button type="button" pButton class="ui-button-secondary text-primary"
+						        icon="fa fa-send" label="Tranferer à l'ordonateur" (click)="sendToOrdonnateur()" [disabled]="engagementsToTransfert?.length === 0">
+						</button>
+					</div>
+				</div>
+			</div>
+		</p-toolbar>
+		<p-toolbar>
+			<div class="ui-toolbar-group-left">
+				<div class="ui-g ui-g-12 ui-g-nopad">
+					<div class="ui-inputgroup mr-1">
+						<span class="ui-inputgroup-addon"><span class="font-weight-bold">Avis Dac</span></span>
+						<p-dropdown [options]="avisDacs" [filter]="true" optionLabel="nomAvisDac" [(ngModel)]="avisDac"
+						            name="nomAvisDac" placeholder="Selectionner un avisDac" [resetFilterOnHide]="true"
+						            (onChange)="onAvisChange()" [style]="{'width': '300px'}">
+						</p-dropdown>
+					</div>
+
+					<div class="ui-inputgroup mr-1">
+						<span class="ui-inputgroup-addon"><span class="font-weight-bold">Contrat</span></span>
+						<p-dropdown [options]="contrats" [filter]="true" optionLabel="reference" [(ngModel)]="contrat"
+						            name="reference" placeholder="Selectionner un contrat" [resetFilterOnHide]="true"
+						            (onChange)="onContratChange()" [style]="{'width': '300px'}">
+						</p-dropdown>
+					</div>
+				</div>
+			</div>
+			<div class="ui-toolbar-group-right">
+				<div class="text-right">
+					<input type="text" pInputText size="45" placeholder="Rechercher"
+					       (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+					<button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+					        [placement]="'top'" (click)="ngOnInit()">
+
+					</button>
+				</div>
+			</div>
+		</p-toolbar>
+	</div>
+	<div class="tableau">
+		<p-table #dataTable [value]="engagements" [(selection)]="engagementsToTransfert" dataKey="id">
+			<ng-template pTemplate="header">
+				<tr>
+					<th style="width: 3em">
+						<p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+					</th>
+					<th>N° engagement</th>
+					<th>Intitule</th>
+					<th>Montant engagé</th>
+					<th>Date</th>
+					<th>Status</th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-enga let-columns="columns">
+				<tr>
+					<td>
+						<p-tableCheckbox [value]="enga"></p-tableCheckbox>
+					</td>
+					<td>{{enga?.reference}} </td>
+					<td>{{enga?.intitule}} </td>
+					<td>{{enga?.montantEngage | formatTableValue:'number': true  }}</td>
+					<td>{{enga?.date}}</td>
+					<td><span class="badge-warning">{{enga?.label}}</span></td>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="emptymessage" let-columns>
+				<tr>
+					<td colspan="6" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"><span
+							class="text-danger"> Aucun engagement trouvé ! </span></td>
+				</tr>
+			</ng-template>
+		</p-table>
+	</div>
+</div>
+
+<div class="message">
+	<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+		<p-footer>
+			<button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+			        (click)="cd.reject()"></button>
+			<button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI"
+			        (click)="cd.accept()"></button>
+		</p-footer>
+	</p-confirmDialog>
+	<p-toast key="1" [style]="{marginTop: '80px'}" position="top-right" baseZIndex="10000000000"></p-toast>
+</div>

@@ -1,0 +1,11 @@
+{
+  "marchepublicgatewayApp": {
+    "Poste": {
+      "null": "",
+      "PRESIDENT": "PRESIDENT",
+      "RAPPORTEUR": "RAPPORTEUR",
+      "MEMBRE": "MEMBRE",
+      "OBSERVATEUR": "OBSERVATEUR"
+    }
+  }
+}

@@ -1,0 +1,169 @@
+<div>
+	<p-toolbar>
+		<div class="ui-g ui-g-12 ui-g-nopad">
+			<div class="ui-g-12 ui-md-7  pt-3 pl-3">
+				<label class="col-sm-7 font-weight-bold text-primary">GESTION DES CANDIDATS</label>
+			</div>
+			<div class="ui-g-12 ui-md-5 p-2">
+				<div class="float-right">
+					<button type="button" pButton class="ui-button-secondary text-primary"
+					        icon="fa fa-plus" label="Candidat" (click)="adds()" [disabled]="!avisDac"
+					>
+					</button>
+                    <button type="submit" pButton icon="fa fa-save" label="Imprimer" [disabled]="!avisDac"
+                            (click)="ImprimerCandidat()" class="ui-button-secondary text-info">
+                    </button>
+					<!--
+										<button type="button" pButton class="ui-button-secondary text-danger"
+												icon="fa fa-times" label="Supprimer Candidat"s
+												[disabled]="CandidatLotSelected?.length<1" (click)="supprimer()">
+										</button>
+					-->
+				</div>
+			</div>
+		</div>
+	</p-toolbar>
+	<p-toolbar>
+		<div class="ui-toolbar-group-left">
+			<div class="ui-g ui-g-12 ui-g-nopad">
+
+				<div class="ui-inputgroup mr-1">
+					<span class="ui-inputgroup-addon"><span class="font-weight-bold">Avis DAC</span></span>
+					<p-dropdown [options]="avisDacs" [(ngModel)]="avisDac"
+					            placeholder="Selectionner un avis Dac"
+					            [style]="{'width': '250px'}" filter="filter" name="avisDac"
+					            showClear="showClear" optionLabel="nomAvisDac" (onChange)="loadAllByAvisDac()"
+					            required [disabled]="!exercice">
+					</p-dropdown>
+				</div>
+			</div>
+		</div>
+		<div class="ui-toolbar-group-right">
+			<div class="text-right">
+				<input type="text" pInputText size="50" placeholder="Rechercher un candidat"
+				       (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+				<button type="button" pButton icon="fa fa-refresh" label="Actualiser"
+				        [ngbTooltip]="'Raffraichir'"
+				        [placement]="'top'" (click)="loadAllCandidat()">
+				</button>
+			</div>
+		</div>
+	</p-toolbar>
+	<div>
+		<p-table #dataTable [value]="allCandidats"
+		         dataKey="id" [paginator]="true" [rows]="20" [responsive]="true" [(selection)]="selectedLots"
+		         [globalFilterFields]="['candidat.nomStructure', 'candidat.adresse','candidat.email']">
+			<ng-template pTemplate="header" let-columns>
+				<tr>
+					<th>Nom de la structure</th>
+					<th>Adresse</th>
+					<th>Email</th>
+					<th style="width: 17em">Action</th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-candida let-expanded="expanded" let-columns="columns">
+				<tr>
+					<td>
+						<a href="#" [pRowToggler]="candida">
+							<i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">&nbsp;</i>
+							<span> {{candida?.nomStructure}}</span>
+						</a>
+					</td>
+					<td>{{candida?.adresse}}</td>
+					<td>{{candida?.email}}</td>
+					<td class="text-right">
+						<div class="btn-group">
+							<button type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning" [disabled]="!avisDac"
+							        label="Modifier" (click)="update(candida)">
+							</button>
+							<button type="button" label="Supprimer" class="ui-button-secondary text-danger" [disabled]="!avisDac"
+							        pButton icon="fa fa-remove" (click)="deleteElement(candida)">
+							</button>
+						</div>
+					</td>
+
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="rowexpansion" let-candida let-columns="columns">
+				<tr>
+					<th style="width: 10em" colspan="1">Lot(s) associé(s)</th>
+					<th style="width: 10em" colspan="2">Description</th>
+					<th style="width: 10em" colspan="1">Etat du dossier</th>
+				</tr>
+				<tr *ngFor="let lot2 of candida.lots">
+					<td colspan="1">{{lot2?.libelle}}</td>
+					<td colspan="2">{{lot2?.description}}</td>
+					<td colspan="1" class="text-center" width="50%">
+						<span *ngIf="lot2?.dossierPaye == false" class="badge badge-pill badge-danger">Non payé</span>
+						<span *ngIf="lot2?.dossierPaye == true" class="badge badge-pill badge-success">Payé</span>
+					</td>
+				</tr>
+			</ng-template>
+		</p-table>
+	</div>
+	<p-dialog header="Ajouter/modifier un candidat" [(visible)]="displayAdd" [modal]="true" [responsive]="true"
+	          (onHide)="previousState()"
+	          [style]="{width: '60%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+		<form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+			<div class="ui-dialog-content">
+				<div>
+					<div class="form-group">
+						<label class="font-weight-bold">Candidat existant</label>
+						<p-dropdown [options]="allCandidats" optionLabel="nomStructure" [filter]="true" name="candidat"
+						            [(ngModel)]="candidat" (onChange)="findCandidat()" showClear="showClear"
+						            placeholder="selectionner un candidat existant"
+						            [resetFilterOnHide]='true' [style]="{width: '100%'}">
+						</p-dropdown>
+					</div>
+					<div class="form-group">
+						<label class="form-control-label font-weight-bold" for="field_candidat_nomStructure">Nom
+							Structure</label>
+						<input type="text" class="form-control" name="candidat_nomStructure"
+						       id="field_candidat_nomStructure" [(ngModel)]="candidatLot.candidat.nomStructure"
+						       required/>
+					</div>
+					<div class="form-group">
+						<label class="form-control-label font-weight-bold" for="field_candidat_adresse">Adresse</label>
+						<input type="text" class="form-control" name="candidat_adresse" id="field_candidat_adresse"
+						       [(ngModel)]="candidatLot.candidat.adresse"/>
+					</div>
+					<div class="form-group">
+						<label class="form-control-label font-weight-bold" for="field_candidat_email">Email</label>
+						<input type="email" class="form-control" name="candidat_email" id="field_candidat_email"
+						       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,8}$"
+						       [(ngModel)]="candidatLot.candidat.email"/>
+					</div>
+					<div class="form-group">
+						<label class="form-control-label font-weight-bold" for="lot">Lot acheté</label>
+						<p-multiSelect [options]="lots" [optionLabel]="'libelle'" name="lot" id="lot"
+						               [(ngModel)]="candidatLot.lots" [style]="{width:'100%'}" dataKey="id"
+						               defaultLabel="Sélectionner les lots" required>
+						</p-multiSelect>
+					</div>
+				</div>
+			</div>
+			<p-footer>
+				<div class="ui-dialog-buttonpane ui-helper-clearfix float-right mt-3">
+					<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+					        label="Fermer" (click)='annuler()'>
+					</button>
+					<button type="submit" pButton icon="fa fa-check" label="Valider"
+					        [disabled]="editForm.invalid || isSaving"
+					        class="ui-button-secondary text-info">
+					</button>
+				</div>
+			</p-footer>
+		</form>
+
+	</p-dialog>
+	<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning"
+	                 [baseZIndex]="10000">
+		<p-footer>
+			<button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+			        (click)="cd.reject()"></button>
+			<button type="button" class="ui-button-secondary text-primary" pButton icon="pi pi-check" label="OUI"
+			        (click)="cd.accept()"></button>
+		</p-footer>
+	</p-confirmDialog>
+	<p-toast [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+</div>

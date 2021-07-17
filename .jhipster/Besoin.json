@@ -1,0 +1,56 @@
+{
+    "name": "Besoin",
+    "fields": [
+        {
+            "fieldName": "libelle",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "quantite",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "deleted",
+            "fieldType": "Boolean"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "besoinLigneBudgetaire",
+            "otherEntityRelationshipName": "besoin",
+            "relationshipName": "besoinLignes"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "exerciceBudgetaire",
+            "otherEntityRelationshipName": "besoins",
+            "relationshipName": "exercice",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "uniteAdministrative",
+            "otherEntityRelationshipName": "besoins",
+            "relationshipName": "uniteAdministrative",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20200424175228",
+    "entityTableName": "besoin",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "clientRootFolder": "",
+    "applications": [
+        "marchepublicgateway"
+    ],
+    "skipServer": true,
+    "microserviceName": "microserviceppm"
+}

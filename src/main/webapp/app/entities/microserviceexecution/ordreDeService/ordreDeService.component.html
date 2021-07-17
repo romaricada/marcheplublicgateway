@@ -1,0 +1,285 @@
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES ORDRES DE SERVICE</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button type="button" pButton class="ui-button-secondary text-primary"
+                            icon="fa fa-plus" label="Ajouter un ordre de service"
+                            [disabled]="contrat==null" (click)="addOrdreDeService()"
+                            *jhiHasAnyAuthority="'ROLE_EXECUTION_GESTION_DES_CONTRATS_ORDRE_DE_SERVICE_EDIT'"
+                            icon="fa fa-edit">
+                    </button>
+                    <button type="button" pButton class="ui-button-secondary text-danger"
+                            [disabled]="ordreDeServiceSelected?.length<1"
+                            icon="fa fa-times" label="Supprimer des ordres de service"
+                            (click)="supprimer()"
+                            *jhiHasAnyAuthority="'ROLE_EXECUTION_GESTION_DES_CONTRATS_ORDRE_DE_SERVICE_DELETE'"
+                            icon="fa fa-trash">
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <br/>
+    <div class=" row p-grid">
+        <div class="col-sm-6 pt-1 text-left">
+            <p-dropdown [options]="contrats" [(ngModel)]="contrat"
+                        placeholder="Selectionner un contrat"
+                        [style]="{'width': '320px'}" filter="filter"
+                        showClear="showClear" optionLabel="reference" (onChange)="findAllOrdreServiceByContrat()"
+                        required>
+            </p-dropdown>
+
+        </div>
+
+        <div class="col-sm-6 pt-1 text-right">
+            <input type="text" pInputText size="50" placeholder="Rechercher un ordre de service"
+                   (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+            <button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+                    [placement]="'top'" (click)="ngOnInit()">
+            </button>
+        </div>
+    </div>
+    <br/>
+    <p-table #dataTable [responsive]="true" [value]="ordreDeServiceS" [(selection)]="ordreDeServiceSelected"
+             dataKey="id"
+             [globalFilterFields]="['reference', 'delai', 'delai' , 'libelle' , 'etat' , 'type','dateDemarrage' , 'NumeroOs' , 'dateFin']"
+             [paginator]="true" rows="20">
+
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th style="width: 3em">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th>Contrat</th>
+                <th>Delai </th>
+                <th>Numero O.S</th>
+                <th>Libelle</th>
+                <th>Etat</th>
+                <th>Type</th>
+                <th>Date Debut</th>
+                <th>Date Fin</th>
+                <th width="20%" class="text-center">Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-ordreDeService let-columns="columns">
+            <tr>
+                <td>
+                    <p-tableCheckbox [value]="ordreDeService"></p-tableCheckbox>
+                </td>
+                <td>{{ordreDeService?.contrat?.reference}}</td>
+                <td>{{ordreDeService?.delai}}</td>
+                <td>{{ordreDeService?.numeroOs1}}</td>
+                <td>{{ordreDeService?.libelle}}</td>
+                <td>{{ordreDeService?.etat}}</td>
+                <td>{{ordreDeService?.type}}</td>
+                <td>{{ordreDeService?.dateDemarrage | date:'mediumDate'}}</td>
+                <td>{{ordreDeService?.dateFin | date:'mediumDate'}}</td>
+
+                <td>
+                    <button type="button" pButton icon="fa fa-edit"
+                            class="ui-button-secondary text-warning"
+                            label="Modifier" [disabled]="contrat===null" (click)="modif(ordreDeService)">
+                    </button>
+
+                    <button type="button" label="Supprimer" class="ui-button-secondary text-danger"
+                            pButton icon="fa fa-remove" [disabled]="contrat==null"
+                            (click)="deleteOrdreService(ordreDeService)">
+                    </button>
+                </td>
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td colspan="7" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"><span
+                    class="text-danger"> Aucun Ordre de service trouvée ! </span></td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+</div>
+
+<p-dialog header="Création/Ajout d'un membre de commission" [(visible)]="displayOrdreService" [modal]="true"
+          [responsive]="true"
+          (onHide)="fermerFormulaire()"
+          [style]="{width: '70%', minWidth: '100px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+    <div class="container">
+        <form name="editForm" role="form" novalidate #editFormOrdre="ngForm">
+            <div class="ui-dialog-content" style="height: 500px">
+                <div class="container">
+
+
+                    <div>
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_contrat">contrat</label>
+                            <p-dropdown [options]="contrats" [(ngModel)]="contrat" id="field_contrat" name="contrat"
+                                        placeholder="Selectionner un contrat"
+                                        filter="filter" showClear="showClear" optionLabel="reference"
+                                        required>
+                            </p-dropdown>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_NumeroOs">
+                            Numero OS</label>
+                        <input type="number" class="form-control"
+                               name="NumeroOs" id="field_NumeroOs"
+                               [(ngModel)]="ordreDeService.NumeroOs" required/>
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_delai">
+                                    Délai</label>
+                                <input type="number" class="form-control"
+                                       name="delai" id="field_delai"
+                                       [(ngModel)]="ordreDeService.delai" required/>
+
+                            </div>
+
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_libelle">Libelle</label>
+                                <input id="field_libelle" type="libelle" class="form-control" name="libelle"
+                                       [(ngModel)]="ordreDeService.libelle" required/>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_etat">Etat</label>
+                                <select class="form-control" name="etat" id="field_etat"
+                                        [(ngModel)]="ordreDeService.etat" required>
+                                    <option value="INITIAL">INITIAL</option>
+                                    <option value="ENCOURS">ENCOURS</option>
+                                    <option value="SUSPENDU">SUSPENDU</option>
+                                    <option value="TERMINE">TERMINE</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_type">Type</label>
+                                <select class="form-control" name="type" id="field_type"
+                                        [(ngModel)]="ordreDeService.type" required>
+                                    <option value="COMMANDE">COMMANDE</option>
+                                    <option value="SERVICE">SERVICE</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_dateDemarrage">Date Demarrage</label>
+                                <div class="input-group">
+                                    <input id="field_dateDemarrage" type="date" class="form-control"
+                                           name="dateDemarrage"
+                                           [(ngModel)]="ordreDeService.dateDemarrage" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_dateFin">Date Notification</label>
+                                <div class="input-group">
+                                    <input id="field_dateFin" type="date" class="form-control" name="dateFin"
+                                           [(ngModel)]="ordreDeService.dateFin" required/>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+
+    <p-footer>
+        <div class="text-center">
+            <button type="button" pButton class="ui-button-secondary text-danger" icon="fa fa-ban"
+                    (click)="annulerOrdreService()" label="Fermer">
+            </button>
+            <button type="button" pButton (click)="saveOffre()" [disabled]="editFormOrdre.invalid || isSaving"
+                    icon="fa fa-save" class="ui-button-secondary text-primary" label="Enregistrer">
+            </button>
+        </div>
+    </p-footer>
+
+
+</p-dialog>
+
+
+<p-dialog header="supprimer une ordre" [(visible)]="displayDelete" [modal]="true" [responsive]="true"
+          (onHide)="fermerFormulaire()"
+          [style]="{width: '50%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+    <p-table [value]="ordreDeServiceSelected" dataKey="id">
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th>Contrat</th>
+                <th>Delai</th>
+                <th>Libelle</th>
+                <th>Etat</th>
+                <th>Type</th>
+                <th>Date Demarrage</th>
+                <th>Date Fin</th>
+               <th>Numero OS</th>
+
+        </ng-template>
+        <ng-template pTemplate="body" let-ordreDeService let-columns="columns">
+            <tr>
+                <td>{{ordreDeService?.contrat?.reference}}</td>
+                <td>{{ordreDeService?.delai}}</td>
+                <td>{{ordreDeService?.libelle}}</td>
+                <td>{{ordreDeService?.etat}}</td>
+                <td>{{ordreDeService?.type}}</td>
+                <td>{{ordreDeService?.dateDemarrage | date:'mediumDate'}}</td>
+                <td>{{ordreDeService?.dateFin | date:'mediumDate'}}</td>
+                <td>{{ordreDeService?.NumeroOs}}</td>
+
+        </ng-template>
+
+    </p-table>
+    <p-footer>
+        <div class="text-center">
+            <button type="button" pButton class="ui-button-secondary text-danger" icon="fa fa-ban"
+                    (click)="annulerOrdreService()" label="Fermer">
+            </button>
+            <button type="button" pButton (click)="deleteAll()"
+                    icon="fa fa-save" class="ui-button-secondary text-primary" label="Supprimer">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+                (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI"
+                (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+
+<p-toast [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+
+
+
+
+
+

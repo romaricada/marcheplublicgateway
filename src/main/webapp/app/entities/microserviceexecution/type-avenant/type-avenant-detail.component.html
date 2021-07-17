@@ -1,0 +1,31 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="typeAvenant">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionTypeAvenant.detail.title">Type Avenant</span> {{typeAvenant.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionTypeAvenant.libelle">Libelle</span></dt>
+                <dd>
+                    <span>{{typeAvenant.libelle}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionTypeAvenant.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{typeAvenant.deleted}}</span>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/type-avenant', typeAvenant.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

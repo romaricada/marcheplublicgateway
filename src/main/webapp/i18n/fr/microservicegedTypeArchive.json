@@ -1,0 +1,28 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicegedTypeArchive": {
+      "home": {
+        "title": "TypeArchives",
+        "createLabel": "Créer un nouveau Type Archive",
+        "createOrEditLabel": "Créer ou éditer un Type Archive",
+        "notFound": "Aucun Type Archive trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Type Archive {{ id }} ?"
+      },
+      "detail": {
+        "title": "Type Archive"
+      },
+      "libelle": "Libelle",
+      "deleted": "Deleted",
+      "documents": "Documents"
+    }
+  },
+  "microservicegedApp": {
+    "microservicegedTypeArchive": {
+      "created": "Un nouveau Type Archive a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Type Archive avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Type Archive avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

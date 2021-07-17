@@ -1,0 +1,583 @@
+<div>
+    <jhi-index-gestionnaire></jhi-index-gestionnaire>
+    <p-toolbar>
+    <div class="ui-g ui-g-12 ui-g-nopad">
+        <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+            <label class="col-sm-7 font-weight-bold text-primary">GESTION DES LIQUIDATIONS</label>
+        </div>
+    </div>
+        <div class="ui-toolbar-group-right float-right">
+                <button  type="button" pButton class="ui-button-secondary text-primary"
+                        icon="fa fa-plus" label="Ajouter une liquidation" (click)="showDialogToAddLiquidation()" [disabled]="!contrat">
+                </button>
+                <button type="button" pButton class="ui-button-secondary text-primary"
+                        icon="fa fa-send" label="Visa du controleur"
+                        [disabled]="liquidationSelect==null"
+                        (click)="onShowControl()">
+                </button>
+                <button type="button" pButton class="ui-button-secondary text-primary"
+                        icon="fa fa-send" label="Transmettre à l'ordonnateur "
+                        [disabled]="liquidationSelect==null"
+                        (click)="onShowOrdonateur()">
+                </button>
+                <button type="button" pButton class="ui-button-secondary text-primary"
+                        icon="fa fa-send" label="Paiement" [disabled]="liquidationSelect==null"
+                        (click)="onShowPaiement()">
+                </button>
+
+               <!-- <button  type="button" pButton class="ui-button-secondary text-danger"
+                        [disabled]="liquidationSelected?.length < 1 "
+                        icon="fa fa-times" label="Supprimer des liquidations" (click)="supprimer()">
+                </button>-->
+            </div>
+</p-toolbar>
+    <br/>
+
+<p-toolbar>
+    <div class="ui-toolbar-group-left float-left row">
+                <div class="ui-inputgroup mr-1">
+                    <span class="ui-inputgroup-addon"><span class="font-weight-bold">Contrat</span></span>
+                    <p-dropdown [options]="contrats" [(ngModel)]="contrat"
+                                placeholder="Selectionner un contrat"
+                                [style]="{'width': '320px'}" filter="filter"
+                                showClear="showClear" optionLabel="reference" (onChange)="findAllEngagementbyContrat()" required>
+                    </p-dropdown>
+            </div>
+                <div class="ui-inputgroup mr-1">
+                    <span class="ui-inputgroup-addon"><span class="font-weight-bold">Engagement</span></span>
+                    <p-dropdown [options]="engagements" [(ngModel)]="engagement"
+                                placeholder="Selectionner un engagement"
+                                [style]="{'width': '320px'}" filter="filter"
+                                showClear="showClear" optionLabel="intitule" (onChange)="loadLiquidationbyEngagement()" required>
+                    </p-dropdown>
+                </div>
+    </div>
+
+    <div class="ui-toolbar-group-right float-right">
+        <div class="text-right">
+        <input type="text" pInputText size="50" placeholder="Rechercher une liquidation"
+               (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+        <button type="button" pButton icon="fa fa-refresh" label="Actualiser"
+                [ngbTooltip]="'Raffraichir'"
+                [placement]="'top'" (click)="ngOnInit()">
+        </button>
+        </div>
+    </div>
+
+</p-toolbar>
+
+<!------------------------------------------------------>
+<!-- Tableau de liquidation -->
+<!------------------------------------------------------->
+
+    <p-table #dataTable [value]="liquidations" dataKey="id" [paginator]="true" [(selection)]="liquidationSelect"
+             [rows]="20" [responsive]="true" selectionMode="single">
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th style="width: 3em">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th>Référence de bon de liquidation</th>
+                <th>Moyen de paiement</th>
+                <th>Date de liquidation</th>
+                <th>Montant à liquider</th>
+                <th>Status</th>
+                <th style="width: 20em">Action</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-liquidation let-columns="columns">
+            <tr [pSelectableRow]="liquidation">
+                <td>
+                    <p-tableRadioButton [value]="liquidation"></p-tableRadioButton>
+                </td>
+                <td>{{liquidation.referencePaiement}}</td>
+                <td>{{liquidation.support}}</td>
+                <td>{{liquidation.datePaiement}}</td>
+                <td>{{liquidation.montant}}</td>
+                <td><span class="badge-warning text-center">{{ liquidation?.etapeLiquidation }}</span></td>
+                <td>
+                    <button type="button" pButton class="ui-button-secondary text-success"
+                            label="Modifier" (click)='addLiquidation(liquidation)'></button>
+                    <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                            label="Supprimer" (click)='supprimerLiquidation(liquidation)'></button>
+                    <button type="submit" pButton icon="fa fa-save"
+                            (click)="ImprimerLiquidation(liquidation)" class="ui-button-secondary text-info">
+                    </button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td colspan="7" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"><span
+                    class="text-danger"> Aucune liquidation trouvée! </span></td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+<p-dialog header="Création/Modification d'une liquidation" [(visible)]="display" [modal]="true"
+          [responsive]="true"
+          (onHide)="AnnullerLiquidation()"
+          [style]="{width: '65%', minWidth: '100px'}" [minY]="20" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate #editFormLiquidation="ngForm">
+                <div class="container-fluid">
+                    <fieldset class="scheduler-border1">
+                        <legend class="scheduler-border1">Projet de liquidation d'un contrat</legend>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_referencePaiement">Référence de bon de liquidation</label>
+                                <input type="text" class="form-control" name="referencePaiement" id="field_referencePaiement"
+                                       [(ngModel)]="liquidation.referencePaiement" required/><span class="input-group-append"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_support">Moyen de paiement</label>
+                                <select class="form-control" name="support" id="field_support" type="text"
+                                        [(ngModel)]="liquidation.support"  required>
+                                    <option value="virement bancaire">Virement bancaire</option>
+                                    <option value="chèque">Chèque</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_date_liquidation">Date de liquidation</label>
+                                <input type="date" class="form-control" name="datePaiement" id="field_date_liquidation"
+                                       [(ngModel)]="liquidation.datePaiement" required/><span class="input-group-append"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_montant_liquiqation">Montant liquidé</label>
+                                <input type="number" class="form-control" min="0" name="montant_liquidation" id="field_montant_liquiqation"
+                                       [(ngModel)]="liquidation.montant" required/>
+                            </div>
+                        </div>
+                    </div>
+                    </fieldset>
+                    </div><br>
+      <!--      <fieldset class="scheduler-border1">
+                <legend class="scheduler-border1">Pénalité liée au contrat s'il y'a lieu</legend>
+            <div class="ui-g-12">
+                <div class="float-right mb-2">
+                    <button type="button" pButton icon="fa fa-plus" label="Ajouter une pénalité"
+                            class="ui-button-secondary text-info" (click)="showPenalite()">
+                    </button>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <p-table [value]="liquidation.penalites" dataKey="id" [paginator]="true"
+                         [rows]="20" [responsive]="true">
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <th style="width: 3em">
+                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                            </th>
+                            <th>Motif</th>
+                            <th>Montant de la pénalité</th>
+                            <th style="width: 23em">Action</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-penalite let-columns="columns" let-rowIndex="rowIndex">
+                        <tr [pSelectableRow]="penalite">
+                            <td>
+                                <p-tableCheckbox [value]="penalite"></p-tableCheckbox>
+                            </td>
+                            <td>{{penalite?.motifPenalite}}</td>
+                            <td>{{penalite?.montantPenalite}}</td>
+                            <td>
+                                <button type="button" pButton class="ui-button-secondary text-success"
+                                        label="Modifier" (click)='modif(penalite)'></button>
+                                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-warning"
+                                        label="Rétirer" (click)='retirer(rowIndex)'></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            </fieldset>-->
+        </form>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)='AnnullerLiquidation()'></button>
+            <button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+                    [disabled]="editFormLiquidation.invalid || isSaving"
+                    (click)='save()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+<p-dialog (onHide)="annulerDelete()" [(visible)]="displayDelete" [baseZIndex]="10000" [maximizable]="true"
+          [minY]="70"
+          [modal]="true" [responsive]="true" [style]="{width: '50%', minWidth: '200px'}"
+          header="Supprimer">
+
+    <p-table [value]="liquidationSelected" dataKey="id">
+        <ng-template let-columns pTemplate="header">
+            <tr>
+                <th>Référence de bon de liquidation</th>
+                <th>Moyen de paiement</th>
+                <th>Date de liquidation</th>
+                <th>Montant à liquider</th>
+            </tr>
+        </ng-template>
+        <ng-template let-columns="columns" let-liquidation pTemplate="body">
+            <tr>
+                <td>{{liquidation.referencePaiement}}</td>
+                <td>{{liquidation.support}}</td>
+                <td>{{liquidation.datePaiement}}</td>
+                <td>{{liquidation.montant}}</td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+            <button (click)='annulerDelete()' class="ui-button-secondary text-info"
+                    icon="fa fa-close" label="Fermer"
+                    pButton type="button">
+            </button>
+            <button (click)="deleteAll()"
+                    class="ui-button-secondary text-danger" icon="fa fa-times"
+                    label="Confirmer"
+                    pButton type="button">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+    <p-dialog header="Création/Modification d'une pénalité" [(visible)]="displayPenalite" [modal]="true"
+              [responsive]="true"
+              (onHide)="AnnullerPenalite()"
+              [style]="{width: '30%', minWidth: '100px'}" [minY]="30" [maximizable]="true" [baseZIndex]="10000">
+        <div class="container">
+            <form name="editForm" role="form" novalidate #editFormPenaliteTMP="ngForm">
+
+                <div class="ui-dialog-content" style="height: 200px">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_penalite">Motif de la pénalité</label>
+                                    <input type="text" class="form-control"
+                                           name="motifPenalite" id="field_penalite"
+                                           [(ngModel)]="penalite.motifPenalite" required/>
+
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_penalite_montant">Montant de la pénalité</label>
+                                    <input type="number" class="form-control" name="montantPenalite" id="field_penalite_montant"
+                                           [(ngModel)]="penalite.montantPenalite" required/>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                        label="Fermer" (click)='AnnullerPenalite()'></button>
+                <button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+                        [disabled]="editFormPenaliteTMP.invalid || isSaving"
+                        (click)='savePenalite()' class="ui-button-secondary text-info">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+
+    <p-dialog header="Paiement" [(visible)]="isPaiement" [modal]="true"
+              [responsive]="true"
+              (onHide)="AnnullerPaiement()"
+              [style]="{width: '70%'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate #editFormLiquidationPe="ngForm">
+            <p-card class="card mb-3">
+                <div class="container-fluid">
+                    <div class="p-grid">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <p-dropdown [options]="liquidations"
+                                            placeholder="Selectionner une liquidation" [style]="{'width': '100%'}"
+                                            filter="filter" (onChange)="onFindLiquidation(liquidationSelect)"
+                                            showClear="showClear" optionLabel="referencePaiement"
+                                            required></p-dropdown>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_referencePaiement2">Référence de bon de liquidation</label>
+                                    <input type="text" class="form-control" name="reference_paiement2" id="field_referencePaiement2"
+                                           [(ngModel)]="liquidation.referencePaiement" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_support2">Moyen de paiement</label>
+                                    <select class="form-control" name="support" id="field_support2" type="text"
+                                            [(ngModel)]="liquidation.support"  required>
+                                        <option value="virement bancaire">Virement bancaire</option>
+                                        <option value="chèque">Chèque</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_date_liquidation2">Date de liquidation</label>
+                                    <input type="date" class="form-control" name="dateLiquidation2" id="field_date_liquidation2"
+                                           [(ngModel)]="liquidation.datePaiement" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_montant_liquiqation2">Montant liquidé</label>
+                                    <input type="number" class="form-control" min="0" name="montant_liquiqation" id="field_montant_liquiqation2"
+                                           [(ngModel)]="liquidation.montant" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_dateVisaControle2">Date visa controleur</label>
+                                    <input type="date" class="form-control" name="dateVisaControle2" id="field_dateVisaControle2"
+                                           [(ngModel)]="liquidation.dateVisaControle" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_dateVisaOrdonateur2">Date visa de l'ordonateur</label>
+                                    <input type="date" class="form-control" name="dateVisaOrdonateur2" id="field_dateVisaOrdonateur2"
+                                           [(ngModel)]="liquidation.dateVisaOrdonateur" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_dateDeLiquidation2">Date de paiement</label>
+                                    <input type="date" class="form-control" name="montant_liquiqation2" id="field_dateDeLiquidation2"
+                                           [(ngModel)]="liquidation.dateDeLiquidation" required/>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br>
+                    <fieldset class="scheduler-border1">
+                        <legend class="scheduler-border1">Pénalité liée au contrat s'il y'a lieu</legend>
+                        <div class="ui-g-12">
+                            <div class="float-right">
+                                <button type="button" pButton icon="fa fa-plus" label="Ajouter une pénalité"
+                                        class="ui-button-secondary text-info" (click)="showPenalite()">
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ui-g-12">
+                            <p-table [value]="liquidation.penalites" dataKey="id" [paginator]="true"
+                                     [rows]="20" [responsive]="true">
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <th style="width: 3em">
+                                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                        </th>
+                                        <th>Motif</th>
+                                        <th>Montant de la pénalité</th>
+                                        <th style="width: 23em">Action</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-penalite let-columns="columns" let-rowIndex="rowIndex">
+                                    <tr [pSelectableRow]="penalite">
+                                        <td>
+                                            <p-tableCheckbox [value]="penalite"></p-tableCheckbox>
+                                        </td>
+                                        <td>{{penalite?.motifPenalite}}</td>
+                                        <td>{{penalite?.montantPenalite}}</td>
+                                        <td>
+                                            <button type="button" pButton class="ui-button-secondary text-success"
+                                                    label="Modifier" (click)='modif(penalite)'></button>
+                                            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-warning"
+                                                    label="Rétirer" (click)='retirer(rowIndex)'></button>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </fieldset>
+                </div>
+            </p-card>
+        </form>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix float-right">
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Annuler" (click)='AnnullerPaiement()'></button>
+            <button type="button" pButton icon="fa fa-save" label="Soumettre" (click)="savePaiement()"
+                    [disabled]="editFormLiquidationPe.invalid || isSaving" class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-dialog>
+
+    <p-dialog header="Visa du controleur" [(visible)]="isControl" [modal]="true"
+              [responsive]="true"
+              (onHide)="AnnullerControl()"
+              [style]="{width: '70%'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate #editFormcontratVisaCl="ngForm">
+            <p-card class="card mb-3">
+                <div class="container-fluid">
+                    <div class="p-grid">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <p-dropdown [options]="liquidations"
+                                            placeholder="Selectionner une liquidation" [style]="{'width': '100%'}"
+                                            filter="filter" (onChange)="onFindLiquidation(liquidationSelect)" optionLabel="referencePaiement"
+                                            showClear="showClear"
+                                            required></p-dropdown>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_referencePaiement1">Référence de bon de liquidation</label>
+                                    <input type="text" class="form-control" name="referencePaiement1" id="field_referencePaiement1"
+                                           [(ngModel)]="liquidation.referencePaiement" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_support1">Moyen de paiement</label>
+                                    <select class="form-control" name="support" id="field_support1" type="text"
+                                            [(ngModel)]="liquidation.support"  required>
+                                        <option value="virement bancaire">Virement bancaire</option>
+                                        <option value="chèque">Chèque</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_date_liquidation1">Date de liquidation</label>
+                                    <input type="date" class="form-control" name="dateLiquidation1" id="field_date_liquidation1"
+                                           [(ngModel)]="liquidation.datePaiement" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_montant_liquidation1">Montant liquidé</label>
+                                    <input type="number" class="form-control" min="0" name="montant_liquiqation1" id="field_montant_liquidation1"
+                                           [(ngModel)]="liquidation.montant" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_dateVisaControle1">Date visa controleur</label>
+                                    <input type="date" class="form-control" name="dateVisaControle1" id="field_dateVisaControle1"
+                                           [(ngModel)]="liquidation.dateVisaControle" required/>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br>
+                </div>
+            </p-card>
+        </form>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix float-right">
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Annuler" (click)='AnnullerControl()'></button>
+            <button type="button" pButton icon="fa fa-save" label="Soumettre" (click)="saveControl()"
+                    [disabled]="editFormcontratVisaCl.invalid || isSaving" class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-dialog>
+
+    <p-dialog header="Visa de l'ordonateur" [(visible)]="isOrdonateur" [modal]="true"
+              [responsive]="true"
+              (onHide)="AnnullerOrdonateur()"
+              [style]="{width: '70%'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate #editFormcontratVisaOr="ngForm">
+            <p-card class="card mb-3">
+                <div class="container-fluid">
+                    <div class="p-grid">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <p-dropdown [options]="liquidations"
+                                            placeholder="Selectionner une liquidation" [style]="{'width': '100%'}"
+                                            filter="filter" (onChange)="onFindLiquidation(liquidationSelect)" optionLabel="referencePaiement"
+                                            showClear="showClear"
+                                            required></p-dropdown>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_referencePaiement2">Référence de bon de liquidation</label>
+                                    <input type="text" class="form-control" name="referencePaiement3" id="field_referencePaiement3"
+                                           [(ngModel)]="liquidation.referencePaiement" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_support3">Moyen de paiement</label>
+                                    <select class="form-control" name="support" id="field_support3" type="text"
+                                            [(ngModel)]="liquidation.support"  required>
+                                        <option value="virement bancaire">Virement bancaire</option>
+                                        <option value="chèque">Chèque</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_date_liquidation3">Date de liquidation</label>
+                                    <input type="date" class="form-control" name="dateLiquidation3" id="field_date_liquidation3"
+                                           [(ngModel)]="liquidation.datePaiement" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_montant_liquiqation3">Montant liquidé</label>
+                                    <input type="number" class="form-control" min="0" name="montant_liquiqation3" id="field_montant_liquiqation3"
+                                           [(ngModel)]="liquidation.montant" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_dateVisaControle3">Date visa controleur</label>
+                                    <input type="date" class="form-control" name="dateVisaControle3" id="field_dateVisaControle3"
+                                           [(ngModel)]="liquidation.dateVisaControle" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="field_dateVisaOrdonateur3">Date visa de l'ordonateur</label>
+                                    <input type="date" class="form-control" name="dateVisaOrdonateur3" id="field_dateVisaOrdonateur3"
+                                           [(ngModel)]="liquidation.dateVisaOrdonateur" required/>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br>
+                </div>
+            </p-card>
+        </form>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix float-right">
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Annuler" (click)='AnnullerOrdonateur()'></button>
+            <button type="button" pButton icon="fa fa-save" label="Soumettre" (click)="saveOrdonateur()"
+                    [disabled]="editFormcontratVisaOr.invalid || isSaving" class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-dialog>
+
+<p-confirmDialog [style]="{width: '50%'}" #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+                (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-primary" pButton icon="pi pi-check" label="OUI"
+                (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+</div>

@@ -1,0 +1,63 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="reception">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microservicedaccamReception.detail.title">Reception</span> {{reception.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamReception.nom">Nom</span></dt>
+                <dd>
+                    <span>{{reception.nom}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamReception.prenom">Prenom</span></dt>
+                <dd>
+                    <span>{{reception.prenom}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamReception.telephone">Telephone</span></dt>
+                <dd>
+                    <span>{{reception.telephone}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamReception.email">Email</span></dt>
+                <dd>
+                    <span>{{reception.email}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamReception.date">Date</span></dt>
+                <dd>
+                    <span>{{reception.date}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamReception.heure">Heure</span></dt>
+                <dd>
+                    <span>{{reception.heure}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamReception.lieu">Lieu</span></dt>
+                <dd>
+                    <span>{{reception.lieu}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamReception.activiteId">Activite Id</span></dt>
+                <dd>
+                    <span>{{reception.activiteId}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamReception.retirer">Retirer</span></dt>
+                <dd>
+                    <span>{{reception.retirer}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamReception.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{reception.deleted}}</span>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/reception', reception.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

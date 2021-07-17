@@ -1,0 +1,29 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmNaturePrestation": {
+      "home": {
+        "title": "NaturePrestations",
+        "createLabel": "Créer un nouveau Nature Prestation",
+        "createOrEditLabel": "Créer ou éditer un Nature Prestation",
+        "notFound": "Aucun Nature Prestation trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Nature Prestation {{ id }} ?"
+      },
+      "detail": {
+        "title": "Nature Prestation"
+      },
+      "code": "Code",
+      "libelle": "Libelle",
+      "deleted": "Deleted",
+      "activites": "Activites"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmNaturePrestation": {
+      "created": "Un nouveau Nature Prestation a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Nature Prestation avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Nature Prestation avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

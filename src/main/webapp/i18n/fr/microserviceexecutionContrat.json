@@ -1,0 +1,38 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceexecutionContrat": {
+      "home": {
+        "title": "Contrats",
+        "createLabel": "Créer un nouveau Contrat",
+        "createOrEditLabel": "Créer ou éditer un Contrat",
+        "notFound": "Aucun Contrat trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Contrat {{ id }} ?"
+      },
+      "detail": {
+        "title": "Contrat"
+      },
+      "reference": "Reference",
+      "dateSignature": "Date Signature",
+      "dateDebutPrevu": "Date Debut Prevu",
+      "dateFinPrevu": "Date Fin Prevu",
+      "candidatLotId": "Candidat Lot Id",
+      "cautionCandidatLotId": "Caution Candidat Lot Id",
+      "deleted": "Deleted",
+      "statutExecutions": "Statut Executions",
+      "penalites": "Penalites",
+      "contentieuxs": "Contentieuxs",
+      "avenants": "Avenants",
+      "etapeExecutions": "Etape Executions",
+      "liquidations": "Liquidations"
+    }
+  },
+  "microserviceexecutionApp": {
+    "microserviceexecutionContrat": {
+      "created": "Un nouveau Contrat a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Contrat avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Contrat avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

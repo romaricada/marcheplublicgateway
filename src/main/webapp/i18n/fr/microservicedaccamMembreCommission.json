@@ -1,0 +1,32 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamMembreCommission": {
+      "home": {
+        "title": "MembreCommissions",
+        "createLabel": "Créer un nouveau Membre Commission",
+        "createOrEditLabel": "Créer ou éditer un Membre Commission",
+        "notFound": "Aucun Membre Commission trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Membre Commission {{ id }} ?"
+      },
+      "detail": {
+        "title": "Membre Commission"
+      },
+      "activiteId": "Activite Id",
+      "referenceArrete": "Reference Arrete",
+      "poste": "Poste",
+      "deleted": "Deleted",
+      "membre": "Membre",
+      "typeCommission": "Type Commission",
+      "tache": "Tache"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamMembreCommission": {
+      "created": "Un nouveau Membre Commission a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Membre Commission avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Membre Commission avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

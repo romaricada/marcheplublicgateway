@@ -1,0 +1,42 @@
+{
+    "name": "PieceCandidat",
+    "fields": [
+        {
+            "fieldName": "deleted",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "candidatLot",
+            "otherEntityRelationshipName": "pieceCandidats",
+            "relationshipName": "candidatLot",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "piece",
+            "otherEntityRelationshipName": "pieceCandidats",
+            "relationshipName": "piece",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20200526162329",
+    "entityTableName": "piece_candidat",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "clientRootFolder": "",
+    "applications": [
+        "marchepublicgateway"
+    ],
+    "skipServer": true,
+    "microserviceName": "microservicedaccam"
+}

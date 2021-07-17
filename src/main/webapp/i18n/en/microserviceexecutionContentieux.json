@@ -1,0 +1,29 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceexecutionContentieux": {
+      "home": {
+        "title": "Contentieuxes",
+        "createLabel": "Create a new Contentieux",
+        "createOrEditLabel": "Create or edit a Contentieux",
+        "notFound": "No Contentieuxes found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Contentieux {{ id }}?"
+      },
+      "detail": {
+        "title": "Contentieux"
+      },
+      "objet": "Objet",
+      "deleted": "Deleted",
+      "contrat": "Contrat",
+      "decisionContentieux": "Decision Contentieux"
+    }
+  },
+  "microserviceexecutionApp": {
+    "microserviceexecutionContentieux": {
+      "created": "A new Contentieux is created with identifier {{ param }}",
+      "updated": "A Contentieux is updated with identifier {{ param }}",
+      "deleted": "A Contentieux is deleted with identifier {{ param }}"
+    }
+  }
+}

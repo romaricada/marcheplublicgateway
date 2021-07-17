@@ -1,0 +1,592 @@
+<div>
+	<div class="text-center">
+		<span class="font-weight-bold text-primary">GESTION DES DEPOUILLEMENTS</span>
+	</div>
+	<p-toolbar>
+		<div class="ui-toolbar-group-left">
+			<div class="ui-g ui-g-12 ui-g-nopad">
+				<div class="ui-inputgroup mr-1">
+					<span class="ui-inputgroup-addon"><span class="font-weight-bold">Avis dac</span></span>
+					<p-dropdown [options]="avisDacs" placeholder="Selectionner un avis"
+					            [style]="{'width': '300px'}"
+					            [(ngModel)]="avisDac" (onChange)="filterDepouillement()" filter="filter"
+					            showClear="showClear" required="required"
+					            optionLabel="nomAvisDac"></p-dropdown>
+				</div>
+			</div>
+		</div>
+		<div class="ui-toolbar-group-left float-right">
+			<button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_DEPOUILLEMENTS_ADD'" pButton
+			        class="ui-button-secondary text-primary" icon="fa fa-plus"
+			        label="Ajouter un depouillement"
+			        (click)="showModal()"
+			        [disabled]="(!invalideLot && depouillements?.length!==0) || avisDac==null"></button>
+		</div>
+	</p-toolbar>
+	<br/>
+	<p-table #tableDepouillement [value]="depouillements" [paginator]="true" [rows]="20" [responsive]="true"
+	         [globalFilterFields]="['description','heureDebut','heureFin','lieu']">
+		<ng-template pTemplate="caption">
+			<div class="col-sm-12 text-right">
+				<input type="text" pInputText size="50" placeholder="Rechercher un dépouillement"
+				       (input)="tableDepouillement.filterGlobal($event.target.value, 'contains')" style="width:auto">
+				<button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+				        [placement]="'top'" (click)="filterDepouillement()">
+				</button>
+			</div>
+		</ng-template>
+		<ng-template pTemplate="header" let-columns>
+			<tr>
+				<th style="width:30em">Description</th>
+				<th>Date</th>
+				<th>Heure debut</th>
+				<th>Heure fin</th>
+				<th>Lieu</th>
+				<th>salle</th>
+				<th style="width:30em">Actions</th>
+			</tr>
+		</ng-template>
+		<ng-template pTemplate="body" let-depouillement let-columns="columns">
+			<tr>
+				<td>
+					<div [innerHTML]="depouillement.description"></div>
+				</td>
+				<td>{{depouillement?.date | date:'mediumDate'}}</td>
+				<td>{{depouillement?.heureDebut}}</td>
+				<td>{{depouillement?.heureFin}}</td>
+				<td>{{depouillement?.lieu}}</td>
+				<td>{{depouillement?.salle}}</td>
+				<td>
+					<!-- <button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_DEPOUILLEMENTS_TACHE'" type="button" pButton
+					        icon="fa fa-tasks" class="ui-button-secondary text-info"
+					        label="Tâche" pTooltip="Tâche" tooltipPosition="right"
+					        [routerLink]="['/create-tache', {id1:avisDac.id,id2:null,id3:depouillement.id}]">
+					</button> -->
+					<!--<button type="button" pButton label="Voir" class="ui-button-secondary text-info" icon="fa fa-eye"
+							(click)="voirDepouillement(depouillement)"></button>-->
+					<button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_DEPOUILLEMENTS_EDIT'" type="button" pButton
+					        label="Modifier" [disabled]="avisDac==null"
+					        class="ui-button-secondary text-warning" (click)="updateDepouillement(depouillement)" [ngbTooltip]="'Modifier'"
+					        icon="fa fa-edit"></button>
+					<button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_DEPOUILLEMENTS_UPLOADER'" type="button" pButton
+					        [disabled]="avisDac==null"
+					        class="ui-button-secondary text-warning" (click)="getFiles(depouillement)" [ngbTooltip]="'Fichier'"
+					        icon="fa fa-paperclip"></button>
+					<button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_DEPOUILLEMENTS_DELETE'" type="button" pButton
+					        label="Supprimer" class="ui-button-secondary text-danger" [ngbTooltip]="'Supprimer'"
+					        (click)="supprimerDepouillement(depouillement)" icon="fa fa-trash"></button>
+                    <button  pButton
+                             class="ui-button-secondary text-info" icon="fa fa-print"
+                             label="imprimer" [ngbTooltip]="'Imprimer'"
+                             (click)="imprimer()">
+                    </button>
+				</td>
+			</tr>
+		</ng-template>
+		<ng-template pTemplate="emptymessage">
+			<tr>
+				<td colspan="7" align="center"><span class="text-danger"> Aucune donnée trouvée ! </span></td>
+			</tr>
+		</ng-template>
+	</p-table>
+
+	<!-- creation et modification de depouillement -->
+	<p-dialog header="Création/Modification d'un depouillement" [(visible)]="display" [modal]="true" [responsive]="true"
+	          (onHide)="annuler()"
+	          [style]="{width: '80%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+		<div class="card">
+			<div class="card-title title-info">
+                <span *ngIf="avisDac!=null"
+                      class="font-weight-bold text-primary"> Dépouillement: {{avisDac.objet}} </span>
+			</div>
+			<form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+				<div class="">
+					<p-panel class="mb-2">
+						<p-header>Informations</p-header>
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="form-group">
+									<h6 class="font-weight-bold">Description</h6>
+									<p-editor [(ngModel)]="depouillement.description"
+									          [style]="{'height':'70px'}"
+									          name="description" required>
+										<p-header>
+                            <span class="ql-formats">
+                                <button class="ql-bold" aria-label="Bold"></button>
+                                <button class="ql-italic" aria-label="Italic"></button>
+                                <button class="ql-underline" aria-label="Underline"></button>
+                            </span>
+										</p-header>
+									</p-editor>
+								</div>
+							</div>
+							<div class="col-sm-4">
+								<div class="form-group">
+									<label class="form-control-label" for="field_date">Date du
+										depouillement</label>
+									<div class="input-group">
+										<input id="field_date" type="text" class="form-control" name="date"
+										       ngbDatepicker
+                                               #dateDp="ngbDatepicker"
+										       [(ngModel)]="depouillement.date" required/>
+										<span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="dateDp.toggle()"><fa-icon
+		                            [icon]="'calendar-alt'"></fa-icon></button>
+                        </span>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-4">
+								<div class="form-group">
+									<label class="form-control-label" for="field_heureDebut">Heure Debut</label>
+									<input type="time" class="form-control" name="heureDebut"
+									       id="field_heureDebut"
+									       [(ngModel)]="depouillement.heureDebut" required/>
+								</div>
+							</div>
+							<div class="col-sm-4">
+								<div class="form-group">
+									<label class="form-control-label" for="field_heureFin">Heure Fin</label>
+									<input type="time" class="form-control" name="heureFin" id="field_heureFin"
+									       [(ngModel)]="depouillement.heureFin" required/>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label class="form-control-label" for="field_lieu">Lieu</label>
+									<input type="text" class="form-control" name="lieu" id="field_lieu"
+									       [(ngModel)]="depouillement.lieu"/>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label class="form-control-label" for="field_salle">Salle</label>
+									<input type="text" class="form-control" name="salle"
+									       [(ngModel)]="depouillement.salle"
+									       id="field_salle"/>
+								</div>
+							</div>
+						</div>
+					</p-panel>
+					<br>
+					<p-panel>
+						<p-header>Soumissionnaires</p-header>
+						<div class="col-sm-12 mb-3">
+							<div class="text-right">
+								<button type="button" class="ui-button-secondary text-primary" pButton
+								        icon="fa fa-plus"
+								        (click)="showSoumissionnaireModal()"
+								        label="Ajouter soumissionnaire"></button>
+							</div>
+							<br>
+							<p-table #soumFilter [value]="depouillement.candidats" dataKey="id"
+							         [scrollable]="true"
+							         scrollHeight="200em"
+							         [globalFilterFields]="['nomStructure','contact','adresse', 'email']">
+								<ng-template pTemplate="caption">
+									<div class="row">
+										<div class="col-sm-12 text-right">
+											<input type="text" pInputText size="50"
+											       placeholder="Rechercher un soumiossionaire"
+											       (input)="soumFilter.filterGlobal($event.target.value, 'contains')"
+											       style="width:auto">
+										</div>
+									</div>
+								</ng-template>
+								<ng-template pTemplate="header" let-columns>
+									<tr>
+										<th style="width: 25em">Nom du soumissionnaire</th>
+										<th style="width: 17em">Actions</th>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-candidat let-expanded="expanded" let-rowIndex="rowIndex"
+								             let-columns="columns">
+									<tr>
+										<td>{{candidat?.nomStructure}} <span class="text-warning">{{ ' ('+ candidat?.soumisionniares.length +' lot(s))' }}</span></td>
+										<td style="width: 17em">
+											<button *ngIf="candidat.soumisionniares.length===0" type="button"
+											        class="ui-button-secondary text-primary"
+											        pButton icon="fa fa-plus" (click)="addLot(candidat)"
+											        label="Ajouter lot"></button>
+                                            <button *ngIf="candidat.soumisionniares.length==0" type="button"
+                                                    class="ui-button-secondary text-danger"
+                                                    (click)="retirerCandidat(rowIndex)"
+                                                    pButton icon="fa fa-edit" label="Retirer"></button>
+											<button *ngIf="candidat.soumisionniares.length!==0" type="button"
+											        class="ui-button-secondary text-warning"
+											        (click)="updateLotCaution(candidat)"
+											        pButton icon="fa fa-edit" label="Modifier"></button>
+                                            <button *ngIf="candidat.soumisionniares.length!==0" type="button"
+											        class="ui-button-secondary text-danger"
+											        (click)="retirerCandidat(rowIndex)"
+											        pButton icon="fa fa-edit" label="Retirer"></button>
+										</td>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="emptymessage" let-columns>
+									<tr>
+										<td colspan="5" align="center"><span
+												class="text-danger text-center"> Aucun soumissionaire associé au depouillement ! </span>
+										</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</div>
+					</p-panel>
+					<br>
+					<p-panel>
+						<p-header>Joindre des fichiers</p-header>
+						<div class="col-sm-12 mb-3">
+							<div class="form-group">
+								<label>Fichiers à joindre</label>
+								<input type="file" name="file" class="form-control" multiple
+								       (change)="setFileData($event)">
+								<ul>
+									<li *ngFor="let file of fichiers">
+										<span class="mt-2">{{file?.name}}</span>
+										<span class="mt-2">{{file?.size}}</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</p-panel>
+				</div>
+				<br>
+				<p-footer>
+					<div class="ui-dialog-buttonpane ui-helper-clearfix text-center">
+						<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+						        label="Fermer" (click)='annuler()'></button>
+						<button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+						        [disabled]="editForm.invalid || isSaving"
+						        class="ui-button-secondary text-info">
+						</button>
+					</div>
+				</p-footer>
+			</form>
+		</div>
+	</p-dialog>
+
+	<!-- Liste des soummisionaire disponible pour le lot -->
+	<p-dialog header="Ajouter un soumissionnaire" [(visible)]="displaySoumissionnaireModal" [modal]="true"
+	          [responsive]="true"
+	          (onHide)="annulerSomissionaire()"
+	          [style]="{width: '40%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+		<form name="editForm0" novalidate role="form" #editForm0="ngForm">
+			<div class="ui-dialog-content" style="height: 25em; overflow: scroll">
+
+				<div class="form-group">
+					<label for="struc">Nom de la structure</label>
+					<input class="form-control" type="text" name="struc" id="struc"
+					       [(ngModel)]="candidatLot.candidat.nomStructure" required/>
+				</div>
+				<div class="form-group">
+					<label for="adresse">Adresse</label>
+					<input class="form-control" type="text" name="adresse" id="adresse"
+					       [(ngModel)]="candidatLot.candidat.adresse"/>
+				</div>
+				<div class="form-group">
+					<label for="email">Email</label>
+					<input class="form-control" type="email" name="email" id="email"
+					       [(ngModel)]="candidatLot.candidat.email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,8}$"/>
+				</div>
+				<div class="form-group">
+					<p-multiSelect [options]="lots" [optionLabel]="'libelle'" name="lot" id="lot"
+					               [(ngModel)]="candidatLot.lots" [showToggleAll]="false" [style]="{width:'100%'}"
+					               [emptyFilterMessage]="'Aucun élément trouvé'"
+					               defaultLabel="Sélectionner les lots" required>
+					</p-multiSelect>
+				</div>
+			</div>
+			<br>
+			<p-footer>
+				<div class="text-center">
+					<button type="button" class="ui-button-secondary text-danger" (click)="annulerSomissionaire()"
+					        pButton
+					        label="Annuler"></button>
+					<button type="button" class="ui-button-secondary text-primary" pButton
+					        [disabled]="editForm0.form.invalid || isSaving"
+					        (click)="saveSoumissionaire()" label="Valider"></button>
+				</div>
+			</p-footer>
+		</form>
+	</p-dialog>
+
+	<!-- modal des lots et caution -->
+	<p-dialog header="Ajout des lots et caution" [(visible)]="lotAndCautionModal" [modal]="true"
+	          [responsive]="true"
+	          (onHide)="closeLotAncautionModal()"
+	          [style]="{width: '70%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+		<p-toolbar>
+			<div class="float-right">
+				<button type="button" class="ui-button-secondary text-primary" pButton
+				        (click)="onSelect()" label="Selectionner lot"></button>
+			</div>
+		</p-toolbar>
+		<div class="ui-dialog-content" style="height: 20em; overflow: scroll">
+			<p-table [value]="soumissionnaires" dataKey="lot.id">
+				<ng-template pTemplate="caption">
+					<div class="col-sm-12 tex-center">
+						<span *ngIf="avisDac!=null"> Liste des lot(s) du soumissionaire {{candidatTMP?.nomStructure}}
+							de {{avisDac?.objet}}</span>
+					</div>
+				</ng-template>
+				<ng-template pTemplate="header">
+					<tr>
+						<th>Lot</th>
+						<th>Montant lu de l'offre</th>
+						<th>Caution</th>
+						<th style="width: 15em">Action</th>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+					<tr>
+						<td> {{rowData?.lot?.libelle}}: {{rowData?.lot?.description}}
+						</td>
+						<td pEditableColumn>
+							<p-cellEditor>
+								<ng-template pTemplate="input">
+									<input pInputText type="number" pKeyFilter="pint"
+									       [name]="'montantLuTtc'+ rowIndex"
+									       [(ngModel)]="rowData.montantLuTtc">
+								</ng-template>
+								<ng-template pTemplate="output">
+									{{rowData.montantLuTtc | formatTableValue: 'number': true}}
+								</ng-template>
+							</p-cellEditor>
+						</td>
+						<td>
+                                                    <span *ngFor="let caution of rowData.candidatCautionLots">
+                                                        montant caution: {{caution?.montantCandidat| number}} <span style="font-weight: bold">{{caution?.typeDeMontant}}</span> =>
+                                                        validité caution: {{caution?.validationCandidat}} jour(s)
+                                                    </span>
+						</td>
+						<td>
+							<button *ngIf="rowData.candidatCautionLots.length===0"
+							        type="button" class="ui-button-secondary text-primary"
+							        (click)="updateEngagement(candidatTMP,rowData)"
+							        pButton icon="fa fa-plus" label="Caution"></button>
+							<button type="button" class="ui-button-secondary text-danger"
+							        (click)="removeLot(rowIndex)"
+							        pButton icon="fa fa-close" label="Retirer"></button>
+						</td>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="emptymessage" let-columns>
+					<tr>
+						<td colspan="4" align="center"><span
+								class="text-danger text-center"> Aucun lot ajouté pour ce soummisionnaire ! </span>
+						</td>
+					</tr>
+				</ng-template>
+			</p-table>
+
+		</div>
+		<br>
+		<p-footer>
+			<div class="text-center">
+				<button type="button" class="ui-button-secondary text-danger" (click)="closeLotAncautionModal()"
+				        pButton
+				        label="Annuler"></button>
+				<button type="button" class="ui-button-secondary text-primary" pButton
+				        [disabled]="soumissionnaires?.length===0"
+				        (click)="validerLot()" label="Ajouter"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+	<!-- modal des lots -->
+	<p-dialog header="Liste des lots" [(visible)]="lotModal" [modal]="true"
+	          [responsive]="true"
+	          (onHide)="annulerLot()"
+	          [style]="{width: '40%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+		<div class="ui-dialog-content" style="height: 20em; overflow: scroll">
+			<p-table [value]="candidatLots" dataKey="lot.id" [globalFilterFields]="['description']"
+			         selectionMode="multiple" [(selection)]="lotsSelected">
+				<ng-template pTemplate="caption">
+					<div class="col-sm-12 tex-center">
+						<span *ngIf="avisDac!=null"> Liste des lot(s): {{avisDac?.objet}}</span>
+					</div>
+				</ng-template>
+				<ng-template pTemplate="header" let-columns>
+					<tr>
+						<th>Description</th>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-candidatLot let-columns="columns">
+					<tr [pSelectableRow]="candidatLot">
+						<td>{{candidatLot?.lot?.libelle}} : {{candidatLot?.lot?.description}}</td>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="emptymessage" let-columns>
+					<tr>
+						<td align="center"><span
+								class="text-danger text-center"> Aucun lot trouvé ! </span>
+						</td>
+					</tr>
+				</ng-template>
+			</p-table>
+
+		</div>
+		<br>
+		<p-footer>
+			<div class="text-center">
+				<button type="button" class="ui-button-secondary text-danger" (click)="annulerLot()"
+				        pButton
+				        label="Annuler"></button>
+				<button type="button" class="ui-button-secondary text-primary" pButton
+				        [disabled]="lotsSelected?.length===0"
+				        (click)="ajoutLotSoumissione()" label="Valider"></button>
+			</div>
+		</p-footer>
+	</p-dialog>
+
+
+	<!-- modal des caution -->
+	<p-dialog header="Ajout de caution" [(visible)]="displayCaution" [responsive]="true" [modal]="true"
+	          (onHide)="annulerCaution()"
+	          [style]="{width: '40%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+		<div class="card-title text-primary"></div>
+		<form name="editForm" role="form" novalidate #editForm1="ngForm">
+			<div class="ui-dialog-content">
+				<div *ngIf="!ajout">
+					<div class="form-group">
+						<label class="form-control-label">Institution financière</label>
+						<div class="input-group">
+							<select class="form-control" id="field_institutionFinanciere" name="institutionFinanciere"
+							        [(ngModel)]="candidatCautionLot.institutionFinanciere" required>
+								<option [ngValue]="null"></option>
+								<option selected *ngFor="let lotOption of institutionFinancieres"
+								        [ngValue]="lotOption.libelle">{{lotOption.libelle}}</option>
+							</select>
+							<span class="input-group-append">
+                            <button
+		                            style="background-color: green"
+		                            type="button" (click)="ajouter()" class="btn btn-primary btn-sm">
+                    <fa-icon [icon]="'plus'"></fa-icon>
+                </button>
+                        </span>
+						</div>
+					</div>
+				</div>
+				<div *ngIf="ajout">
+					<div class="form-group">
+						<label class="form-control-label">Institution financière</label>
+						<div class="input-group">
+							<input class="form-control" [(ngModel)]="candidatCautionLot.institutionFinanciere"
+							       name="institutionFinanciere"
+							       type="text" required>
+							<span class="input-group-append">
+                            <button
+		                            style="background-color: green"
+		                            type="button" (click)="ajouter()" class="btn btn-primary btn-sm">
+                    <fa-icon [icon]="'plus'"></fa-icon>
+                </button>
+                        </span>
+						</div>
+					</div>
+				</div>
+
+                <div class="form-group">
+                <p-selectButton [options]="types" [(ngModel)]="type" optionLabel="label" name="typeButton"></p-selectButton>
+                </div>
+
+				<div class="form-group" *ngIf="type.label === 'TTC'">
+					<label for="montant">Montant TTC</label>
+					<input type="number" min="0" class="form-control" name="montant" id="montant"
+					       [(ngModel)]="candidatCautionLot.montantCandidat" required/>
+				</div>
+                <div class="form-group" *ngIf="type.label === 'HT/HD'">
+					<label for="montant">Montant HT/HD</label>
+					<input type="number" min="0" class="form-control" name="montant" id="montant"
+					       [(ngModel)]="candidatCautionLot.montantCandidat" required/>
+				</div>
+                <div class="form-group" *ngIf="type.label === 'H/TVA'">
+					<label for="montant">Montant H TVA</label>
+					<input type="number" min="0" class="form-control" name="montant" id="montant"
+					       [(ngModel)]="candidatCautionLot.montantCandidat" required/>
+				</div>
+				<div class="form-group">
+					<label for="validite">Validite</label>
+					<input type="number" min="0" class="form-control" name="validite" id="validite"
+					       [(ngModel)]="candidatCautionLot.validationCandidat" required/>
+				</div>
+				<div class="form-group">
+					<label for="date">Date debut engagement</label>
+					<input type="date" id="date" class="form-control" name="date"
+					       [(ngModel)]="candidatCautionLot.dateDebut"
+					       required/>
+				</div>
+			</div>
+			<p-footer>
+				<div class="text-center">
+					<button type="button" class="ui-button-secondary text-danger" (click)="annulerCaution()" pButton
+					        label="Fermer"></button>
+					<button type="button" class="ui-button-secondary text-primary" pButton (click)="validerEngagement()"
+					        label="Valider" [disabled]="editForm1.form.invalid || isSaving"></button>
+				</div>
+			</p-footer>
+		</form>
+	</p-dialog>
+
+	<!-- Liste des fichier join -->
+	<p-dialog [(visible)]="showFicModal" [style]="{width: '50%', height: '200px'}">
+		<p-header>
+			Fichiers
+		</p-header>
+		<p-table [value]="dataFiles" [scrollable]="true" scrollHeight="200px">
+			<ng-template pTemplate="caption">
+				<div class="row">
+					<div class="col-sm-8">
+						<input type="file" name="file" class="form-control" multiple
+						       (change)="setFileAddData($event)">
+					</div>
+					<div class="col-sm-4 text-right">
+                        <span *ngIf="isSaving">
+                            <img src="../../../../content/images/ajax-loader.gif"/>
+                        </span>
+						<button type="button" class="ui-button-secondary text-primary"
+						        [disabled]="fileListe==undefined || isSaving"
+						        pButton (click)="addFile(fileListe)"
+						        label="Uploader" icon="fa fa-save">
+						</button>
+					</div>
+					<span class="text-center" *ngIf="isLoading">
+                        <br>
+                        <img src="../../../../content/images/ajax-loader.gif"/> Chargement en cours...
+                    </span>
+				</div>
+			</ng-template>
+			<ng-template pTemplate="header">
+				<tr>
+					<th>Name</th>
+					<th width="30%">Action</th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-fichier>
+				<tr>
+					<td>{{fichier.fileName}}</td>
+					<td width="30%">
+						<button type="button" class="ui-button-secondary text-primary" pButton
+						        (click)="dowloadFichier(fichier)"
+						        label="Télécharger" icon="fa fa-download"></button>
+						<button type="button" class="ui-button-secondary text-danger" icon="fa fa-trash" pButton
+						        (click)="retirerFihier(fichier)"
+						        label="Retirer"></button>
+					</td>
+				</tr>
+			</ng-template>
+		</p-table>
+	</p-dialog>
+
+	<p-toast key="key" [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+
+	<p-confirmDialog #cd [baseZIndex]="10000" header="Confirmation" icon="pi pi-exclamation-triangle"
+	                 class="text-warning">
+		<p-footer>
+			<button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+			        (click)="cd.reject()"></button>
+			<button type="button" class="ui-button-secondary text-primary" pButton icon="pi pi-check" label="OUI"
+			        (click)="cd.accept()"></button>
+		</p-footer>
+	</p-confirmDialog>
+</div>

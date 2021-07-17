@@ -1,0 +1,39 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="pieceCandidat">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microservicedaccamPieceCandidat.detail.title">Piece Candidat</span> {{pieceCandidat.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamPieceCandidat.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{pieceCandidat.deleted}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamPieceCandidat.candidatLot">Candidat Lot</span></dt>
+                <dd>
+                    <div *ngIf="pieceCandidat.candidatLot">
+                        <a [routerLink]="['/candidat-lot', pieceCandidat.candidatLot?.id, 'view']">{{pieceCandidat.candidatLot?.id}}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamPieceCandidat.piece">Piece</span></dt>
+                <dd>
+                    <div *ngIf="pieceCandidat.piece">
+                        <a [routerLink]="['/piece', pieceCandidat.piece?.id, 'view']">{{pieceCandidat.piece?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/piece-candidat', pieceCandidat.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

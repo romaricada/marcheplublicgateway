@@ -1,0 +1,41 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="decision">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microservicedaccamDecision.detail.title">Decision</span> {{decision.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamDecision.structure">Structure</span></dt>
+                <dd>
+                    <span>{{decision.structure}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamDecision.decision">Decision</span></dt>
+                <dd>
+                    <span>{{decision.decision}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamDecision.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{decision.deleted}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamDecision.reclamation">Reclamation</span></dt>
+                <dd>
+                    <div *ngIf="decision.reclamation">
+                        <a [routerLink]="['/reclamation', decision.reclamation?.id, 'view']">{{decision.reclamation?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/decision', decision.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

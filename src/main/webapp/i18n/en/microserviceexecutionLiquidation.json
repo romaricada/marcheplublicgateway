@@ -1,0 +1,29 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceexecutionLiquidation": {
+      "home": {
+        "title": "Liquidations",
+        "createLabel": "Create a new Liquidation",
+        "createOrEditLabel": "Create or edit a Liquidation",
+        "notFound": "No Liquidations found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Liquidation {{ id }}?"
+      },
+      "detail": {
+        "title": "Liquidation"
+      },
+      "montant": "Montant",
+      "date": "Date",
+      "deleted": "Deleted",
+      "contrat": "Contrat"
+    }
+  },
+  "microserviceexecutionApp": {
+    "microserviceexecutionLiquidation": {
+      "created": "A new Liquidation is created with identifier {{ param }}",
+      "updated": "A Liquidation is updated with identifier {{ param }}",
+      "deleted": "A Liquidation is deleted with identifier {{ param }}"
+    }
+  }
+}

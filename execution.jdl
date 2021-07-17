@@ -1,0 +1,145 @@
+
+entity Contrat {
+    reference String required,
+    dateSignature LocalDate required,
+    dateDebutPrevu LocalDate required,
+    dateFinPrevu LocalDate required,
+    candidatLotId Long required,
+    cautionCandidatLotId Long,
+    deleted Boolean required
+
+}
+entity StatutExecution {
+    motif String required,
+    suspendu Boolean required,
+    reprise Boolean required,
+    dateSuspendu LocalDate required,
+    dateReprise LocalDate required,
+    deleted Boolean required
+}
+entity EtapeExecution {
+    libelle String required,
+    deleted Boolean required
+}
+entity Contentieux {
+    objet String required,
+    deleted Boolean required
+}
+
+entity Avenant {
+    reference  String required,
+    motif  String required,
+    montant  Double required,
+    temps  String required,
+    date LocalDate required,
+    deleted Boolean required
+}
+entity Penalite {
+    motifPenalite String required,
+    deleted Boolean required
+}
+entity Liquidation {
+    montant Double required,
+    date  LocalDate required,
+    deleted Boolean required
+}
+entity TypeAvenant {
+    libelle String required,
+    deleted Boolean required
+}
+
+entity DecisionContentieux {
+    decision String required,
+    date LocalDate required,
+    structure String required,
+    referenceDecision String required,
+    deleted Boolean required
+}
+
+relationship OneToMany {
+    Contrat{statutExecutions} to StatutExecution {contrat}
+    Contrat{penalites} to Penalite{contrat}
+    Contrat{contentieuxs} to Contentieux{contrat}
+    Contrat{avenants} to Avenant{contrat}
+    Contrat{etapeExecutions} to EtapeExecution{contrat}
+    Contrat{liquidations} to Liquidation{contrat}
+    DecisionContentieux{contentieuxs} to Contentieux{decisionContentieux}
+    TypeAvenant{avenants} to Avenant{typeAvenant}
+}
+
+entity Entrepot {
+    libelle String required,
+    deleted Boolean required
+
+}
+entity Locale {
+    libelle String required,
+   adresseLocale String required,
+    deleted Boolean required
+}
+entity TypeEntrepot {
+    libelle String required,
+    deleted Boolean required
+}
+entity Document {
+    libelle String required,
+    code String required,
+    date LocalDate required,
+    uniteAdministrativeId Long,
+    deleted Boolean required
+}
+entity TypeArchive {
+   libelle  String required,
+    deleted Boolean required
+}
+entity TypeDocument {
+    libelle String required,
+    deleted Boolean required
+}
+entity Serveur {
+    adresse String required,
+    port Integer required,
+    nomServeur String required,
+    deleted Boolean required
+}
+
+relationship OneToMany {
+    Locale{entrepots} to Entrepot{local}
+    Entrepot{documents} to Document{entrepot}
+    TypeEntrepot{entrepots} to Entrepot{typeEntrepot}
+    TypeArchive{documents} to Document{typeArchivage}
+    TypeDocument{documents} to Document{typeDocument}
+}
+relationship ManyToOne {
+    Entrepot{entrepot} to Entrepot
+}
+
+// service * with serviceClass
+// dto * with mapstruct
+paginate * with pagination
+
+application {
+  config {
+    baseName marchepublicgateway
+    applicationType gateway
+    authenticationType jwt
+    devDatabaseType postgresql
+    prodDatabaseType postgresql
+    packageName mena.gov.bf
+    //searchEngine elasticsearch
+  }
+  entities *
+}
+
+// skipClient *
+skipServer *
+
+microservice Contrat,StatutExecution,
+    EtapeExecution,Contentieux,Avenant,Penalite,Liquidation,
+    TypeAvenant, DecisionContentieux with microserviceexecution
+
+
+
+microservice Entrepot, Locale,TypeEntrepot, Document,
+    TypeArchive,TypeDocument,Serveur with microserviceged
+

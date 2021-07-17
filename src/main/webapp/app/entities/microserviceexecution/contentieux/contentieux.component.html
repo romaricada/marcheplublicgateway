@@ -1,0 +1,264 @@
+<span>
+
+                <label class="col-sm-12 font-weight-bold text-primary text-center">GESTION DES INCIDENTS D'EXECUTION </label>
+</span>
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <p-dropdown [options]="contrats" [(ngModel)]="contrat"
+                            placeholder="Selectionner un contrat"
+                            [style]="{'width': '320px'}" filter="filter"
+                            showClear="showClear" optionLabel="reference"  name="contrat" (onChange)="findContentieuxByContrat()" required>
+                </p-dropdown>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button pButton class="ui-button-secondary text-primary" icon="fa fa-plus"
+                            label="Ajouter un incident d'exécution" (click)="ajoutContentieux()" [disabled]="!contrat"></button>
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <br/>
+
+     <p-table #dataTable [globalFilterFields]="['objet']" [value]="contentieuxes" [(selection)]="contentieuxSelecteds"
+              dataKey="id" [paginator]="true" [rows]="20" [responsive]="true">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th style="width: 3em"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                    <th>Reference</th>
+                    <th>Motif</th>
+                    <th>montant</th>
+                    <th>Temps</th>
+                    <th>Type d'incident</th>
+                    <th>Date</th>
+                    <th style="width: 20em">Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-contentieux let-columns="columns">
+                <tr>
+                    <td>
+                        <p-tableCheckbox [value]="contentieux"></p-tableCheckbox>
+                    </td>
+                    <td>{{contentieux.reference}}</td>
+                    <td>{{contentieux.motif}}</td>
+                    <td>{{contentieux.montant}}</td>
+                    <td>{{contentieux.temps}}</td>
+                    <td class="text-center" height="100%" width="90%">
+                        <span class="badge badge-pill badge-success">{{contentieux.typeIncidentExecution}}</span>
+                    </td>
+                    <td>{{contentieux.date}}</td>
+                    <td>
+                        <p-footer>
+                            <button type="button" pButton label="Modifier"
+                                    class="ui-button-secondary text-warning" g
+                                    (click)="updateContentieux(contentieux)"
+                                    icon="fa fa-edit" [disabled]="!contrat">
+                            </button>
+                            <button type="button" pButton label="Supprimer" class="ui-button-secondary text-danger"
+                                    (click)="supprimer(contentieux)" icon="fa fa-trash"></button>
+                        </p-footer>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-columns>
+                <tr>
+                    <td colspan="5" align="center"><span class="text-danger"> Aucun contentieux trouvé ! </span></td>
+                </tr>
+            </ng-template>
+     </p-table>
+
+
+    <p-dialog header="CREATION/MODIFICATION D'UN INCIDENT D'EXECUTION" [(visible)]="display" [modal]="true"
+              [responsive]="true"
+              (onHide)="previousState()"
+              [style]="{width: '80%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+            <div class="ui-dialog-content">
+                <form name="editForm" role="form" novalidate #editForm="ngForm">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label">Type d'incident d'exécution</label>
+                                <select class="form-control" name="type_incident" id="field_incident"
+                                        [(ngModel)]="contentieux.typeIncidentExecution"  required>
+                                    <option value="" disabled selected>Choisir le type d'incident d'exécution</option>
+                                    <option value="LITIGES">LITIGES</option>
+                                    <option value="CONTENTIEUX" >CONTENTIEUX</option>
+                                    <option value="AVENANTS">AVENANTS</option>
+                                    <option value="ARBITRAGE">ARBITRAGE</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_reference">Reference</label>
+                                <input type="text" class="form-control"
+                                       name="reference" id="field_reference"
+                                       [(ngModel)]="contentieux.reference" required/>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_motif">Motif</label>
+                                <input type="text" class="form-control" name="motif" id="field_motif"
+                                       [(ngModel)]="contentieux.motif" required/>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_montant">Montant</label>
+                                <input type="number" class="form-control" name="montant" id="field_montant"
+                                       [(ngModel)]="contentieux.montant" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_temps">Temps</label>
+                                <input type="text" class="form-control" name="temps" id="field_temps"
+                                       [(ngModel)]="contentieux.temps" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_date">Date</label>
+                                <div class="input-group">
+                                    <input id="field_dat" type="text" class="form-control" type="date" name="date"
+                                           [(ngModel)]="contentieux.date" required/>
+                                    <span class="input-group-append">
+
+                        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+        <div *ngIf="contentieux.typeIncidentExecution?.toString() === 'CONTENTIEUX'">
+        <fieldset>
+            <legend>Liste des décisions</legend>
+            <div class="mb-5">
+                <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-decision-contentieux " (click)="showModal()" [disabled]="(contentieux.decisionContentieuxes?.length>0)">
+                    <fa-icon [icon]="'plus'" ></fa-icon>
+                    <span>
+                    Création d'une décision contentieuse
+                    </span>
+                </button>
+            </div>
+
+            <div class="col-sm-12">
+                <p-table #soumFilter  [value]="contentieux.decisionContentieuxes" dataKey="id" [globalFilterFields]="[]" editMode="row">
+                    <ng-template pTemplate="caption">
+                        <div class="row">
+                            <div class="col-sm-12 text-right">
+                                <input type="text" pInputText size="50" placeholder="Rechercher"
+                                       (input)="soumFilter.filterGlobal($event.target.value, 'contains')"
+                                       style="width:auto">
+                            </div>
+
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <th width="20px">N°</th>
+                            <th>Nom de la structure</th>
+                            <th>Reference de la decision</th>
+                            <th>Decision</th>
+                            <th>Date de la décision</th>
+                            <th style="width: 20em">Action</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-decisionContentieux let-editing="editing" let-expanded="expanded" let-columns="columns"
+                                 let-i="rowIndex">
+                        <tr [pSelectableRow]="decisionContentieux" [pEditableRow]="decisionContentieux">
+                            <td>{{i + 1}}</td>
+                            <td><span>{{decisionContentieux.structure}}</span></td>
+                            <td>{{decisionContentieux.referenceDecision}}</td>
+                            <td>{{decisionContentieux.decision}}</td>
+                            <td>{{decisionContentieux.date}}</td>
+                            <td>
+                                <button type="button" class="ui-button-secondary text-primary" pButton icon="fa fa-plus" (click)="modif(decisionContentieux)" label="Modifier"></button>
+                                <button type="button" class="ui-button-secondary text-danger" pButton icon="fa fa-trash" (click)="retirer(i)" label="Retirer"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-columns>
+                        <tr>
+                            <td colspan="8" align="center"><span
+                                class="text-danger"> Aucun candidat trouvé ! </span></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </fieldset>
+        </div>
+
+        <p-footer>
+                <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+                    <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                            label="Fermer" (click)='annuler()'>
+                    </button>
+                    <button type="button" pButton icon="fa fa-check" label="Valider"
+                            (click)="save()" class="ui-button-secondary text-info">
+                    </button>
+                </div>
+            </p-footer>
+        </p-dialog>
+
+    <p-dialog header="Ajout/Modif d'une décision" [(visible)]="displayDecisionModal" [modal]="true"
+              [responsive]="true"
+              (onHide)="annulerDecision()"
+              [style]="{width: '60%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <div class="ui-dialog-content">
+                <div>
+
+                    <div class="form-group">
+                        <label class="form-control-label">Date</label>
+                        <div class="input-group">
+                            <input type="date" class="form-control" name="date" [(ngModel)]="decisionContentieux.date" id="field_date" required/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-control-label">Reference de décision</label>
+                        <input type="text" class="form-control" [(ngModel)]="decisionContentieux.referenceDecision" name="referenceDecision" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label">Décision</label>
+                        <input type="text" class="form-control" [(ngModel)]="decisionContentieux.decision" name="decision"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label">Autorité de décision</label>
+                        <input type="text" class="form-control" [(ngModel)]="decisionContentieux.structure" name="structure" />
+                    </div>
+
+                </div>
+        </div>
+
+        <p-footer>
+            <div class="text-center">
+                <button class="ui-button-secondary text-danger" (click)="annulerDecision()" pButton
+                        label="Fermer"></button>
+                <button class="ui-button-secondary text-primary" pButton (click)="validerDecision()" label="Valider"></button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+    </div>
+
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+                (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI"
+                (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+<p-toast key="myKey" [style]="{marginTop: '80px'}" position="top-right" [baseZIndex]="100000" ></p-toast>

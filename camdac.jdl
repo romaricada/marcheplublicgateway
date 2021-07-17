@@ -1,0 +1,147 @@
+enum Etat {
+    INITIAL, ENCOURS, VALIDE, TERMINE
+}
+enum Poste {
+    PRESIDENT, RAPPORTEUR, MEMBRE, OBSERVATEUR
+}
+entity Membre {
+    nom String required,
+    prenom String required,
+    telephone String,
+    email String,
+    directionId Long,
+    deleted Boolean required
+
+}
+entity TypeCommission {
+    libelle String required,
+    deleted Boolean required
+}
+entity Reception {
+    nom String required,
+    prenom String required,
+    telephone String,
+    email String,
+    date LocalDate required,
+    heure String required,
+    lieu String required,
+    activiteId Long,
+    retirer Boolean,
+    deleted Boolean required
+}
+entity MembreCommission {
+    activiteId Long,
+    referenceArrete String,
+    poste Poste required,
+    deleted Boolean required
+}
+entity Tache {
+    libelle String required,
+    dateCreation LocalDate,
+    deleted Boolean required
+}
+entity Workflow {
+    libelle String required,
+    deleted Boolean required
+}
+entity TacheWorkflow {
+    date LocalDate required,
+    deleted Boolean required
+}
+entity Piece {
+    nomPiece String required,
+    deleted Boolean required
+}
+entity Lot {
+    libelle String required,
+    activiteId Long,
+    deleted Boolean,
+    infructueux Boolean required
+}
+entity TacheEtape {
+    etat Etat,
+    etapeActivitePpmId Long,
+    deleted Boolean required
+}
+entity Candidat {
+    nomStructure String required,
+    adresse String,
+    email String,
+    deleted Boolean required
+}
+entity CandidatLot {
+    estCandidat Boolean required,
+    soumissionnaire Boolean required,
+    attributaire Boolean required,
+    titulaire Boolean required,
+    montant Float,
+    dossierPaye Boolean required,
+    nombrePoint Double,
+    deleted Boolean required
+}
+entity Decision {
+    structure String required,
+    decision String required,
+    deleted Boolean required
+}
+entity Reclamation {
+    date LocalDate required,
+    motif String required,
+    deleted Boolean required
+}
+entity Depouillement {
+    description String required,
+    date LocalDate required,
+    heureDebut String,
+    heureFin String,
+    lieu String,
+    salle String,
+    deleted Boolean required
+}
+entity Deliberation {
+    description String required,
+    date LocalDate required,
+    valide Boolean required,
+    deleted Boolean required
+}
+entity PieceCandidat {
+    deleted Boolean required
+}
+relationship OneToMany {
+    Membre{commissions} to MembreCommission{membre}
+    TypeCommission{commissions} to MembreCommission{typeCommission}
+    Lot{candidatLots} to CandidatLot{lot}
+    Candidat{candidatLots} to CandidatLot{candidat}
+    Tache{tacheWorkflows} to TacheWorkflow{tache}
+    Workflow{tacheWorkflows} to TacheWorkflow{workflow}
+    Tache{tacheEtapes} to TacheEtape{tache}
+    Tache{membreCommissions} to MembreCommission{tache}
+    CandidatLot{pieceCandidats} to PieceCandidat{candidatLot}
+    Piece{pieceCandidats} to PieceCandidat{piece}
+    Deliberation{candidatLots} to CandidatLot{deliberation}
+    Depouillement{candidatLots} to CandidatLot{depouillement}
+    Reclamation{candidatLots} to CandidatLot{reclamation}
+    Reclamation{decisions} to Decision{reclamation}
+}
+//service * with serviceClass
+//dto * with mapstruct
+ paginate * with pagination
+
+application {
+  config {
+    baseName marchepublicgateway
+    applicationType gateway
+    authenticationType jwt
+    devDatabaseType postgresql
+    prodDatabaseType postgresql
+    packageName mena.gov.bf
+    //searchEngine elasticsearch
+  }
+  entities *
+}
+
+//skipClient *
+skipServer *
+
+microservice * with microservicedaccam
+

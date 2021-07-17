@@ -1,0 +1,28 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceexecutionEtapeExecution": {
+      "home": {
+        "title": "Etape Executions",
+        "createLabel": "Create a new Etape Execution",
+        "createOrEditLabel": "Create or edit a Etape Execution",
+        "notFound": "No Etape Executions found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Etape Execution {{ id }}?"
+      },
+      "detail": {
+        "title": "Etape Execution"
+      },
+      "libelle": "Libelle",
+      "deleted": "Deleted",
+      "contrat": "Contrat"
+    }
+  },
+  "microserviceexecutionApp": {
+    "microserviceexecutionEtapeExecution": {
+      "created": "A new Etape Execution is created with identifier {{ param }}",
+      "updated": "A Etape Execution is updated with identifier {{ param }}",
+      "deleted": "A Etape Execution is deleted with identifier {{ param }}"
+    }
+  }
+}

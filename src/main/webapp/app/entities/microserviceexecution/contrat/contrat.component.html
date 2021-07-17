@@ -1,0 +1,264 @@
+<!--
+<div class="text-center">
+	<label class="font-weight-bold text-primary">GESTION DES CONTRATS</label>
+</div>
+<p-toolbar>
+	<div class="ui-toolbar-group-left">
+		<div class="ui-g ui-g-12 ui-g-nopad">
+			<div class="ui-g ui-g-12 ui-g-nopad">
+                <div class="ui-inputgroup mr-1">
+                    <span class="ui-inputgroup-addon"><span class="font-weight-bold">Avis DAC</span></span>
+                    <p-dropdown (onChange)="loadAllLotbyAvisDAC()" [(ngModel)]="avisdac"
+                                [options]="avisdacs" [style]="{'width': '320px'}"
+                                filter="filter" optionLabel="nomAvisDac" placeholder="Selectionner un avis dac" required showClear="showClear">
+                    </p-dropdown>
+                </div>
+				<div class="ui-inputgroup mr-1">
+					<span class="ui-inputgroup-addon"><span class="font-weight-bold">Lots</span></span>
+					<p-dropdown [options]="lots" [(ngModel)]="lot"
+					            placeholder="Selectionner un lot" [style]="{'width': '320px'}" optionLabel="description"
+					            filter="filter" (onChange)="loadLigneBudgetaire()"
+					            showClear="showClear" [disabled]="avisdac===null"
+					            required></p-dropdown>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="ui-toolbar-group-left float-right">
+		<button type="button" pButton class="ui-button-secondary text-primary"
+		        icon="fa fa-plus" label="Ajouter un contrat"
+		        *jhiHasAnyAuthority="'ROLE_EXECUTION_GESTION_DES_CONTRATS_ADD'" [disabled]="lot===null || contrats?.length!==0"
+		        (click)="addContrat()">
+		</button>
+	</div>
+</p-toolbar>
+<div class="ui-g-12">
+	<p-table [value]="contrats" dataKey="id" [paginator]="true"
+	         [rows]="20" [responsive]="true">
+		<ng-template pTemplate="header" let-columns>
+			<tr>
+				<th style="width: 3em">
+					<p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+				</th>
+				<th>Reférence</th>
+				<th>Date de signature</th>
+				<th>Montant</th>
+				<th>Action</th>
+			</tr>
+		</ng-template>
+		<ng-template pTemplate="body" let-contrat let-columns="columns">
+			<tr [pSelectableRow]="contrat">
+				<td>
+					<p-tableCheckbox [value]="contrat"></p-tableCheckbox>
+				</td>
+				<td>{{contrat?.reference}}</td>
+				<td>{{contrat?.dateSignature}}</td>
+				<td>{{contrat?.montant}}</td>
+				<td class="float-right">
+					<button  type="button" pButton icon="fa fa-edit" label="Modifier"
+					        class="ui-button-secondary text-warning" (click)="update(contrat)">
+					</button>
+					<button type="button" pButton icon="fa fa-trash" label="Suprprimer"
+					        class="ui-button-secondary text-danger" (click)="supprimer(contrat)">
+					</button>
+					<button type="button" pButton icon="fa fa-eye" label="Visualiser"
+					        class="ui-button-secondary text-info" (click)="view(contrat)">
+					</button>
+				</td>
+			</tr>
+		</ng-template>
+	</p-table>
+</div>
+&lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;
+&lt;!&ndash; creation et modification de contrat &ndash;&gt;
+&lt;!&ndash;-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;
+<p-dialog header="Création/Modification d'un contrat" [(visible)]="displayContrat" [modal]="true"
+          [responsive]="true"
+          (onHide)="annulerContrat()"
+          [style]="{width: '50%'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+	<form name="editForm" role="form" novalidate  #editFormcontrat="ngForm">
+		<p-card class="card mb-3">
+			<div class="container-fluid">
+				<div class="col-sm-12">
+					<div class="form-group">
+						<label class="form-control-label" for="field_reference">Reference</label>
+						<input id="field_reference" type="text" class="form-control"
+						       name="reference"
+						       [(ngModel)]="contrat.reference" required>
+					</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="form-group">
+						<label class="form-control-label" for="field_date_signataire">Date signature</label>
+						<input id="field_date_signataire" type="date" class="form-control"
+						       name="dateSignature"
+						       [(ngModel)]="contrat.dateSignature" required>
+					</div>
+				</div>
+                <div class="row ml-1 ">
+                <div class="col-sm-4">
+					<div class="form-group">
+						<label class="form-control-label" for="field_montant">Montant</label>
+						<input id="field_montant" type="number" class="form-control"
+						       name="montant"
+						       [(ngModel)]="contrat.montant" required>
+					</div>
+				</div>
+                    <div class="col-sm-8">
+                            <div *ngIf="candidatLot==null">
+                        <p
+                            class="font-weight-bold" style="font-weight: bold; margin-top: 40px;">Attributaire du lot :
+                            <span class="badge badge-pill badge-warning" style="font-weight: bold; font-size: 16px;">Pas d'attributaire pour ce lot</span></p>
+                            </div>
+                            <div *ngIf="candidatLot!==null">
+                        <p
+                            class="font-weight-bold" style=" margin-top: 40px;">Attributaire du lot: <span class="badge badge-pill badge-success"  style="font-weight: bold; font-size: 16px;">
+                            {{candidatLot?.candidat?.nomStructure}}</span></p>
+                            </div>
+				</div>
+			</div>
+			<div class="ui-g-12">
+                    <p-panel>
+                        <p-header>Information sur les lignes budgetaires selectionnées pour ce contrat</p-header>
+                        <p-table [responsive]="true" [value]="besoinLigneBudgetaires"
+                                 dataKey="id">
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th>Ligne crédit</th>
+                                    <th>Montant estimé</th>
+                                    <th width="100">Action</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-columns="columns"
+                                         let-i="rowIndex">
+                                <tr>
+                                    <td>{{rowData?.ligneCredit}}</td>
+                                    <td>{{rowData?.montantEstime | formatTableValue:'number': true }}</td>
+                                    <td width="100">
+                                        <p-inputSwitch [name]="'sletede'+i" [title]="'ligne crédit actif'"
+                                                       [(ngModel)]="rowData.selected" (onChange)="onChangeVal(rowData)"></p-inputSwitch>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="footer">
+                                <tr>
+                                    <td>Total</td>
+                                    <td>{{totaTMontant | formatTableValue:'number': true}}</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </p-panel>
+			</div>
+            </div>
+		</p-card>
+	</form>
+	<div class="ui-dialog-buttonpane ui-helper-clearfix float-right">
+		<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+		        label="Annuler" (click)='annulerContrat()'></button>
+		<button type="button" pButton icon="fa fa-save" label="Soumettre" (click)="saveContrat()"
+		        [disabled]="editFormcontrat.invalid || isSaving" class="ui-button-secondary text-info">
+		</button>
+	</div>
+</p-dialog>
+
+&lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;
+&lt;!&ndash; creation et modification de contrat &ndash;&gt;
+&lt;!&ndash;-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;
+<p-dialog header="Détail" [(visible)]="isView" [modal]="true"
+          [responsive]="true"
+          (onHide)="annulerContrat()"
+          [style]="{width: '80%'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+	<form name="editForm" role="form" novalidate  #editFormcontrat="ngForm">
+		<p-card class="card mb-3">
+			<div class="container-fluid">
+				<div class="col-sm-12">
+					<div class="form-group">
+						<label class="form-control-label" for="field_reference1">Reference</label>
+						<input id="field_reference1" type="text" class="form-control"
+						       name="reference"
+						       [(ngModel)]="contrat.reference" [disabled]="true">
+					</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="form-group">
+						<label class="form-control-label" for="field_date_signataire1">Date d'approbation</label>
+						<input id="field_date_signataire1" type="date" class="form-control"
+						       name="dateSignature"
+						       [(ngModel)]="contrat.dateSignature" [disabled]="true">
+					</div>
+				</div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_montant">Montant</label>
+                            <input id="field_montant1" type="number" class="form-control"
+                                   name="montant"
+                                   [(ngModel)]="contrat.montant" [disabled]="true">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div *ngIf="avisdac==null">
+                            <p
+                                class="font-weight-bold" style="font-weight: bold; margin-top: 40px;">Attributaire du lot : <span class="badge badge-pill badge-success">{{candidatLot?.candidat?.nomStructure}}</span></p>
+                        </div>
+                        <div *ngIf="avisdac!==null">
+                            <p
+                                class="font-weight-bold" style=" margin-top: 40px;">Attributaire du lot: <span class="badge badge-pill badge-success">{{candidatLot?.candidat?.nomStructure}}</span></p>
+                        </div>
+                    </div>
+                </div>
+                &lt;!&ndash;<div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="form-control-label" for="contratLots">Lot du contrat</label>
+                        <p-multiSelect [options]="candidatLots" optionLabel="label" [(ngModel)]="candidatLotSelected" name="candidatLotId"
+                                       id="contratLots" dataKey="id"
+                                       [style]="{'width': '100%'}" defaultLabel="Sélectionné les lots"
+                                       required></p-multiSelect>
+                    </div>
+                </div>&ndash;&gt;
+            </div>
+            <div class="ui-g-12">
+                <p-panel>
+                    <p-header>Information sur les lignes budgetaire selectionnées pour ce contrat</p-header>
+                    <p-table [responsive]="true" [value]="besoinLigneBudgetaires"
+                             dataKey="id">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th>Ligne crédit</th>
+                                <th>Montant estimé</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns"
+                                     let-i="rowIndex">
+                            <tr>
+                                <td>{{rowData?.ligneCredit}}</td>
+                                <td>{{rowData?.montantEstime | formatTableValue:'number': true }}</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="footer">
+                            <tr>
+                                <td>Toital</td>
+                                <td>{{totaTMontant | formatTableValue:'number': true}}</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </p-panel>
+            </div>
+        </p-card>
+	</form>
+	<div class="ui-dialog-buttonpane ui-helper-clearfix float-right card-footer">
+		<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+		        label="Fermer" (click)='annulerContrat()'></button>
+	</div>
+</p-dialog>
+
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+	<p-footer>
+		<button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+		        (click)="cd.reject()"></button>
+		<button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI"
+		        (click)="cd.accept()"></button>
+	</p-footer>
+</p-confirmDialog>
+<p-toast key="myKey" [style]="{marginTop: '80px'}" position="top-right" [baseZIndex]="100000" ></p-toast>
+-->

@@ -1,0 +1,103 @@
+{
+    "name": "Contrat",
+    "fields": [
+        {
+            "fieldName": "reference",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "dateSignature",
+            "fieldType": "LocalDate",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "dateDebutPrevu",
+            "fieldType": "LocalDate",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "dateFinPrevu",
+            "fieldType": "LocalDate",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "candidatLotId",
+            "fieldType": "Long",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "cautionCandidatLotId",
+            "fieldType": "Long"
+        },
+        {
+            "fieldName": "deleted",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "statutExecution",
+            "otherEntityRelationshipName": "contrat",
+            "relationshipName": "statutExecutions"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "penalite",
+            "otherEntityRelationshipName": "contrat",
+            "relationshipName": "penalites"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "contentieux",
+            "otherEntityRelationshipName": "contrat",
+            "relationshipName": "contentieuxs"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "avenant",
+            "otherEntityRelationshipName": "contrat",
+            "relationshipName": "avenants"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "etapeExecution",
+            "otherEntityRelationshipName": "contrat",
+            "relationshipName": "etapeExecutions"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "liquidation",
+            "otherEntityRelationshipName": "contrat",
+            "relationshipName": "liquidations"
+        }
+    ],
+    "changelogDate": "20200602185340",
+    "entityTableName": "contrat",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "clientRootFolder": "",
+    "applications": [
+        "marchepublicgateway"
+    ],
+    "skipServer": true,
+    "microserviceName": "microserviceexecution"
+}

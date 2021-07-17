@@ -1,0 +1,6 @@
+export enum EtatOs {
+  INITIAL = 'INITIAL',
+  ENCOURS = 'ENCOURS',
+  SUSPENDU = 'SUSPENDU',
+  TERMINE = 'TERMINE'
+}

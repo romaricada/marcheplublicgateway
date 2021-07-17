@@ -1,0 +1,53 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="statutExecution">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionStatutExecution.detail.title">Statut Execution</span> {{statutExecution.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionStatutExecution.motif">Motif</span></dt>
+                <dd>
+                    <span>{{statutExecution.motif}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionStatutExecution.suspendu">Suspendu</span></dt>
+                <dd>
+                    <span>{{statutExecution.suspendu}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionStatutExecution.reprise">Reprise</span></dt>
+                <dd>
+                    <span>{{statutExecution.reprise}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionStatutExecution.dateSuspendu">Date Suspendu</span></dt>
+                <dd>
+                    <span>{{statutExecution.dateSuspendu}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionStatutExecution.dateReprise">Date Reprise</span></dt>
+                <dd>
+                    <span>{{statutExecution.dateReprise}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionStatutExecution.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{statutExecution.deleted}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionStatutExecution.contrat">Contrat</span></dt>
+                <dd>
+                    <div *ngIf="statutExecution.contrat">
+                        <a [routerLink]="['/contrat', statutExecution.contrat?.id, 'view']">{{statutExecution.contrat?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/statut-execution', statutExecution.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

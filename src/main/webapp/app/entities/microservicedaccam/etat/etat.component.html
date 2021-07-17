@@ -1,0 +1,269 @@
+<div>
+
+<!--  role des menus etats
+    *jhiHasAnyAuthority="'ROLE_MENU_ETATS_ALL'"
+    *jhiHasAnyAuthority="'ROLE_MENU_ETATS_ENCOURS'"
+    *jhiHasAnyAuthority="'ROLE_MENU_ETATS_EXECUTES'"
+    *jhiHasAnyAuthority="'ROLE_MENU_ETATS_LITIGE'"
+    *jhiHasAnyAuthority="'ROLE_MENU_ETATS_RESILIE'"
+
+    -->
+
+
+
+
+
+
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES ETATS</label>
+            </div>
+        </div>
+    </p-toolbar>
+    <p-tabView (onChange)="onIncateurClick($event)">
+        <p-tabPanel header="Tous les Marchés">
+            <div>
+                <div class="text-center mb-1">
+                    <span *ngIf="type === 'AL'" class="badge-pill badge-secondary font-weight-bold">Tous les marchés</span>
+                    <span *ngIf="type === 'EX'" class="badge-pill badge-secondary font-weight-bold">Les marchés exécutés</span>
+                    <span *ngIf="type === 'EC'" class="badge-pill badge-secondary font-weight-bold">Les marchés en cours</span>
+                    <span *ngIf="type === 'EL'" class="badge-pill badge-secondary font-weight-bold">Les marchés en litiges</span>
+                    <span *ngIf="type === 'ER'" class="badge-pill badge-secondary font-weight-bold">Les marchés Résiliés</span>
+                    <span *ngIf="type === 'D'" class="badge-pill badge-secondary font-weight-bold">Tableau récaputulatif</span>
+                </div>
+<!--
+                    <p-table [value]="avisDacs" [paginator]="true" [rows]="7" selectionMode="single" [(selection)]="selectedAvisdac">
+
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th width="40%">Marchés</th>
+                            <th>Date Lancement</th>
+                            <th>Date Butoire</th>
+                            <th>Budget</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-activite>
+                        <tr [pSelectableRow]="activite">
+                            <td>{{activite?.codeLignePlan+'-'+activite?.naturePrestationLibelle}}</td>
+                            <td>{{activite?.ppmActivite?.periodeLancementAppel | date:'dd/MM/yyyy'}}</td>
+                            <td>{{activite?.ppmActivite?.dateButtoire | date:'dd/MM/yyyy'}}</td>
+                            <td>{{activite.ppmActivite?.creditDisponible | number}}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-columns>
+                        <tr>
+                            <td colspan="4" align="center"><span class="text-danger"> Aucun marché trouvé ! </span></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+-->
+
+                <p-table [value]="avisDacs" [paginator]="true" [rows]="7" selectionMode="single" [(selection)]="selectedAvisdac">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th width="40%">Marchés</th>
+                            <th>Date Lancement</th>
+                            <th>Date Butoire</th>
+                            <th>Montant</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-avisDac>
+                        <tr [pSelectableRow]="avisDac">
+                            <td>{{avisDac?.numeroAvis+'/'+avisDac?.objet}}</td>
+                            <td>{{avisDac?.dateDepotOffre | date:'dd/MM/yyyy'}}</td>
+                            <td>{{avisDac?.dateLancement| date:'dd/MM/yyyy'}}</td>
+                            <td>{{avisDac?.validite | number}}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-columns>
+                        <tr>
+                            <td colspan="4" align="center"><span class="text-danger"> Aucun marché trouvé ! </span></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+
+            </div>
+
+            <br>
+
+            <button *ngIf="avisDacs.length" type="button" pButton class="ui-button-secondary text-primary"
+                    icon="fa fa-print"
+                    label="Imprimer" (click)="imprimeAllMarche()">
+            </button>
+        </p-tabPanel>
+        <p-tabPanel header="Marchés en cours"  >
+            <div>
+                <!---->
+                <div class="text-center mb-1">
+                    <span *ngIf="type === 'AL'" class="badge-pill badge-secondary font-weight-bold">Tous les marchés</span>
+                    <span *ngIf="type === 'EX'" class="badge-pill badge-secondary font-weight-bold">Les marchés exécutés</span>
+                    <span *ngIf="type === 'EC'" class="badge-pill badge-secondary font-weight-bold">Les marchés en cours</span>
+                    <span *ngIf="type === 'EL'" class="badge-pill badge-secondary font-weight-bold">Les marchés en litiges</span>
+                    <span *ngIf="type === 'ER'" class="badge-pill badge-secondary font-weight-bold">Les marchés Résiliés</span>
+                    <span *ngIf="type === 'D'" class="badge-pill badge-secondary font-weight-bold">Tableau récaputulatif</span>
+                </div>
+                <p-table [value]="avisDacs" [paginator]="true" [rows]="7" selectionMode="single" [(selection)]="selectedAvisdac">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th width="40%">Marchés</th>
+                            <th>Date Lancement</th>
+                            <th>Date Butoire</th>
+                            <th>Montant</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-avisDac>
+                        <tr [pSelectableRow]="avisDac">
+                            <td>{{avisDac?.numeroAvis+'/'+avisDac?.objet}}</td>
+                            <td>{{avisDac?.dateDepotOffre | date:'dd/MM/yyyy'}}</td>
+                            <td>{{avisDac?.dateLancement| date:'dd/MM/yyyy'}}</td>
+                            <td>{{avisDac?.validite | number}}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-columns>
+                        <tr>
+                            <td colspan="4" align="center"><span class="text-danger"> Aucun marché trouvé ! </span></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+                <button *ngIf="avisDacs.length" type="button" pButton class="ui-button-secondary text-primary"
+                        icon="fa fa-print"
+                        label="Imprimer" (click)="imprimeMarchesEnCours()">
+                </button>
+        </p-tabPanel>
+        <p-tabPanel header="Marchés exécutés" >
+            <div>
+                <div class="text-center mb-1">
+                    <span *ngIf="type === 'AL'" class="badge-pill badge-secondary font-weight-bold">Tous les marchés</span>
+                    <span *ngIf="type === 'EX'" class="badge-pill badge-secondary font-weight-bold">Les marchés exécutés</span>
+                    <span *ngIf="type === 'EC'" class="badge-pill badge-secondary font-weight-bold">Les marchés en cours</span>
+                    <span *ngIf="type === 'EL'" class="badge-pill badge-secondary font-weight-bold">Les marchés en litiges</span>
+                    <span *ngIf="type === 'ER'" class="badge-pill badge-secondary font-weight-bold">Les marchés Résiliés</span>
+                    <span *ngIf="type === 'D'" class="badge-pill badge-secondary font-weight-bold">Tableau récaputulatif</span>
+                </div>
+                <p-table [value]="avisDacs" [paginator]="true" [rows]="7" selectionMode="single" [(selection)]="selectedAvisdac">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th width="40%">Marchés</th>
+                            <th>Date Lancement</th>
+                            <th>Date Butoire</th>
+                            <th>Montant</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-avisDac>
+                        <tr [pSelectableRow]="avisDac">
+                            <td>{{avisDac?.numeroAvis+'/'+avisDac?.objet}}</td>
+                            <td>{{avisDac?.dateDepotOffre | date:'dd/MM/yyyy'}}</td>
+                            <td>{{avisDac?.dateLancement| date:'dd/MM/yyyy'}}</td>
+                            <td>{{avisDac?.validite | number}}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-columns>
+                        <tr>
+                            <td colspan="4" align="center"><span class="text-danger"> Aucun marché trouvé ! </span></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+
+            <button *ngIf="activites.length" type="button" pButton class="ui-button-secondary text-primary"
+                        icon="fa fa-print"
+                        label="Imprimer" (click)="imprimeFinishedMarches()">
+                </button>
+        </p-tabPanel>
+        <p-tabPanel header="Marchés ayant un litige" >
+            <div>
+                <!---->
+                <div class="text-center mb-1">
+                    <span *ngIf="type === 'AL'" class="badge-pill badge-secondary font-weight-bold">Tous les marchés</span>
+                    <span *ngIf="type === 'EX'" class="badge-pill badge-secondary font-weight-bold">Les marchés exécutés</span>
+                    <span *ngIf="type === 'EC'" class="badge-pill badge-secondary font-weight-bold">Les marchés en cours</span>
+                    <span *ngIf="type === 'EL'" class="badge-pill badge-secondary font-weight-bold">Les marchés en litiges</span>
+                    <span *ngIf="type === 'ER'" class="badge-pill badge-secondary font-weight-bold">Les marchés Résiliés</span>
+                    <span *ngIf="type === 'D'" class="badge-pill badge-secondary font-weight-bold">Tableau récaputulatif</span>
+                </div>
+                <p-table [value]="avisDacs" [paginator]="true" [rows]="7" selectionMode="single" [(selection)]="selectedAvisdac">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th width="40%">Marchés</th>
+                            <th>Date Lancement</th>
+                            <th>Date Butoire</th>
+                            <th>Montant</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-avisDac>
+                        <tr [pSelectableRow]="avisDac">
+                            <td>{{avisDac?.numeroAvis+'/'+avisDac?.objet}}</td>
+                            <td>{{avisDac?.dateDepotOffre | date:'dd/MM/yyyy'}}</td>
+                            <td>{{avisDac?.dateLancement| date:'dd/MM/yyyy'}}</td>
+                            <td>{{avisDac?.validite | number}}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-columns>
+                        <tr>
+                            <td colspan="4" align="center"><span class="text-danger"> Aucun marché trouvé ! </span></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+
+            <br>
+
+            <button *ngIf="activites.length" type="button" pButton class="ui-button-secondary text-primary"
+                        icon="fa fa-print"
+                        label="Imprimer" (click)="imprimeMarchesAyantLitige()">
+                </button>
+        </p-tabPanel>
+        <p-tabPanel header="Marchés ayant un contrat résilié" >
+            <div>
+                <!---->
+                <div class="text-center mb-1">
+                    <span *ngIf="type === 'AL'" class="badge-pill badge-secondary font-weight-bold">Tous les marchés</span>
+                    <span *ngIf="type === 'EX'" class="badge-pill badge-secondary font-weight-bold">Les marchés exécutés</span>
+                    <span *ngIf="type === 'EC'" class="badge-pill badge-secondary font-weight-bold">Les marchés en cours</span>
+                    <span *ngIf="type === 'EL'" class="badge-pill badge-secondary font-weight-bold">Les marchés en litiges</span>
+                    <span *ngIf="type === 'ER'" class="badge-pill badge-secondary font-weight-bold">Les marchés Résiliés</span>
+                    <span *ngIf="type === 'D'" class="badge-pill badge-secondary font-weight-bold">Tableau récaputulatif</span>
+                </div>
+                <p-table [value]="avisDacs" [paginator]="true" [rows]="7" selectionMode="single" [(selection)]="selectedAvisdac">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th width="40%">Marchés</th>
+                            <th>Date Lancement</th>
+                            <th>Date Butoire</th>
+                            <th>Montant</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-avisDac>
+                        <tr [pSelectableRow]="avisDac">
+                            <td>{{avisDac?.numeroAvis+'/'+avisDac?.objet}}</td>
+                            <td>{{avisDac?.dateDepotOffre | date:'dd/MM/yyyy'}}</td>
+                            <td>{{avisDac?.dateLancement| date:'dd/MM/yyyy'}}</td>
+                            <td>{{avisDac?.validite | number}}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-columns>
+                        <tr>
+                            <td colspan="4" align="center"><span class="text-danger"> Aucun marché trouvé ! </span></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+
+            <br>
+
+            <button *ngIf="activites.length" type="button" pButton class="ui-button-secondary text-primary"
+                        icon="fa fa-print"
+                        label="Imprimer" (click)="imprimeMarchesAyantContratResilie()">
+                </button>
+        </p-tabPanel>
+    </p-tabView>
+</div>
+
+

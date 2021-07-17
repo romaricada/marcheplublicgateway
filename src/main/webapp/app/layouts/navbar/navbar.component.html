@@ -1,0 +1,704 @@
+<nav class="navbar navbar-dark navbar-expand-md bg-dark" *ngIf="isAuthenticated()">
+	<div class="jh-logo-container float-left col-sm-4" *ngIf="isAuthenticated()" style="padding-left: 0 !important;">
+		<a class="jh-navbar-toggler d-lg-none float-right" href="javascript:void(0);" data-toggle="collapse"
+		   data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+		   aria-label="Toggle navigation" (click)="toggleNavbar()">
+			<i class="fa fa-bars"></i>
+		</a>
+		<a class="navbar-brand logo" routerLink="/accueil" (click)="collapseNavbar()" data-toggle="tooltip"
+		   title="ACCUEIL">
+			<span class="logo-img"></span>
+			<span class="navbar-title">SGIMP-MENAPLN</span>
+		</a>
+		<a class="mt-2" data-toggle="tooltip" title="PROFIL" routerLink="account/settings" *ngIf="isAuthenticated()">
+			<i class="fa fa-fw fa-user fa-2x text-light" aria-hidden="true"></i>
+			<span class="font-weight-bold text-light" style="font-size: medium">{{myLogin}}</span>
+		</a>
+		<a data-toggle="tooltip" title="CHANGER DE MOT DE PASSE" routerLink="account/password"
+		   *ngIf="isAuthenticated()">
+			<i class="fa fa-fw fa-lock fa-2x text-light" aria-hidden="true"></i>
+		</a>
+		<a data-toggle="tooltip" title="DECONNEXION" (click)="logout()" id="logout" *ngIf="isAuthenticated()">
+			<i class="fa fa-fw fa-sign-out fa-2x text-danger" aria-hidden="true"></i>
+		</a>
+	</div>
+	<div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed"
+	     [ngSwitch]="isAuthenticated()">
+		<ul class="navbar-nav ml-auto">
+
+			<li *ngSwitchCase="true" ngbDropdown class="nav-item dropdown pointer" display="dynamic"
+			    routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+
+				<a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="alertsDropdown">
+					<i class="fa fa-bell fa-1x"></i>
+					<!-- Counter - Alerts -->
+					<span class="badge badge-danger badge-counter"
+					      *ngIf="etapeActivitePPMs?.length < 10">{{etapeActivitePPMs?.length}}</span>
+					<span class="badge badge-primary badge-counter"
+					      *ngIf="etapeActivitePPMs?.length >= 10">{{etapeActivitePPMs?.length}}</span>
+				</a>
+				<div class="dropdown-list dropdown-menu dropdown-menu-right shadow" ngbDropdownMenu
+				     aria-labelledby="alertsDropdown">
+					<h6 class="dropdown-header text-center">
+						Vos Alertes
+					</h6>
+					<span *ngFor="let etape of etapeActivitePPMs; let i = index">
+                        <a *ngIf="i <= 5" class="dropdown-item" (click)="collapseNavbar()" routerLink="alert">
+                            <div class="mr-3">
+                                <div class="badge badge-pill badge-primary badge-counter">
+                                    <i class="fa fa-file-o text-white"></i>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="small text-gray-500">12 Mars 2020</div>
+                                <span class="font-weight-bold">Vous avez
+                                    <span class="text-primary" *ngIf="etape[i]?.length > 0">{{etape[i]?.debtu}}
+	                                    - {{etape[i]?.fin}}</span>
+                                    <span class="text-primary" *ngIf="etape[i]?.length < 0">0</span>
+                                    Marchés en attente de traitement
+                                </span>
+                            </div>
+                        </a>
+						<!-- <a class="dropdown-item" (click)="collapseNavbar()" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" [routerLink]="['alert', id[1] ]">
+							<div class="mr-3">
+								<span class="badge badge-pill badge-warning badge-counter">
+									<i class="fa fa-diamond text-white"></i>
+								</span>
+							</div>
+							<div>
+								<div class="small text-gray-500"> 10 Mars 2020</div>Vous avez
+								<span class="text-primary" *ngIf="statusTask?.length > 1">{{statusTask[1]}}</span>
+								<span class="text-primary" *ngIf="statusTask?.length < 1">0</span>
+								Marchés à délais très proche !
+							</div>
+						</a>
+						<a class="dropdown-item" (click)="collapseNavbar()" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" [routerLink]="['alert/', id[2]]">
+							<div class="mr-3">
+								<span class="badge badge-pill badge-danger badge-counter">
+									<i class="fa fa-exclamation-triangle text-white"></i>
+								</span>
+							</div>
+							<div>
+								<div class="small text-gray-500">11 Mars 2020</div> Vous avez
+								<span class="text-primary" *ngIf="statusTask?.length > 2">{{statusTask[2]}}</span>
+								<span class="text-primary" *ngIf="statusTask?.length < 2">0</span>
+								Marchés à délais dépassé!
+
+
+							</div>
+						</a>-->
+                    </span>
+					<a class="dropdown-item" routerLink="alert" routerLinkActive="active"
+					   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+						Voir tous</a>
+				</div>
+
+			</li>
+			<li *jhiHasAnyAuthority="'ROLE_ADMIN'" ngbDropdown class="nav-item dropdown pointer" display="dynamic"
+			    routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+				<a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="entity-menu">
+                    <span>
+                        <i class="fa fa-cog"></i>
+                        <span style="font-size: 14px">
+                            Paramètres
+                        </span>
+                    </span>
+				</a>
+				<ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
+					<li>
+						<a class="dropdown-item" routerLink="exercice-budgetaire" routerLinkActive="active"
+						   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+							<span>Exercices Budgétaires</span>
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" routerLink="unite-administrative" routerLinkActive="active"
+						   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+							<span>Unités Administratives</span>
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" routerLink="mode-passation" routerLinkActive="active"
+						   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+							<span>Modes de Passation</span>
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" routerLink="nature-prestation-mode-passation" routerLinkActive="active"
+						   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+							<span>Gestion des types de marchés</span>
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" routerLink="acteur" routerLinkActive="active"
+						   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+							<span>Acteurs</span>
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" routerLink="referentiel-delai" routerLinkActive="active"
+						   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+							<span>Référentiels de Delais</span>
+						</a>
+					</li>
+                    <li>
+                        <a class="dropdown-item" routerLink="source-financement" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+                            <span>Sources de Financements</span>
+                        </a>
+                    </li>
+					<li>
+						<a class="dropdown-item" routerLink="ligne-budgetaire" routerLinkActive="active"
+						   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+							<span>Lignes Budgétaires</span>
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" routerLink="timbre" routerLinkActive="active"
+						   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+							<span>Timbre</span>
+						</a>
+					</li>
+
+					<li>
+						<a class="dropdown-item" routerLink="jour-ferier" routerLinkActive="active"
+						   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+							<span>Jours fériés</span>
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" routerLink="piece" routerLinkActive="active"
+						   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+							<span>Pièces Administratives</span>
+						</a>
+					</li>
+					<!--<li>
+						<a class="dropdown-item" routerLink="calcul-delai" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+						   <fa-icon icon="asterisk" fixedWidth="true"></fa-icon>
+							<span>Délais Calculé</span>
+						</a>
+					</li>-->
+					<li>
+						<a class="dropdown-item" routerLink="delaiMessage" routerLinkActive="active"
+						   [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<span>Messages de Délais</span>
+						</a>
+					</li>
+
+				</ul>
+			</li>
+			<li *ngSwitchCase="true" ngbDropdown class="nav-item dropdown pointer" display="dynamic"
+			    routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                <span *jhiHasAnyAuthority="'ROLE_PPM'">
+                <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="entity-menu-param">
+                        <span>
+                        <fa-icon icon="list-alt"></fa-icon>
+                        <span style="font-size: 14px">
+                            PPM
+                        </span>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
+                        <li *jhiHasAnyAuthority="'ROLE_PPM_SOUS_PPM'">
+                            <a class="dropdown-item" routerLink="besoin" routerLinkActive="active"
+                               [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                                <span>Sous PPM</span>
+                            </a>
+                        </li>
+                        <li *jhiHasAnyAuthority="'ROLE_PPM_PPM'">
+                            <a class="dropdown-item" routerLink="ppm" routerLinkActive="active"
+                               [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                                <!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+                                <span>PPM</span>
+                            </a>
+                        </li>
+                        <li *jhiHasAnyAuthority="'ROLE_PPM_DEPENSES_ENGAGEES_NON_LIQUIDES'">
+                            <a class="dropdown-item" routerLink="report" routerLinkActive="active"
+                               [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                                <!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+                                <span>Dépenses engagées non liquidées</span>
+                            </a>
+                        </li>
+                        <li *jhiHasAnyAuthority="'ROLE_PPM_IMPORT_EXPORT_PPM'">
+                            <a class="dropdown-item" routerLink="import-export" routerLinkActive="active"
+                               [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                                <!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+                                <span>Import-export ppm</span>
+                            </a>
+                        </li>
+                        <li *jhiHasAnyAuthority="'ROLE_PPM_PPM_DES_STRUCTURES_DECONCENTREES'">
+                            <a class="dropdown-item" routerLink="ppm-deconcentre" routerLinkActive="active"
+                               [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                                <!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+                                <span>Ppm des Structures Déconcentrées</span>
+                            </a>
+                        </li>
+                    </ul>
+                     </span>
+			</li>
+			<li *ngSwitchCase="true" ngbDropdown class="nav-item dropdown pointer" display="dynamic"
+			    routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="collapseNavbar()">
+
+                <span *jhiHasAnyAuthority="'ROLE_DAC'">
+                <a class="nav-link" ngbDropdownToggle href="javascript:void(0);" id="dac-entity">
+                        <span>
+                            <span style="font-size: 14px">
+                                DAC
+                            </span>
+                        </span>
+                </a>
+                <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
+                    <li *jhiHasAnyAuthority="'ROLE_DAC_GESTION_DES_ALLOTISSEMENTS'">
+                        <a class="dropdown-item" routerLink="avis-dac" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Gestion des DAC</span>
+                        </a>
+                    </li>
+	                <!-- <li *jhiHasAnyAuthority="'ROLE_DAC_GESTION_DES_ALLOTISSEMENTS'">
+						 <a class="dropdown-item" routerLink="lot" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							 <span>Gestion des allotissement</span>
+						 </a>
+					 </li>-->
+	                <!--
+										<li *jhiHasAnyAuthority="'ROLE_DAC_GESTION_DES_CAUTIONS'">
+											<a class="dropdown-item" routerLink="caution" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+												<span>Gestion des Cautions</span>
+											</a>
+										</li>
+					-->
+                </ul>
+                    </span>
+			</li>
+			<li *ngSwitchCase="true" ngbDropdown class="nav-item dropdown pointer" display="dynamic"
+			    routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                     <span *jhiHasAnyAuthority="'ROLE_PLANNIFICATION'">
+                    <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="tache-entity">
+                            <span>
+                            <fa-icon icon="tasks"></fa-icon>
+                            <span style="font-size: 14px">
+                                Planification
+                            </span>
+                            </span>
+                    </a>
+                    <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
+                        <li *jhiHasAnyAuthority="'ROLE_PLANNIFICATION_ELABORATION_SUIVI_PLANNIFICATION'">
+                            <a class="dropdown-item" routerLink="suivi-dac" routerLinkActive="active"
+                               [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                                <span>Elaboration et Suivi de la Planification</span>
+                            </a>
+                        </li>
+	                    <!--
+												<li>
+													<a class="dropdown-item" routerLink="suivi-execution" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+														<span>Elaboration et Suivi de la Planification</span>
+													</a>
+												</li>
+						-->
+                    </ul>
+                         </span>
+			</li>
+
+			<li *ngSwitchCase="true" ngbDropdown class="nav-item dropdown pointer" display="dynamic"
+			    routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+               <span>
+                <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="cam-entity">
+                            <span>
+                            <fa-icon icon="users"></fa-icon>
+                            <span style="font-size: 14px">
+                                CAM
+                            </span>
+                            </span>
+                </a>
+                <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
+                    <li>
+                        <!--<a class="dropdown-item" routerLink="type-commission" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Type de commission</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" routerLink="membre" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Membre</span>
+                        </a>
+                    </li>-->
+                    <li *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_MEMBRES_DE_COMMISSION'">
+                        <a class="dropdown-item" routerLink="membre-commission" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Gestion des membres de commission</span>
+                        </a>
+                    </li>
+
+                    <li *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_CANDIDATS'">
+                        <a class="dropdown-item" routerLink="candidat-lot" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Gestion des Candidats</span>
+                        </a>
+                    </li>
+                    <li *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_RECEPTIONS_DES_OFFRES'">
+                        <a class="dropdown-item" routerLink="reception" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Gestion de Reception des offres</span>
+                        </a>
+                    </li>
+                    <li *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_DEPOUILLEMENTS'">
+                        <a class="dropdown-item" routerLink="depouillement" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Gestion des Dépouillements</span>
+                        </a>
+                    </li>
+                    <li *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_DELIBERATION'">
+                        <a class="dropdown-item" routerLink="deliberation" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Gestion des Déliberations</span>
+                        </a>
+                    </li>
+                    <li *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_RECOURS'">
+                        <a class="dropdown-item" routerLink="reclamation" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Gestion des Recours</span>
+                        </a>
+                    </li>
+                </ul>
+                   </span>
+			</li>
+			<li *ngSwitchCase="true" ngbDropdown class="nav-item dropdown pointer" display="dynamic"
+			    routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                <span *jhiHasAnyAuthority="'ROLE_EXECUTION'">
+                <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="entity-execution">
+                        <span>
+                        <fa-icon icon="list-alt"></fa-icon>
+                        <span style="font-size: 14px">
+                            Exécution
+                        </span>
+                        </span>
+            </a>
+            <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
+                <li *jhiHasAnyAuthority="'ROLE_EXECUTION_GESTION_DES_CONTRATS'">
+                    <a class="dropdown-item" routerLink="elab-contrat" routerLinkActive="active"
+                       [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                        <!-- <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> -->
+                        <span>Gestionnaire</span>
+                    </a>
+                </li>
+	            <!--<li *jhiHasAnyAuthority="'ROLE_EXECUTION_GESTION_DES_CONTRATS'">
+					<a class="dropdown-item" routerLink="elab-contrat" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+						&lt;!&ndash; <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> &ndash;&gt;
+						<span>Elaborer contrat</span>
+					</a>
+				</li>-->
+	            <!--<li *jhiHasAnyAuthority="'ROLE_EXECUTION_GESTION_DES_CONTRATS'">
+					<a class="dropdown-item" routerLink="contrat" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+						&lt;!&ndash; <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> &ndash;&gt;
+						<span>Gestion des Contrats</span>
+					</a>
+				</li>-->
+	            <!-- <li>
+					 <a class="dropdown-item" routerLink="avenant" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+						 &lt;!&ndash;&lt;!&ndash; <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> &ndash;&gt;&ndash;&gt;
+						 <span>Avenant</span>
+					 </a>
+				 </li>-->
+               <li>
+                    <a class="dropdown-item" routerLink="contentieux" routerLinkActive="active"
+                       [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                        <!--&lt;!&ndash; <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> &ndash;&gt;-->
+                        <span>INCIDENTS D'EXECUTION</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" routerLink="ordres-service" routerLinkActive="active"
+                       [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                        <span>Ordre de service</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" routerLink="ordre-commande" routerLinkActive="active"
+                       [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                        <span>Ordre de commande</span>
+                    </a>
+                </li>
+	            <!-- <li>
+					 <a class="dropdown-item" routerLink="engagement" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+						 <span>Gestion des engagements</span>
+					 </a>
+				 </li>-->
+                <li>
+                    <a class="dropdown-item" routerLink="controle-cf-engagement" routerLinkActive="active"
+                       [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                        <span>Contrôler financier</span>
+                    </a>
+                </li>
+	            <li>
+                    <a class="dropdown-item" routerLink="controle-ordo-engagement" routerLinkActive="active"
+                       [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                        <span>Ordonnancement</span>
+                    </a>
+                </li>
+               <!-- <li>
+                    <a class="dropdown-item" routerLink="liquidation" routerLinkActive="active"
+                       [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                        &lt;!&ndash;&lt;!&ndash; <fa-icon icon="asterisk" fixedWidth="true"></fa-icon> &ndash;&gt;&ndash;&gt;
+                        <span>Liquidation</span>
+                    </a>
+                </li>-->
+	            <!--<li>
+					<a class="dropdown-item" routerLink="suivi-execution" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+						<span>Suivi Execution</span>
+					</a>
+				</li>-->
+	            <!-- <li>
+						<a class="dropdown-item" routerLink="engagement" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<span>Gestion des Engagements</span>
+						</a>
+					</li>-->
+            </ul>
+                </span>
+			</li>
+
+			<li *ngSwitchCase="true" ngbDropdown class="nav-item dropdown pointer" display="dynamic"
+			    routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                <span *jhiHasAnyAuthority="'ROLE_GED'">
+                <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="ged-entity">
+                            <span>
+                            <fa-icon icon="list-alt"></fa-icon>
+                            <span style="font-size: 14px">
+                                GED
+                            </span>
+                            </span>
+                </a>
+                <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
+                    <!--<li>
+                        <a class="dropdown-item" routerLink="locale" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Locale</span>
+                        </a>
+                    </li>-->
+                    <li *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_ENTREPOTS'">
+                        <a class="dropdown-item" routerLink="entrepot" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span> Gestion des Entrepôts</span>
+                        </a>
+                    </li>
+                    <li *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_SERVEURS '">
+                        <a class="dropdown-item" routerLink="serveur" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Gestion des Serveurs</span>
+                        </a>
+                    </li>
+	                <!--<li>
+						<a class="dropdown-item" routerLink="type-entrepot" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<span>Type entrepot</span>
+						</a>
+					</li>-->
+	                <!--<li>
+						<a class="dropdown-item" routerLink="type-archive" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<span>Type archive</span>
+						</a>
+					</li>-->
+	                <!--<li>
+						<a class="dropdown-item" routerLink="type-document" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<span>Type document</span>
+						</a>
+					</li>-->
+                    <li *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_ARCHIVES'">
+                        <a class="dropdown-item" routerLink="document" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Gestion des Archives</span>
+                        </a>
+                    </li>
+
+                </ul>
+                     </span>
+			</li>
+
+			<li *ngSwitchCase="true" ngbDropdown class="nav-item dropdown pointer" display="dynamic"
+			    routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                <span>
+                <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="etat-entity">
+                            <span>
+                            <fa-icon icon="print"></fa-icon>
+                            <span style="font-size: 14px">
+                                Etats
+                            </span>
+                            </span>
+                </a>
+                <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
+                    <!--<li>
+                        <a class="dropdown-item" routerLink="workflow" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Workflow</span>
+                        </a>
+                    </li>-->
+	                <!--<li>
+						<a class="dropdown-item" routerLink="tache" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+							<span>Tâche</span>
+						</a>
+					</li>-->
+                    <li>
+
+<!--      role de l'etat
+                        *jhiHasAnyAuthority="'ROLE_MENU_ETATS_ETATS'"   *jhiHasAnyAuthority="'ROLE_MENU_ETATS'"
+-->
+                        <a class="dropdown-item" routerLink="etat" routerLinkActive="active"
+                           [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <span>Gestion des Etats</span>
+                        </a>
+                    </li>
+                </ul>
+                    </span>
+			</li>
+
+
+			<li ngbDropdown class="nav-item dropdown pointer" display="dynamic" routerLinkActive="active"
+			    [routerLinkActiveOptions]="{exact: true}">
+
+				<a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="admin-menu">
+                        <span>
+                        <fa-icon icon="user-plus"></fa-icon>
+                        <span jhiTranslate="global.menu.admin.main" style="font-size: 14px">Administration</span>
+                        </span>
+				</a>
+				<ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="admin-menu">
+					<!--
+											<li>
+												<a class="dropdown-item" routerLink="admin/gateway" routerLinkActive="active" (click)="collapseNavbar()">
+													<fa-icon icon="road" fixedWidth="true"></fa-icon>
+													<span jhiTranslate="global.menu.admin.gateway">Gateway</span>
+												</a>
+											</li>
+					-->
+					<li>
+						<a class="dropdown-item" routerLink="admin/user-management" routerLinkActive="active"
+						   (click)="collapseNavbar()">
+							<fa-icon icon="user" fixedWidth="true"></fa-icon>
+							<span jhiTranslate="global.menu.admin.userManagement">User management</span>
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" routerLink="admin/metrics" routerLinkActive="active"
+						   (click)="collapseNavbar()">
+							<fa-icon icon="tachometer-alt" fixedWidth="true"></fa-icon>
+							<span jhiTranslate="global.menu.admin.metrics">Metrics</span>
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" routerLink="admin/health" routerLinkActive="active"
+						   (click)="collapseNavbar()">
+							<fa-icon icon="heart" fixedWidth="true"></fa-icon>
+							<span jhiTranslate="global.menu.admin.health">Health</span>
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" routerLink="admin/audits" routerLinkActive="active"
+						   (click)="collapseNavbar()">
+							<fa-icon icon="bell" fixedWidth="true"></fa-icon>
+							<span jhiTranslate="global.menu.admin.audits">Audits</span>
+						</a>
+					</li>
+				</ul>
+			</li>
+			<!-- <li ngbDropdown class="nav-item dropdown pointer" display="dynamic" *ngIf="languages && languages.length > 1">
+			 <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="languagesnavBarDropdown">
+				 <span>
+					 <fa-icon icon="flag"></fa-icon>
+					 <span jhiTranslate="global.menu.language">Language</span>
+				 </span>
+			 </a>
+			 <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="languagesnavBarDropdown">
+				 <li *ngFor="let language of languages">
+					 <a class="dropdown-item" [jhiActiveMenu]="language" href="javascript:void(0);" (click)="changeLanguage(language);collapseNavbar();">{{language | findLanguageFromKey}}</a>
+				 </li>
+			 </ul>
+		 </li>-->
+			<li *ngSwitchCase="true" ngbDropdown class="nav-item dropdown pointer" display="dynamic"
+			    routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+				<a class="nav-link" href="javascript:void(0);" id="account-menu" pTooltip="Changer d'exercice"
+				   tooltipPosition="bottom"
+				   (click)="onChangeExerciceClick()">
+					<i class="fa fa-calendar"></i>
+					<span class="text-warning">
+                      Exercice: {{exercice?.annee}}
+                    </span>
+				</a>
+			</li>
+			<!--<li *ngSwitchCase="true" ngbDropdown class="nav-item dropdown pointer" display="dynamic" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+			<a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="account-menu">
+			  <span *ngIf="!getImageUrl()">
+				<fa-icon icon="user"></fa-icon>
+				<span jhiTranslate="global.menu.account.main">
+				  Account
+				</span>
+			  </span>
+			  <span *ngIf="getImageUrl()">
+				  <img [src]="getImageUrl()" class="profile-image rounded-circle" alt="Avatar">
+			  </span>
+			</a>
+			<ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="account-menu">
+				<li *ngSwitchCase="true">
+					<a class="dropdown-item" routerLink="account/settings" routerLinkActive="active" (click)="collapseNavbar()">
+						<fa-icon icon="wrench" fixedWidth="true"></fa-icon>
+						<span jhiTranslate="global.menu.account.settings">Settings</span>
+					</a>
+				</li>
+				<li *ngSwitchCase="true">
+					<a class="dropdown-item" routerLink="account/password" routerLinkActive="active" (click)="collapseNavbar()">
+						<fa-icon icon="lock" fixedWidth="true"></fa-icon>
+						<span jhiTranslate="global.menu.account.password">Password</span>
+					</a>
+				</li>
+				<li *ngSwitchCase="true">
+					<a class="dropdown-item" (click)="logout()" id="logout">
+						<fa-icon icon="sign-out-alt" fixedWidth="true"></fa-icon>
+						<span jhiTranslate="global.menu.account.logout">Sign out</span>
+					</a>
+				</li>
+				<li *ngSwitchCase="false">
+					<a class="dropdown-item" (click)="login()" id="login">
+						<fa-icon icon="sign-in-alt" fixedWidth="true"></fa-icon>
+						<span jhiTranslate="global.menu.account.login">Sign in</span>
+					</a>
+				</li>
+				<li *ngSwitchCase="false">
+					<a class="dropdown-item" routerLink="account/register" routerLinkActive="active" (click)="collapseNavbar()">
+						<fa-icon icon="user-plus" fixedWidth="true"></fa-icon>
+						<span jhiTranslate="global.menu.account.register">Register</span>
+					</a>
+				</li>
+			</ul>
+		</li>-->
+		</ul>
+	</div>
+</nav>
+<p-dialog header="Changer d'exercice" [(visible)]="display" [modal]="true" [responsive]="true" (onHide)="annuler()"
+          [style]="{width: '30%'}">
+	<form name="editForm" role="form" novalidate #editFormlot="ngForm">
+		<div>
+			<div class="form-group">
+				<p-dropdown [options]="exercices" [(ngModel)]="newExercice" [autoDisplayFirst]="false"
+				            [style]="{'width': '100%'}" name="exercice" placeholder="Exercice"
+				            filter="filter" showClear="showClear" optionLabel="annee"
+				            required appendTo="body">
+				</p-dropdown>
+			</div>
+		</div>
+	</form>
+	<p-footer class="text-center">
+		<div class="ui-dialog-buttonpane ui-helper-clearfix">
+			<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+			        label="Fermer" (click)="annuler()"></button>
+			<button type="button" pButton icon="fa fa-save" label="Changer" [disabled]="editFormlot.invalid"
+			        (click)="changeExercice()"
+			        class="ui-button-secondary text-info">
+			</button>
+		</div>
+	</p-footer>
+</p-dialog>

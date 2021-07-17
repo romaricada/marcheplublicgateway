@@ -1,0 +1,158 @@
+enum AeCp {
+    AE, CP
+}
+
+enum TypeRelationPartenaire {
+    BILATERAL, MULTILATERAL, INTERIEUR
+}
+entity LigneBudgetaire {
+	budget String required,
+    ligneCredit String required,
+    aecp AeCp required,
+    montantEstime Double,
+    deleted Boolean
+}
+
+entity Besoin  {
+    libelle String required,
+    quantite  Integer,
+    deleted Boolean
+}
+
+entity BesoinLigneBudgetaire {
+    deleted Boolean
+}
+
+entity ExerciceBudgetaire {
+	annee Integer required,
+    deleted Boolean
+}
+entity UniteAdministrative {
+	libelle String required,
+    abbreviation String required,
+    adresse  String,
+    contact String,
+    identiteResponsable String,
+    deleted Boolean
+}
+entity ModePassation {
+    libellePassation String required,
+    deleted Boolean    	
+}
+entity PPM {
+	libellePpm String required,
+    referencePlan String required,
+    valid Boolean,
+    deleted Boolean           	
+}
+entity Activite {
+	codeLignePlan String required,
+    gestionnaireCredit String,
+    deleted Boolean
+}
+
+entity Acteur {
+    libelle String required,
+    deleted Boolean
+}
+
+entity ReferentielDelai {
+    norme Integer,
+    referentiel Integer,
+    normeMin Integer,
+    referentielMin Integer,
+    normeMax Integer,
+    referentielMax Integer,
+    observation String,
+    normeOuvrable Boolean,
+    referentielOuvrable Boolean,
+    deleted Boolean
+}
+
+entity SourceFinancement {
+    code String required,
+    libelle String required,
+    codePays String required,
+    description String required,
+    type TypeRelationPartenaire required,
+    deleted Boolean
+}
+
+entity Etape {
+    libelle String required,
+    deleted Boolean
+}
+
+entity PpmActivite {
+    montantDepenseEngageNonLiquide Double required,
+    creditDisponible Double required,
+    periodeLancementAppel LocalDate required,
+    periodeRemiseOffre LocalDate required,
+    tempsNecessaireEvaluationOffre Integer required,
+    dateProblableDemaragePrestation LocalDate required,
+    delaiExecutionPrevu Integer required,
+    dateButtoire LocalDate required,
+    deleted Boolean
+}
+
+entity EtapeActivitePpm {
+    dateEtape LocalDate,
+    deleted Boolean
+}
+
+entity NaturePrestation {
+    code String required,
+    libelle String required,
+    deleted Boolean
+}
+
+entity Timbre {
+    code String,
+    sigle String,
+    libelle String,
+    pays String,
+    devise String,
+    logo Blob,
+    identiteMinistre String,
+    titreMinistre String
+} 
+
+relationship OneToMany {
+    LigneBudgetaire{besoins} to BesoinLigneBudgetaire{ligneBudget}
+    Besoin{besoinLignes} to BesoinLigneBudgetaire{besoin}
+    ExerciceBudgetaire{besoins} to Besoin{exercice}
+    Activite{besoinLignes} to BesoinLigneBudgetaire{activite}
+    UniteAdministrative{besoins} to Besoin{uniteAdministrative}
+    PPM{PpmActivites} to PpmActivite{ppm}
+    Activite{PpmActivites} to PpmActivite{activite}
+    ModePassation{activites} to Activite{passation}
+    NaturePrestation{activites} to Activite{naturePrestation}
+    Etape{referentielDelais} to ReferentielDelai{etape}
+    SourceFinancement{PpmActivites} to PpmActivite{sourceFinancement}
+    Etape{EtapeActivitePpms} to EtapeActivitePpm{etape}
+    PpmActivite{EtapeActivitePpms} to EtapeActivitePpm{PpmActivite}
+    Acteur{referentielDelais} to ReferentielDelai{acteur}
+    ModePassation{referentielDelais} to ReferentielDelai{modePassation}
+}
+
+//service * with serviceClass
+//dto * with mapstruct
+paginate * with pagination
+
+application {
+  config {
+    baseName marchepublicgateway
+    applicationType gateway
+    authenticationType jwt
+    devDatabaseType postgresql
+    prodDatabaseType postgresql
+    packageName mena.gov.bf
+    //searchEngine elasticsearch
+  }
+  entities *
+}
+
+//skipClient *
+skipServer *
+
+microservice * with microserviceppm

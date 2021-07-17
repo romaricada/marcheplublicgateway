@@ -1,0 +1,115 @@
+.td-header {
+    font-family: inherit !important;
+    background: #007ad9 !important;
+    font-size: 17px !important;
+}
+
+.header-table {
+    font-size: 0.7em !important;
+}
+.table-responsive {
+  margin-top: 0.5em;
+}
+
+.filter-item {
+  margin-top: 0.5em;
+  margin-left: 0.7em;
+}
+label {
+  font-size: 1.2em;
+  // font-weight: bold;
+}
+hr {
+  size: 0.1em;
+}
+
+.scheduler-border {
+  border: solid .015em #000 !important;
+  border-color: #000 !important;
+  // border-radius: 1em !important;
+
+  padding: 0 1.4em 1.4em 1.4em !important;
+  margin: 0 0 1.5em 0 !important;
+  // -webkit-box-shadow: 0px 0px 0px 0px #000;
+  // box-shadow: 0px 0px 0px 0px #000;
+
+}
+
+fieldset.scheduler-border {
+  border: 1px groove #ddd !important;
+  padding: 0 1.4em 1.4em 1.4em !important;
+  margin: 0 1.5em 0 !important;
+  -webkit-box-shadow:  0px 0px 0px 0px #000;
+  box-shadow:  0px 0px 0px 0px #000;
+  width: 105em;
+}
+
+legend.scheduler-border {
+  border: 1px groove #ddd !important;
+  font-size: 1.4em !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  height: 1.8em;
+  background-color: lightblue;
+}
+
+fieldset.scheduler-border-plan {
+  border: 1px groove #ddd !important;
+  padding: 0 1.4em 1.4em 1.4em !important;
+  margin: 0 1.5em 1em !important;
+  -webkit-box-shadow:  0px 0px 0px 0px #000;
+  box-shadow:  0px 0px 0px 0px #000;
+  width: 105em;
+}
+
+legend.scheduler-border-plan {
+  border: 1px groove #ddd !important;
+  font-size: 1.4em !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  height: 1.8em;
+  background-color: lightblue;
+}
+
+fieldset.scheduler-border-besoin {
+  border: 1px groove #ddd !important;
+  padding: 0 1.4em 1.4em 1.4em !important;
+  margin: 0 1.5em 1em 1em !important;
+  -webkit-box-shadow:  0px 0px 0px 0px #000;
+  box-shadow:  0px 0px 0px 0px #000;
+  width: 105em;
+  height: 30em;
+
+}
+
+legend.scheduler-border-besoin {
+  border: 1px groove #ddd !important;
+  font-size: 1.4em !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  height: 1.8em;
+  background-color: lightblue;
+}
+
+.table {
+  height: 20em;
+  overflow-y: auto;
+  margin-bottom: 1em;
+}
+
+.p-grid {
+  margin-top: 0.8em;
+  margin-bottom: 0.7em;
+}
+
+.gant-task {
+  width: 800em;
+  height: 400em;
+}
+
+.required-field {
+  font-size: 1em;
+  font-weight: bold;
+  // body .ui-calendar.ui-calendar-w-btn .ui-inputtext
+}
+

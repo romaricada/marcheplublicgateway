@@ -1,0 +1,30 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamDeliberation": {
+      "home": {
+        "title": "Deliberations",
+        "createLabel": "Create a new Deliberation",
+        "createOrEditLabel": "Create or edit a Deliberation",
+        "notFound": "No Deliberations found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Deliberation {{ id }}?"
+      },
+      "detail": {
+        "title": "Deliberation"
+      },
+      "description": "Description",
+      "date": "Date",
+      "valide": "Valide",
+      "deleted": "Deleted",
+      "candidatLots": "Candidat Lots"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamDeliberation": {
+      "created": "A new Deliberation is created with identifier {{ param }}",
+      "updated": "A Deliberation is updated with identifier {{ param }}",
+      "deleted": "A Deliberation is deleted with identifier {{ param }}"
+    }
+  }
+}

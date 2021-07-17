@@ -1,0 +1,49 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="entrepot">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microservicegedEntrepot.detail.title">Entrepot</span> {{entrepot.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicegedEntrepot.libelle">Libelle</span></dt>
+                <dd>
+                    <span>{{entrepot.libelle}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicegedEntrepot.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{entrepot.deleted}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicegedEntrepot.entrepot">Entrepot</span></dt>
+                <dd>
+                    <div *ngIf="entrepot.entrepot">
+                        <a [routerLink]="['/entrepot', entrepot.entrepot?.id, 'view']">{{entrepot.entrepot?.id}}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicegedEntrepot.local">Local</span></dt>
+                <dd>
+                    <div *ngIf="entrepot.local">
+                        <a [routerLink]="['/locale', entrepot.local?.id, 'view']">{{entrepot.local?.id}}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicegedEntrepot.typeEntrepot">Type Entrepot</span></dt>
+                <dd>
+                    <div *ngIf="entrepot.typeEntrepot">
+                        <a [routerLink]="['/type-entrepot', entrepot.typeEntrepot?.id, 'view']">{{entrepot.typeEntrepot?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/entrepot', entrepot.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

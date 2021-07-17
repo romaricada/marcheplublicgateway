@@ -1,0 +1,31 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="typeDocument">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microservicegedTypeDocument.detail.title">Type Document</span> {{typeDocument.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicegedTypeDocument.libelle">Libelle</span></dt>
+                <dd>
+                    <span>{{typeDocument.libelle}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicegedTypeDocument.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{typeDocument.deleted}}</span>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/type-document', typeDocument.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

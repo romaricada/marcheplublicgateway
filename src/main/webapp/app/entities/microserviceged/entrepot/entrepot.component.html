@@ -1,0 +1,330 @@
+<div>
+    <div class="entete">
+        <p-toolbar>
+            <div class="ui-g ui-g-12 ui-g-nopad">
+                <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                    <label class="col-sm-7 font-weight-bold text-primary">GESTION DES ENTREPÔTS D'ARCHIVAGE</label>
+                </div>
+                <div class="ui-g-12 ui-md-5 p-2">
+                    <div class="float-right">
+                        <button type="button" pButton class="ui-button-secondary text-primary" icon="fa fa-plus" label="Ajouter un Entrepôt" *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_ENTREPOTS_ADD'"(click)="add()">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </p-toolbar>
+        <p-toolbar>
+            <div class="ui-toolbar-group-left">
+                <div class="ui-g ui-g-12 ui-g-nopad">
+                    <div class="ui-inputgroup mr-1">
+                        <span class="ui-inputgroup-addon"><span class="font-weight-bold">Emplacement</span></span>
+                        <p-dropdown [options]="locales" [filter]="true" optionLabel="libelle" [(ngModel)]="locale"
+                                    placeholder="Emplacement" name="emplacement" (onChange)="findByLocal()"
+                                    [resetFilterOnHide]="true">
+                        </p-dropdown>
+                    </div>
+                    <div class="ui-inputgroup mr-1">
+                        <span class="ui-inputgroup-addon"><span class="font-weight-bold">Type entrepôt</span></span>
+                        <p-dropdown [options]="typeEntrepots" [filter]="true" optionLabel="libelle" [(ngModel)]="typeEntrepot"
+                                    placeholder="Selectionner un type d'entrepôt" name="typeEntrepot"
+                                    (onChange)="findByTypeEntrepotAndLocalite()" [resetFilterOnHide]="true">
+                        </p-dropdown>
+                    </div>
+                </div>
+            </div>
+            <div class="ui-toolbar-group-right">
+                <div class="text-right">
+                    <input type="text" pInputText size="50" placeholder="Rechercher un entrepôt ou un type d'entrepôt"
+                           (input)="tableEntrepot.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                    <button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+                            [placement]="'top'" (click)="loadAll()">
+                    </button>
+                </div>
+            </div>
+        </p-toolbar>
+    </div>
+    <div class="tableau">
+        <p-table #tableEntrepot [value]="entrepots" [(selection)]="entrepotSelect" dataKey="id" [paginator]="true" [rows]="20" [responsive]="true"
+                 [globalFilterFields]="['libelle','libelleTypeEntrepot','libelleLocal','adresseLocal','ordreTypeEntrepot']">
+            <ng-template pTemplate="header" let-columns="columns">
+                <tr>
+                    <th>Entrepôt</th>
+                    <th style="width: 10em" >Emplacement</th>
+                    <th style="width: 13em" >Adresse emplacement</th>
+                    <th style="width: 12em" >Type d'entrepôt</th>
+                    <th style="width: 5em">Ordre</th>
+                    <th style="width: 30em" >Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-entrepot1 let-columns="columns">
+                <tr>
+                    <td>{{entrepot1.libelle}}</td>
+                    <td>{{entrepot1.libelleLocal}}</td>
+                    <td>{{entrepot1.adresseLocal}}</td>
+                    <td>{{entrepot1.libelleTypeEntrepot}}</td>
+                    <td>{{entrepot1.ordreTypeEntrepot}}<td>
+                        <button type="button" class="ui-button-secondary text-info" pButton icon="fa fa-search" label="Voir Composants" *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_ENTREPOTS_VOIR'"(click)="voir(entrepot1)"></button>
+                        <button type="button" class="ui-button-secondary text-warning" pButton icon="fa fa-edit" label="Modifier" *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_ENTREPOTS_EDIT'"(click)="modif(entrepot1)"></button>
+                        <button type="button" class="ui-button-secondary text-danger" pButton icon="fa fa-remove" *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_ENTREPOTS_DELETE'"(click)="deleteElement(entrepot1)" label="Supprimer"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <p-dialog header="Voir les entrepôts fils" [(visible)]="displayDelete" [modal]="true"
+              [responsive]="true"
+              (onHide)="fermer()"
+              [style]="{width: '50%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+        <p-table [value]="entrepotFils" dataKey="id">
+            <ng-template pTemplate="header" let-document>
+                <tr>
+                    <th>Entrepôt</th>
+                    <th>Emplacement</th>
+                    <th>Adresse emplacement</th>
+                    <th>Type d'entrepôt</th>
+                    <th>Ordre</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-entrepot let-columns="columns">
+                <tr>
+                    <td>{{entrepot.libelle}}</td>
+                    <td>{{entrepot.libelleLocal}}</td>
+                    <td>{{entrepot.adresseLocal}}</td>
+                    <td>{{entrepot.libelleTypeEntrepot}}</td>
+                    <td>{{entrepot.ordreTypeEntrepot}}</td>
+
+                </tr>
+            </ng-template>
+        </p-table>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <button type="button" pButton class="ui-button-secondary text-danger" (click)="fermer()"
+                        icon="fa fa-times" label="Fermer">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+    <p-dialog header="Ajouter/Modifier un entrepôt" [(visible)]="display" [modal]="true" [responsive]="true" (onHide)="annuler()"
+                  [style]="{width: '80%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate>
+            <div class="ui-dialog-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-5 form-group" *ngIf="plusT">
+                            <label class="form-control-label" for="field_type">Type entrepot</label>
+                            <input type="text" class="form-control" name="type" id="field_type" [(ngModel)]="typeEntrepot.libelle" required/>
+                        </div>
+                        <div class="col-sm-5 form-group" *ngIf="!plusT">
+                            <label class="form-control-label">Type entrepot</label>
+                            <select class="form-control" id="field_typeEntrepot" (change)="onTypeChange()" name="typeEnt" [(ngModel)]="typeEntrepot" required>
+                                <option [ngValue]="null"></option>
+                                <option [ngValue]="typeEntrepotOption" *ngFor="let typeEntrepotOption of typeEntrepots">{{typeEntrepotOption.libelle}}</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-1">
+                            <button type="button" class="ui-button-secondary text-primary" pButton icon="fa fa-plus" (click)="addTypeEntrepo()" style="margin-left: -15px; height: 35px; margin-top: 30px"></button>
+                        </div>
+                        <div class="col-sm-2 form-group" *ngIf="plusL === true">
+                            <label class="form-control-label" for="field_libelle_localite">Emplacement</label>
+                            <input type="text" class="form-control" name="libelleEntrepot" id="field_libelle_localite" [(ngModel)]="locale.libelle" required/>
+                        </div>
+                        <div class="col-sm-3 form-group" *ngIf="plusL === true">
+                            <label class="form-control-label" for="field_adresse_localite">Adresse</label>
+                            <input type="text" class="form-control" name="localEntrepot" id="field_adresse_localite" [(ngModel)]="locale.adresseLocale" required/>
+                        </div>
+                        <div class="col-sm-5 form-group" *ngIf="plusL === false">
+                            <label class="form-control-label">Emplacement</label>
+                            <select class="form-control" id="field_local" name="local" (change)="onTypeChange()" [(ngModel)]="locale" required>
+                                <option [ngValue]="null"></option>
+                                <option [ngValue]="localeOption" *ngFor="let localeOption of locales">{{localeOption.libelle}}</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-1">
+                            <button type="button" class="ui-button-secondary text-primary" pButton icon="fa fa-plus" (click)="addLocalite()" style="margin-left: -15px; height: 35px; margin-top: 30px"></button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label class="form-control-label" for="field_libelle">Désignation</label>
+                            <input type="text" class="form-control" name="libelle" id="field_libelle" [(ngModel)]="entrepot.libelle" required/>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-control-label" for="field_libelle">Entrepot parent</label>
+                            <select class="form-control" id="field_entrepotParent" name="field_entrepotParent" [(ngModel)]="entrepot.entrepotId"
+                                    required [disabled]="typeEntrepot.id === undefined || locale.id === undefined || entrepotParents.length < 1">
+                                <option [ngValue]="null"></option>
+                                <option [ngValue]="entrepotOption.id" *ngFor="let entrepotOption of entrepotParents">{{entrepotOption.libelle}}</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-12 text-left mt-1">
+                            <p-toggleButton onLabel="Fermer" offLabel="Ajoute des sous entrepots" onIcon="fa fa-minus" id="ifdef" name="ifdef" offIcon="fa fa-plus" iconPos="left" [(ngModel)]="ifAddFils">
+                            </p-toggleButton>
+                        </div>
+                    </div>
+                    <div class="card mt-2" *ngIf="ifAddFils">
+                        <div class="card-header text-left">
+                            <div class="font-weight-bold">
+                                Ajout des sous entrepots
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="dialTable">
+                                <div class="row mb-1">
+                                    <div class="col-sm-6">
+                                        <div class="form-group" *ngIf="typeEntrepotFils.id === undefined">
+                                            <label class="form-control-label" for="field_type">Type entrepot sous entrepots</label>
+                                            <input type="text" class="form-control" name="typeEntFils" id="field_type_fils" [(ngModel)]="typeEntrepotFils.libelle"/>
+                                        </div>
+                                        <div class="form-group mt-1 pt-4" *ngIf="typeEntrepotFils.id !== undefined">
+                                            <label class="form-control-label">
+                                                Type entrepot sous entrepots :
+                                                <span class="font-weight-bold">{{typeEntrepotFils.libelle}}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 text-right mt-1 mb-1 pt-4">
+                                        <button type="button" class="ui-button-secondary text-primary" [disabled]="typeEntrepotFils.libelle === undefined" pButton icon="fa fa-plus"
+                                                label="Ajouter un sous entrepot" (click)="addFilsEntrepot()">
+                                        </button>
+                                    </div>
+                                </div>
+                                <p-table [value]="entrepot.entrepots" [responsive]="true">
+                                    <ng-template pTemplate="caption">
+                                        <span class="font-weight-bold">Liste des sous entreprepots</span>
+                                    </ng-template>
+                                    <ng-template pTemplate="header" let-columns>
+                                        <tr>
+                                            <th>Entrepot</th>
+                                            <th style="width: 10em">Action</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-entrepo let-columns="columns" let-i="index">
+                                        <tr>
+                                            <td>{{entrepo.libelle}}</td>
+                                            <!--<td pEditableColumn>
+                                                <p-cellEditor>
+                                                    <ng-template pTemplate="input">
+                                                        <input pInputText type="text" name={{(i+3)*2}} id={{(i+3)*4}} [(ngModel)]="entrepo.libelle" required>
+                                                    </ng-template>
+                                                    <ng-template pTemplate="output">
+                                                        <span *ngIf="entrepo.libelle !== undefined">{{entrepo.libelle}}</span>
+                                                        <span *ngIf="entrepo.libelle == undefined">Cliquez pour modifier..</span>
+                                                    </ng-template>
+                                                </p-cellEditor>
+                                            </td>-->
+                                            <td>
+                                                <button type="button" class="ui-button-secondary text-danger" pButton label="Retirer" icon="fa fa-trash" (click)="retirerFils(entrepo)">
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage" let-columns>
+                                        <tr>
+                                            <td colspan="2" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"><span
+                                                class="text-danger"> Aucun sous entreprôts trouvés! </span></td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <p-footer style="text-align: right;">
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger" label="Fermer" (click)='annuler()'>
+                </button>
+                <button type="button" pButton icon="fa fa-check" label="Enregistre" (click)="save()" class="ui-button-secondary text-info">
+                </button>
+            </div>
+        </p-footer>
+        <p-toast [style]="{marginTop: '80px'}" key="2" position="top-center"></p-toast>
+    </p-dialog>
+</div>
+
+<p-dialog header="Ajouter un nouveau type" [(visible)]="isAddingType" [modal]="true" [responsive]="true"
+          [style]="{width: '30%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+    <!--<p-toast key="myKey1" position="top-center"></p-toast>-->
+    <form name="editForm1" role="form" novalidate #editForm1="ngForm">
+        <div>
+            <div class="form-group">
+                <label class="font-weight-bold">Désignation</label>
+                <input style="width: 100%; height: 2.3em"  pInputText type="text"  name="designation"
+                       [(ngModel)]="typeEntrepot.libelle" required/>
+            </div>
+
+        </div>
+    </form>
+    <p-footer class="text-right">
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="submit" pButton icon="fa fa-plus" label="Ajouter"
+                    [disabled]="editForm1.invalid"
+                    (click)='addTypeEntrepo()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+<p-dialog header="Ajouter un nouveau emplacement" [(visible)]="isAddingLocal" [modal]="true" [responsive]="true"
+          [style]="{width: '30%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+    <!--<p-toast key="myKey1" position="top-center"></p-toast>-->
+    <form name="editForm2" role="form" novalidate #editForm2="ngForm">
+        <div>
+            <div class="form-group">
+                <label class="font-weight-bold">Emplacement</label>
+                <input style="width: 100%; height: 2.3em"  pInputText type="text"  name="libelleLocal"
+                       [(ngModel)]="locale.libelle" required/>
+            </div>
+            <div class="form-group">
+                <label class="font-weight-bold">Adress</label>
+                <input style="width: 100%; height: 2.3em"  pInputText type="text"  name="address"
+                       [(ngModel)]="locale.adresseLocale" required/>
+            </div>
+
+        </div>
+    </form>
+    <p-footer class="text-right">
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="submit" pButton icon="fa fa-plus" label="Ajouter"
+                    [disabled]="editForm2.invalid"
+                    (click)='addLocalite()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+<p-dialog header="Ajout d'un sous entrepot" [(visible)]="isAddingFils" [modal]="true" [responsive]="true"
+          [style]="{width: '30%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+    <!--<p-toast key="myKey1" position="top-center"></p-toast>-->
+    <form name="editForm3" role="form" novalidate #editForm3="ngForm">
+        <div>
+            <div class="form-group">
+                <label class="font-weight-bold">Désignation</label>
+                <input style="width: 100%; height: 2.3em"  pInputText type="text"  name="filsEntrepot"
+                       [(ngModel)]="filsEntrepot.libelle" required/>
+            </div>
+
+        </div>
+    </form>
+    <p-footer class="text-right">
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="submit" pButton icon="fa fa-plus" label="Ajouter"
+                    [disabled]="editForm3.invalid"
+                    (click)='addFilsEntrepot()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+                (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI"
+                (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+<p-toast [style]="{marginTop: '80px'}" key="1" position="top-center"></p-toast>

@@ -1,0 +1,32 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmSourceFinancement": {
+      "home": {
+        "title": "SourceFinancements",
+        "createLabel": "Créer un nouveau Source Financement",
+        "createOrEditLabel": "Créer ou éditer un Source Financement",
+        "notFound": "Aucun Source Financement trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Source Financement {{ id }} ?"
+      },
+      "detail": {
+        "title": "Source Financement"
+      },
+      "code": "Code",
+      "libelle": "Libelle",
+      "codePays": "Code Pays",
+      "description": "Description",
+      "type": "Type",
+      "deleted": "Deleted",
+      "ppmActivites": "Ppm Activites"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmSourceFinancement": {
+      "created": "Un nouveau Source Financement a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Source Financement avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Source Financement avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

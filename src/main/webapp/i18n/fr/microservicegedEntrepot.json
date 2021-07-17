@@ -1,0 +1,31 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicegedEntrepot": {
+      "home": {
+        "title": "Entrepots",
+        "createLabel": "Créer un nouveau Entrepot",
+        "createOrEditLabel": "Créer ou éditer un Entrepot",
+        "notFound": "Aucun Entrepot trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Entrepot {{ id }} ?"
+      },
+      "detail": {
+        "title": "Entrepot"
+      },
+      "libelle": "Libelle",
+      "deleted": "Deleted",
+      "documents": "Documents",
+      "entrepot": "Entrepot",
+      "local": "Local",
+      "typeEntrepot": "Type Entrepot"
+    }
+  },
+  "microservicegedApp": {
+    "microservicegedEntrepot": {
+      "created": "Un nouveau Entrepot a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Entrepot avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Entrepot avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

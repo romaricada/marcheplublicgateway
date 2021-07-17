@@ -1,0 +1,29 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmBesoinLigneBudgetaire": {
+      "home": {
+        "title": "BesoinLigneBudgetaires",
+        "createLabel": "Créer un nouveau Besoin Ligne Budgetaire",
+        "createOrEditLabel": "Créer ou éditer un Besoin Ligne Budgetaire",
+        "notFound": "Aucun Besoin Ligne Budgetaire trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Besoin Ligne Budgetaire {{ id }} ?"
+      },
+      "detail": {
+        "title": "Besoin Ligne Budgetaire"
+      },
+      "deleted": "Deleted",
+      "ligneBudget": "Ligne Budget",
+      "besoin": "Besoin",
+      "activite": "Activite"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmBesoinLigneBudgetaire": {
+      "created": "Un nouveau Besoin Ligne Budgetaire a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Besoin Ligne Budgetaire avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Besoin Ligne Budgetaire avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

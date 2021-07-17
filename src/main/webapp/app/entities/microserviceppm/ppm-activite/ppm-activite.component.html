@@ -1,0 +1,102 @@
+<div>
+    <h2 id="page-heading">
+        <span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.home.title">Ppm Activites</span>
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-ppm-activite" [routerLink]="['/ppm-activite/new']">
+            <fa-icon [icon]="'plus'"></fa-icon>
+            <span  jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.home.createLabel">
+            Create a new Ppm Activite
+            </span>
+        </button>
+    </h2>
+    <jhi-alert-error></jhi-alert-error>
+    <jhi-alert></jhi-alert>
+    <br/>
+    <div class="alert alert-warning" *ngIf="ppmActivites?.length === 0">
+        <span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.home.notFound">No ppmActivites found</span>
+    </div>
+    <div class="table-responsive" *ngIf="ppmActivites?.length > 0">
+        <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+            <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
+            <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="montantDepenseEngageNonLiquide"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.montantDepenseEngageNonLiquide">Montant Depense Engage Non Liquide</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="creditDisponible"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.creditDisponible">Credit Disponible</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="periodeLancementAppel"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.periodeLancementAppel">Periode Lancement Appel</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="periodeRemiseOffre"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.periodeRemiseOffre">Periode Remise Offre</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="tempsNecessaireEvaluationOffre"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.tempsNecessaireEvaluationOffre">Temps Necessaire Evaluation Offre</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="dateProblableDemaragePrestation"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.dateProblableDemaragePrestation">Date Problable Demarage Prestation</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="delaiExecutionPrevu"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.delaiExecutionPrevu">Delai Execution Prevu</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="dateButtoire"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.dateButtoire">Date Butoir</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="deleted"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.deleted">Deleted</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"><span>Report</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="ppm.id"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.ppm">Ppm</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="activite.id"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.activite">Activite</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="sourceFinancement.id"><span jhiTranslate="marchepublicgatewayApp.microserviceppmPpmActivite.sourceFinancement">Source Financement</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let ppmActivite of ppmActivites ;trackBy: trackId">
+                <td><a [routerLink]="['/ppm-activite', ppmActivite.id, 'view' ]">{{ppmActivite.id}}</a></td>
+                <td>{{ppmActivite.montantDepenseEngageNonLiquide}}</td>
+                <td>{{ppmActivite.creditDisponible}}</td>
+                <td>{{ppmActivite.periodeLancementAppel | date:'mediumDate'}}</td>
+                <td>{{ppmActivite.periodeRemiseOffre | date:'mediumDate'}}</td>
+                <td>{{ppmActivite.tempsNecessaireEvaluationOffre}}</td>
+                <td>{{ppmActivite.dateProblableDemaragePrestation | date:'mediumDate'}}</td>
+                <td>{{ppmActivite.delaiExecutionPrevu}}</td>
+                <td>{{ppmActivite.dateButtoire | date:'mediumDate'}}</td>
+                <td>{{ppmActivite.deleted}}</td>
+                <td>{{ppmActivite.report}}</td>
+                <td>
+                    <div *ngIf="ppmActivite.ppm">
+                        <a [routerLink]="['/ppm', ppmActivite.ppm?.id, 'view' ]" >{{ppmActivite.ppm?.id}}</a>
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="ppmActivite.activite">
+                        <a [routerLink]="['/activite', ppmActivite.activite?.id, 'view' ]" >{{ppmActivite.activite?.id}}</a>
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="ppmActivite.sourceFinancement">
+                        <a [routerLink]="['/source-financement', ppmActivite.sourceFinancement?.id, 'view' ]" >{{ppmActivite.sourceFinancement?.id}}</a>
+                    </div>
+                </td>
+                <td class="text-right">
+                    <div class="btn-group">
+                        <button type="submit"
+                                [routerLink]="['/ppm-activite', ppmActivite.id, 'view' ]"
+                                class="btn btn-info btn-sm">
+                            <fa-icon [icon]="'eye'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/ppm-activite', ppmActivite.id, 'edit']"
+                                class="btn btn-primary btn-sm">
+                            <fa-icon [icon]="'pencil-alt'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/ppm-activite', { outlets: { popup: ppmActivite.id + '/delete'} }]"
+                                replaceUrl="true"
+                                queryParamsHandling="merge"
+                                class="btn btn-danger btn-sm">
+                            <fa-icon [icon]="'times'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div [hidden]="ppmActivites?.length === 0">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+        </div>
+    </div>
+</div>

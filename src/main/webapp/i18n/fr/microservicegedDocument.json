@@ -1,0 +1,33 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicegedDocument": {
+      "home": {
+        "title": "Documents",
+        "createLabel": "Créer un nouveau Document",
+        "createOrEditLabel": "Créer ou éditer un Document",
+        "notFound": "Aucun Document trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Document {{ id }} ?"
+      },
+      "detail": {
+        "title": "Document"
+      },
+      "libelle": "Libelle",
+      "code": "Code",
+      "date": "Date",
+      "uniteAdministrativeId": "Unite Administrative Id",
+      "deleted": "Deleted",
+      "entrepot": "Entrepot",
+      "typeArchivage": "Type Archivage",
+      "typeDocument": "Type Document"
+    }
+  },
+  "microservicegedApp": {
+    "microservicegedDocument": {
+      "created": "Un nouveau Document a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Document avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Document avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

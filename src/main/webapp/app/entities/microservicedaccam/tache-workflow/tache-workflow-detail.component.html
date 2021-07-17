@@ -1,0 +1,43 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="tacheWorkflow">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microservicedaccamTacheWorkflow.detail.title">Tache Workflow</span> {{tacheWorkflow.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamTacheWorkflow.date">Date</span></dt>
+                <dd>
+                    <span>{{tacheWorkflow.date}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamTacheWorkflow.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{tacheWorkflow.deleted}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamTacheWorkflow.tache">Tache</span></dt>
+                <dd>
+                    <div *ngIf="tacheWorkflow.tache">
+                        <a [routerLink]="['/tache', tacheWorkflow.tache?.id, 'view']">{{tacheWorkflow.tache?.id}}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicedaccamTacheWorkflow.workflow">Workflow</span></dt>
+                <dd>
+                    <div *ngIf="tacheWorkflow.workflow">
+                        <a [routerLink]="['/workflow', tacheWorkflow.workflow?.id, 'view']">{{tacheWorkflow.workflow?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/tache-workflow', tacheWorkflow.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmEtapeActivitePpm": {
+      "home": {
+        "title": "Etape Activite Ppms",
+        "createLabel": "Create a new Etape Activite Ppm",
+        "createOrEditLabel": "Create or edit a Etape Activite Ppm",
+        "notFound": "No Etape Activite Ppms found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Etape Activite Ppm {{ id }}?"
+      },
+      "detail": {
+        "title": "Etape Activite Ppm"
+      },
+      "dateEtape": "Date Etape",
+      "deleted": "Deleted",
+      "etape": "Etape",
+      "ppmActivite": "Ppm Activite"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmEtapeActivitePpm": {
+      "created": "A new Etape Activite Ppm is created with identifier {{ param }}",
+      "updated": "A Etape Activite Ppm is updated with identifier {{ param }}",
+      "deleted": "A Etape Activite Ppm is deleted with identifier {{ param }}"
+    }
+  }
+}

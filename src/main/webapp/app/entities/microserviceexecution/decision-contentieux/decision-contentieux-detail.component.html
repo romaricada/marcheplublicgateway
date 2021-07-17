@@ -1,0 +1,43 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="decisionContentieux">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.detail.title">Decision Contentieux</span> {{decisionContentieux.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.decision">Decision</span></dt>
+                <dd>
+                    <span>{{decisionContentieux.decision}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.date">Date</span></dt>
+                <dd>
+                    <span>{{decisionContentieux.date}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.structure">Structure</span></dt>
+                <dd>
+                    <span>{{decisionContentieux.structure}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.referenceDecision">Reference Decision</span></dt>
+                <dd>
+                    <span>{{decisionContentieux.referenceDecision}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{decisionContentieux.deleted}}</span>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/decision-contentieux', decisionContentieux.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

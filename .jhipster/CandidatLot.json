@@ -1,0 +1,112 @@
+{
+    "name": "CandidatLot",
+    "fields": [
+        {
+            "fieldName": "estCandidat",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "soumissionnaire",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "attributaire",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "titulaire",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "montant",
+            "fieldType": "Float"
+        },
+        {
+            "fieldName": "dossierPaye",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "nombrePoint",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "deleted",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "pieceCandidat",
+            "otherEntityRelationshipName": "candidatLot",
+            "relationshipName": "pieceCandidats"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "lot",
+            "otherEntityRelationshipName": "candidatLots",
+            "relationshipName": "lot",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "candidat",
+            "otherEntityRelationshipName": "candidatLots",
+            "relationshipName": "candidat",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "deliberation",
+            "otherEntityRelationshipName": "candidatLots",
+            "relationshipName": "deliberation",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "depouillement",
+            "otherEntityRelationshipName": "candidatLots",
+            "relationshipName": "depouillement",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "reclamation",
+            "otherEntityRelationshipName": "candidatLots",
+            "relationshipName": "reclamation",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20200526162324",
+    "entityTableName": "candidat_lot",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "clientRootFolder": "",
+    "applications": [
+        "marchepublicgateway"
+    ],
+    "skipServer": true,
+    "microserviceName": "microservicedaccam"
+}

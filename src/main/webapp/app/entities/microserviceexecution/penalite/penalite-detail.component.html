@@ -1,0 +1,37 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="penalite">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionPenalite.detail.title">Penalite</span> {{penalite.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionPenalite.motifPenalite">Motif Penalite</span></dt>
+                <dd>
+                    <span>{{penalite.motifPenalite}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionPenalite.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{penalite.deleted}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionPenalite.contrat">Contrat</span></dt>
+                <dd>
+                    <div *ngIf="penalite.contrat">
+                        <a [routerLink]="['/contrat', penalite.contrat?.id, 'view']">{{penalite.contrat?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/penalite', penalite.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

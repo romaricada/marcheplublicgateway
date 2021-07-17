@@ -1,0 +1,544 @@
+<jhi-index-gestionnaire></jhi-index-gestionnaire>
+<div class="text-center">
+	<label class="font-weight-bold text-primary">GESTION DE L'ELABORATION DU CONTRATS</label>
+</div>
+<p-toolbar>
+	<div class="ui-toolbar-group-left">
+		<div class="ui-g ui-g-12 ui-g-nopad">
+			<div class="ui-g ui-g-12 ui-g-nopad">
+				<div class="ui-inputgroup mr-1">
+					<span class="ui-inputgroup-addon"><span class="font-weight-bold">Avis DAC</span></span>
+					<p-dropdown (onChange)="loadAllLotbyAvisDAC()" [(ngModel)]="avisdac"
+					            [options]="avisdacs" [style]="{'width': '320px'}"
+					            filter="filter" optionLabel="nomAvisDac" placeholder="Selectionner un avis dac" required
+					            showClear="showClear">
+					</p-dropdown>
+				</div>
+				<div class="ui-inputgroup mr-1">
+					<span class="ui-inputgroup-addon"><span class="font-weight-bold">Lots</span></span>
+					<p-dropdown [options]="lots" [(ngModel)]="lot"
+					            placeholder="Selectionner un lot" [style]="{'width': '320px'}" optionLabel="description"
+					            filter="filter" (onChange)="loadData()"
+					            showClear="showClear" [disabled]="avisdac===null"
+					            required></p-dropdown>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="ui-toolbar-group-left float-right">
+		<button type="button" pButton class="ui-button-secondary text-primary"
+		        icon="fa fa-plus" label="Ajouter un contrat"
+		        *jhiHasAnyAuthority="'ROLE_EXECUTION_GESTION_DES_CONTRATS_ADD'"
+		        [disabled]="lot===null || contrats?.length!==0"
+		        (click)="addContrat()">
+		</button>
+		<button type="button" pButton class="ui-button-secondary text-primary"
+		        icon="fa fa-send" label="Transmettre au titulaire "
+		        [disabled]="contratSelected==null"
+		        (click)="onSendToTutilaire(contratSelected)">
+		</button>
+		<button type="button" pButton class="ui-button-secondary text-primary"
+		        icon="fa fa-send" label="Reception du contrat"
+		        (click)="onShowReception()">
+		</button>
+	</div>
+</p-toolbar>
+<div class="ui-g-12">
+	<p-table [value]="contrats" dataKey="id" [paginator]="true"
+	         [rows]="20" [responsive]="true" [(selection)]="contratSelected" selectionMode="single">
+		<ng-template pTemplate="header" let-columns>
+			<tr>
+				<th style="width: 3em">
+				</th>
+				<th>Reférence</th>
+				<th>Montant</th>
+				<th>Numéro de compte</th>
+				<th>Clé rib</th>
+				<th>Banque</th>
+				<th>Statut</th>
+				<th style="width: 30em">Action</th>
+			</tr>
+		</ng-template>
+		<ng-template pTemplate="body" let-contrat let-columns="columns">
+			<tr [pSelectableRow]="contrat">
+				<td>
+					<p-tableRadioButton [value]="contrat"></p-tableRadioButton>
+				</td>
+				<td>{{contrat?.reference}}</td>
+				<td>{{contrat?.montant}}</td>
+				<td>{{contrat?.numeroCompte}}</td>
+				<td>{{contrat?.cleRib}}</td>
+				<td>{{contrat?.libelleBanque}}</td>
+				<td><span class="badge-warning">{{ contrat?.etapeContrat }}</span></td>
+				<td style="width: 30em">
+					<button type="button" pButton icon="fa fa-edit" label="Modifier"
+					        class="ui-button-secondary text-warning" (click)="update(contrat)">
+					</button>
+					<button type="button" pButton icon="fa fa-trash" label="Suprprimer"
+					        class="ui-button-secondary text-danger" (click)="supprimer(contrat)">
+					</button>
+					<button type="button" pButton icon="fa fa-eye" label="Visualiser"
+					        class="ui-button-secondary text-info" (click)="view(contrat)">
+					</button>
+				</td>
+			</tr>
+		</ng-template>
+	</p-table>
+</div>
+<!------------------------------------------------------>
+<!-- creation et modification de contrat -->
+<!------------------------------------------------------->
+<p-dialog header="Création/Modification d'un contrat" [(visible)]="displayContrat" [modal]="true"
+          [responsive]="true"
+          (onHide)="annulerContrat()"
+          [style]="{width: '60%'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+    <div class="card-title title-info">
+                <span *ngIf="avisdac!=null"
+                      class="font-weight-bold text-primary"> Contrat pour l'exécution du marché: {{avisdac.objet}} </span>
+    </div>
+	<form name="editForm" role="form" novalidate #editFormcontratO="ngForm">
+		<p-card class="card mb-3">
+			<div class="container-fluid">
+				<div class="p-grid">
+					<div class="col-8">
+						<div *ngIf="candidatLot==null">
+							<p
+									class="font-weight-bold" style="font-weight: bold; margin-top: 40px;">Titulaire
+								du
+								lot :
+								<span class="badge badge-pill badge-warning"
+								      style="font-weight: bold; font-size: 16px;">Pas de titulaire pour ce lot</span>
+							</p>
+						</div>
+						<div *ngIf="candidatLot!==null">
+							<p
+									class="font-weight-bold" style=" margin-top: 40px;">Titulaire du lot: <span
+									class="badge badge-pill badge-success" style="font-weight: bold; font-size: 16px;">
+                            {{candidatLot?.candidat?.nomStructure}}</span></p>
+						</div>
+					</div>
+                    <div class="col-4">
+						<div *ngIf="candidatLot==null">
+							<p
+									class="font-weight-bold" style="font-weight: bold; margin-top: 40px;">Adresse du titulaire :
+								<span class="badge badge-pill badge-warning"
+								      style="font-weight: bold; font-size: 16px;">Pas de titulaire</span>
+							</p>
+						</div>
+						<div *ngIf="candidatLot!==null">
+							<p
+									class="font-weight-bold" style=" margin-top: 40px;">Adresse du titulaire: <span
+									class="badge badge-pill badge-success" style="font-weight: bold; font-size: 16px;">
+                            {{candidatLot?.candidat?.adresse}}</span></p>
+						</div>
+					</div><br>
+					<div class="col-6">
+						<div class="form-group">
+							<label class="form-control-label" for="field_reference">Reference</label>
+							<input id="field_reference" type="text" class="form-control"
+							       name="reference"
+							       [(ngModel)]="contrat.reference" required>
+						</div>
+					</div>
+                    <div class="col-6">
+						<div class="form-group">
+							<label class="form-control-label" for="field_natureMarche">Nature du marché</label>
+                            <select class="form-control" name="natureMarche" id="field_natureMarche" type="text"
+                                    [(ngModel)]="contrat.natureMarche"  required>
+                                <option value="marché public"> Marché public</option>
+                                <option value="marché à commande">Marché à commande</option>
+                            </select>
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+							<label class="form-control-label" for="field_montant">Montant</label>
+							<input id="field_montant" type="number" class="form-control"
+							       name="montant"
+							       [(ngModel)]="contrat.montant" required>
+						</div>
+					</div>
+                    <div class="col-6">
+						<div class="form-group">
+                            <label class="form-control-label">Source de financement</label>
+                            <p-dropdown [options]="sourceFinancements" [(ngModel)]="sourceFinancement"
+                                        placeholder="Choisir un source de financement" [style]="{'width': '435px'}" optionLabel="libelle" name="sourceFinancement"
+                                        filter="filter" type="text" showClear="showClear" required></p-dropdown>
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+							<label class="form-control-label" for="field_numeroCompte">Numéro du compte bancaire</label>
+							<input id="field_numeroCompte" type="number" class="form-control"
+							       name="numeroCompte"
+							       [(ngModel)]="contrat.numeroCompte">
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+							<label class="form-control-label" for="field_cleRib">Clé rib</label>
+							<input id="field_cleRib" type="number" class="form-control"
+							       name="cleRib"
+							       [(ngModel)]="contrat.cleRib">
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+							<label class="form-control-label" for="field_libelleBanque">Banque</label>
+							<input id="field_libelleBanque" type="text" class="form-control"
+							       name="libelleBanque"
+							       [(ngModel)]="contrat.libelleBanque">
+						</div>
+					</div>
+                    <div class="col-6">
+						<div class="form-group">
+							<label class="form-control-label" for="field_delaisExecution">Délais d'exécution</label>
+							<input id="field_delaisExecution" type="number" class="form-control"
+							       name="delaisExecution"
+							       [(ngModel)]="contrat.delaisExecution">
+						</div>
+					</div>
+					<div class="col-12">
+						<p-panel>
+							<p-header>Information sur les lignes budgetaires selectionnées pour ce contrat</p-header>
+							<p-table [responsive]="true" [value]="besoinLigneBudgetaires"
+							         dataKey="id">
+								<ng-template pTemplate="header" let-columns>
+									<tr>
+										<th>Ligne crédit</th>
+										<th>Montant estimé</th>
+										<th width="100">Action</th>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-columns="columns"
+								             let-i="rowIndex">
+									<tr>
+										<td>{{rowData?.ligneCredit}}</td>
+										<td>{{rowData?.montantEstime | formatTableValue:'number': true }}</td>
+										<td width="100">
+											<p-inputSwitch [name]="'sletede'+i" [title]="'ligne crédit actif'"
+											               [(ngModel)]="rowData.selected"
+											               (onChange)="onChangeVal(rowData)"></p-inputSwitch>
+										</td>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="footer">
+									<tr>
+										<td>Total</td>
+										<td>{{totaTMontant | formatTableValue:'number': true}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</p-panel>
+					</div>
+				</div>
+				<!--<div class="col-sm-12">
+					<div class="form-group">
+						<label class="form-control-label" for="field_date_signataire">Date signature</label>
+						<input id="field_date_signataire" type="date" class="form-control"
+						       name="dateSignature"
+						       [(ngModel)]="contrat.dateSignature" required>
+					</div>
+				</div>-->
+			</div>
+		</p-card>
+	</form>
+	<div class="ui-dialog-buttonpane ui-helper-clearfix float-right">
+		<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+		        label="Annuler" (click)='annulerContrat()'></button>
+		<button type="button" pButton icon="fa fa-save" label="Soumettre" (click)="saveContrat()"
+		        [disabled]="editFormcontratO.invalid || isSaving" class="ui-button-secondary text-info">
+		</button>
+	</div>
+</p-dialog>
+
+<!------------------------------------------------------>
+<!-- creation et modification de contrat -->
+<!------------------------------------------------------->
+<p-dialog header="Détail" [(visible)]="isView" [modal]="true"
+          [responsive]="true"
+          (onHide)="annulerContrat()"
+          [style]="{width: '80%'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+    <div class="card-title title-info">
+                <span *ngIf="avisdac!=null"
+                      class="font-weight-bold text-primary"> Contrat pour l'exécution du marché: {{avisdac.objet}} </span>
+    </div>
+	<form name="editForm" role="form" novalidate #editFormcontrat="ngForm">
+		<p-card class="card mb-3">
+			<div class="container-fluid">
+                <div class="p-grid">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <p-dropdown [options]="contrats"
+                                        placeholder="Selectionner un contrat" [style]="{'width': '100%'}"
+                                        filter="filter" (onChange)="onFindContrat(contratSelected)" optionLabel="reference"
+                                        showClear="showClear"
+                                        required></p-dropdown>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_reference">Reference</label>
+                            <input id="field_reference5" type="text" class="form-control"
+                                   name="reference"
+                                   [(ngModel)]="contrat.reference" required>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_natureMarche">Nature du marché</label>
+                            <select class="form-control" name="natureMarche" id="field_natureMarche5" type="text"
+                                    [(ngModel)]="contrat.natureMarche"  required>
+                                <option value="marché public"> Marché public</option>
+                                <option value="marché à commande">Marché à commande</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_montant">Montant</label>
+                            <input id="field_montant5" type="number" class="form-control"
+                                   name="montant"
+                                   [(ngModel)]="contrat.montant" required>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label">Source de financement</label>
+                            <p-dropdown [options]="sourceFinancements" [(ngModel)]="sourceFinancement"
+                                        placeholder="Choisir un source de financement" [style]="{'width': '435px'}" optionLabel="libelle" name="sourceFinancement"
+                                        filter="filter" type="text" showClear="showClear" required></p-dropdown>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_numeroCompte">Numéro du compte bancaire</label>
+                            <input id="field_numeroCompte5" type="number" class="form-control"
+                                   name="numeroCompte"
+                                   [(ngModel)]="contrat.numeroCompte">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_cleRib">Clé rib</label>
+                            <input id="field_cleRib5" type="number" class="form-control"
+                                   name="cleRib"
+                                   [(ngModel)]="contrat.cleRib">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_libelleBanque">Banque</label>
+                            <input id="field_libelleBanque5" type="text" class="form-control"
+                                   name="libelleBanque"
+                                   [(ngModel)]="contrat.libelleBanque">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_delaisExecution">Délais d'exécution</label>
+                            <input id="field_delaisExecution5" type="number" class="form-control"
+                                   name="delaisExecution"
+                                   [(ngModel)]="contrat.delaisExecution">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_date_signataire5">Date de signature du
+                                titulaire</label>
+                            <input id="field_date_signataire5" type="date" class="form-control"
+                                   name="dateSignatureSoumissionnaire"
+                                   [(ngModel)]="contrat.dateSignatureSoumissionnaire" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_date_dateReceptionGC">Date de reception</label>
+                            <input id="field_date_dateReceptionGC5" type="date" class="form-control"
+                                   name="dateReceptionGC"
+                                   [(ngModel)]="contrat.dateReceptionGC" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_date_dateApprobation5">Date
+                                d'approbation</label>
+                            <input id="field_date_dateApprobation5" type="date" class="form-control"
+                                   name="dateApprobation"
+                                   [(ngModel)]="contrat.dateApprobation" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_date_dateDemarrage5">Date de notification du marché</label>
+                            <input id="field_date_dateDemarrage5" type="date" class="form-control"
+                                   name="dateDemarrage"
+                                   [(ngModel)]="contrat.dateDemarrage" required>
+                        </div>
+                    </div>
+                </div>
+				<div class="col-12">
+					<p-panel>
+						<p-header>Information sur les lignes budgetaire selectionnées pour ce contrat</p-header>
+						<p-table [responsive]="true" [value]="besoinLigneBudgetaires"
+						         dataKey="id">
+							<ng-template pTemplate="header" let-columns>
+								<tr>
+									<th>Ligne crédit</th>
+									<th>Montant estimé</th>
+								</tr>
+							</ng-template>
+							<ng-template pTemplate="body" let-rowData let-columns="columns"
+							             let-i="rowIndex">
+								<tr>
+									<td>{{rowData?.ligneCredit}}</td>
+									<td>{{rowData?.montantEstime | formatTableValue:'number': true }}</td>
+								</tr>
+							</ng-template>
+							<ng-template pTemplate="footer">
+								<tr>
+									<td>Toital</td>
+									<td>{{totaTMontant | formatTableValue:'number': true}}</td>
+								</tr>
+							</ng-template>
+						</p-table>
+					</p-panel>
+				</div>
+			</div>
+		</p-card>
+	</form>
+	<div class="ui-dialog-buttonpane ui-helper-clearfix float-right card-footer">
+        <button [disabled]="!avisdac" type="button" pButton icon="fa fa-print" [ngbTooltip]="'Imprimer'" label="Imprimer"
+                class="ui-button-secondary text-info" (click)="ImprimerContratReception()">
+        </button>
+		<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+		        label="Fermer" (click)='annulerContrat()'>
+        </button>
+	</div>
+</p-dialog>
+
+<!------------------------------------------------------>
+<!-- Reception de contrat -->
+<!------------------------------------------------------->
+<p-dialog header="Reception d'un contrat" [(visible)]="isReception" [modal]="true"
+          [responsive]="true"
+          (onHide)="annulerContrat()"
+          [style]="{width: '60%'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+	<form name="editForm" role="form" novalidate #editFormcontratRe="ngForm">
+		<p-card class="card mb-3">
+			<div class="container-fluid">
+				<div class="p-grid">
+					<div class="col-12">
+						<div class="form-group">
+							<p-dropdown [options]="contrats"
+							            placeholder="Selectionner un contrat" [style]="{'width': '100%'}"
+							            filter="filter" (onChange)="onFindContrat(contratSelected)" optionLabel="reference"
+							            showClear="showClear"
+							            required></p-dropdown>
+						</div>
+					</div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_reference">Reference</label>
+                            <input id="field_reference3" type="text" class="form-control"
+                                   name="reference"
+                                   [(ngModel)]="contrat.reference" required>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_natureMarche">Nature du marché</label>
+                            <select class="form-control" name="natureMarche" id="field_natureMarche3" type="text"
+                                    [(ngModel)]="contrat.natureMarche"  required>
+                                <option value="marché public"> Marché public</option>
+                                <option value="marché à commande">Marché à commande</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_montant">Montant</label>
+                            <input id="field_montant3" type="number" class="form-control"
+                                   name="montant"
+                                   [(ngModel)]="contrat.montant" required>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label">Source de financement</label>
+                            <p-dropdown [options]="sourceFinancements" [(ngModel)]="sourceFinancement"
+                                        placeholder="Choisir un source de financement" [style]="{'width': '435px'}" optionLabel="libelle" name="sourceFinancement"
+                                        filter="filter" type="text" showClear="showClear" required></p-dropdown>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_numeroCompte">Numéro du compte bancaire</label>
+                            <input id="field_numeroCompte3" type="number" class="form-control"
+                                   name="numeroCompte"
+                                   [(ngModel)]="contrat.numeroCompte">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_cleRib">Clé rib</label>
+                            <input id="field_cleRib3" type="number" class="form-control"
+                                   name="cleRib"
+                                   [(ngModel)]="contrat.cleRib">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_libelleBanque">Banque</label>
+                            <input id="field_libelleBanque3" type="text" class="form-control"
+                                   name="libelleBanque"
+                                   [(ngModel)]="contrat.libelleBanque">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_delaisExecution">Délais d'exécution</label>
+                            <input id="field_delaisExecution3" type="number" class="form-control"
+                                   name="delaisExecution"
+                                   [(ngModel)]="contrat.delaisExecution">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_date_signataire">Date de signature du
+                                titulaire</label>
+                            <input id="field_date_signataire" type="date" class="form-control"
+                                   name="dateSignature"
+                                   [(ngModel)]="contrat.dateSignatureSoumissionnaire" required>
+                        </div>
+                    </div>
+					<div class="col-sm-6">
+						<div class="form-group">
+							<label class="form-control-label" for="field_date_dateReceptionGC">Date de reception</label>
+							<input id="field_date_dateReceptionGC" type="date" class="form-control"
+							       name="dateReceptionGC"
+							       [(ngModel)]="contrat.dateReceptionGC" required>
+						</div>
+					</div>
+				</div>
+			</div>
+		</p-card>
+	</form>
+	<div class="ui-dialog-buttonpane ui-helper-clearfix float-right">
+		<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+		        label="Annuler" (click)='annulerContrat()'></button>
+		<button type="button" pButton icon="fa fa-save" label="Soumettre" (click)="saveReception()"
+		        [disabled]="editFormcontratRe.invalid || isSaving" class="ui-button-secondary text-info">
+		</button>
+	</div>
+</p-dialog>
+
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+	<p-footer>
+		<button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+		        (click)="cd.reject()"></button>
+		<button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI"
+		        (click)="cd.accept()"></button>
+	</p-footer>
+</p-confirmDialog>
+<p-toast key="myKey" [style]="{marginTop: '80px'}" position="top-right" [baseZIndex]="1000000"></p-toast>

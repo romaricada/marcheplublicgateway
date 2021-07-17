@@ -1,0 +1,10 @@
+{
+  "marchepublicgatewayApp": {
+    "TypeRelationPartenaire": {
+      "null": "",
+      "BILATERAL": "BILATERAL",
+      "MULTILATERAL": "MULTILATERAL",
+      "INTERIEUR": "INTERIEUR"
+    }
+  }
+}

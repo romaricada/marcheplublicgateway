@@ -1,0 +1,29 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmModePassation": {
+      "home": {
+        "title": "ModePassations",
+        "createLabel": "Créer un nouveau Mode Passation",
+        "createOrEditLabel": "Créer ou éditer un Mode Passation",
+        "notFound": "Aucun Mode Passation trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Mode Passation {{ id }} ?"
+      },
+      "detail": {
+        "title": "Mode Passation"
+      },
+      "libellePassation": "Libelle Passation",
+      "deleted": "Deleted",
+      "activites": "Activites",
+      "referentielDelais": "Referentiel Delais"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmModePassation": {
+      "created": "Un nouveau Mode Passation a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Mode Passation avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Mode Passation avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamDecision": {
+      "home": {
+        "title": "Decisions",
+        "createLabel": "Create a new Decision",
+        "createOrEditLabel": "Create or edit a Decision",
+        "notFound": "No Decisions found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Decision {{ id }}?"
+      },
+      "detail": {
+        "title": "Decision"
+      },
+      "structure": "Structure",
+      "decision": "Decision",
+      "deleted": "Deleted",
+      "reclamation": "Reclamation"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamDecision": {
+      "created": "A new Decision is created with identifier {{ param }}",
+      "updated": "A Decision is updated with identifier {{ param }}",
+      "deleted": "A Decision is deleted with identifier {{ param }}"
+    }
+  }
+}

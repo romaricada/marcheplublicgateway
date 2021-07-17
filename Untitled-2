@@ -1,0 +1,189 @@
+import {NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
+
+@NgModule({
+  imports: [
+    RouterModule.forChild([
+      {
+        path: 'ligne-budgetaire',
+        loadChildren: () =>
+          import('./microserviceppm/ligne-budgetaire/ligne-budgetaire.module').then(m => m.MicroserviceppmLigneBudgetaireModule)
+      },
+      {
+        path: 'besoin',
+        loadChildren: () => import('./microserviceppm/besoin/besoin.module').then(m => m.MicroserviceppmBesoinModule)
+      },
+      {
+        path: 'besoin-ligne-budgetaire',
+        loadChildren: () =>
+          import('./microserviceppm/besoin-ligne-budgetaire/besoin-ligne-budgetaire.module').then(
+            m => m.MicroserviceppmBesoinLigneBudgetaireModule
+          )
+      },
+      {
+        path: 'exercice-budgetaire',
+        loadChildren: () =>
+          import('./microserviceppm/exercice-budgetaire/exercice-budgetaire.module').then(m => m.MicroserviceppmExerciceBudgetaireModule)
+      },
+      {
+        path: 'unite-administrative',
+        loadChildren: () =>
+          import('./microserviceppm/unite-administrative/unite-administrative.module').then(m => m.MicroserviceppmUniteAdministrativeModule)
+      },
+      {
+        path: 'mode-passation',
+        loadChildren: () => import('./microserviceppm/mode-passation/mode-passation.module').then(m => m.MicroserviceppmModePassationModule)
+      },
+      {
+        path: 'ppm',
+        loadChildren: () => import('./microserviceppm/ppm/ppm.module').then(m => m.MicroserviceppmPPMModule)
+      },
+      {
+        path: 'activite',
+        loadChildren: () => import('./microserviceppm/activite/activite.module').then(m => m.MicroserviceppmActiviteModule)
+      },
+      {
+        path: 'acteur',
+        loadChildren: () => import('./microserviceppm/acteur/acteur.module').then(m => m.MicroserviceppmActeurModule)
+      },
+      {
+        path: 'referentiel-delai',
+        loadChildren: () =>
+          import('./microserviceppm/referentiel-delai/referentiel-delai.module').then(m => m.MicroserviceppmReferentielDelaiModule)
+      },
+      {
+        path: 'source-financement',
+        loadChildren: () =>
+          import('./microserviceppm/source-financement/source-financement.module').then(m => m.MicroserviceppmSourceFinancementModule)
+      },
+      {
+        path: 'etape',
+        loadChildren: () => import('./microserviceppm/etape/etape.module').then(m => m.MicroserviceppmEtapeModule)
+      },
+      {
+        path: 'ppm-activite',
+        loadChildren: () => import('./microserviceppm/ppm-activite/ppm-activite.module').then(m => m.MicroserviceppmPpmActiviteModule)
+      },
+      {
+        path: 'etape-activite-ppm',
+        loadChildren: () =>
+          import('./microserviceppm/etape-activite-ppm/etape-activite-ppm.module').then(m => m.MicroserviceppmEtapeActivitePpmModule)
+      },
+      {
+        path: 'nature-prestation',
+        loadChildren: () =>
+          import('./microserviceppm/nature-prestation/nature-prestation.module').then(m => m.MicroserviceppmNaturePrestationModule)
+      },
+      {
+        path: 'timbre',
+        loadChildren: () => import('./microserviceppm/timbre/timbre.module').then(m => m.MicroserviceppmTimbreModule)
+      },
+      {
+        path: 'calcul-delai',
+        loadChildren: () => import('./microserviceppm/calcul-delai/calcul-delai.module').then(m => m.MicroserviceppmCalculDelaiModule)
+      },
+      {
+        path: 'type-commission',
+        loadChildren: () =>
+          import('./microservicedaccam/type-commission/type-commission.module').then(m => m.MicroservicedaccamTypeCommissionModule)
+      },
+      {
+        path: 'reception',
+        loadChildren: () => import('./microservicedaccam/reception/reception.module').then(m => m.MicroservicedaccamReceptionModule)
+      },
+      {
+        path: 'membre-commission',
+        loadChildren: () =>
+          import('./microservicedaccam/membre-commission/membre-commission.module').then(m => m.MicroservicedaccamMembreCommissionModule)
+      },
+      {
+        path: 'membre',
+        loadChildren: () =>
+          import('./microservicedaccam/membre/membre.module').then(m => m.MicroservicedaccamMembreModule)
+      },
+      {
+        path: 'tache',
+        loadChildren: () => import('./microservicedaccam/tache/tache.module').then(m => m.MicroservicedaccamTacheModule)
+      },
+      {
+        path: 'workflow',
+        loadChildren: () => import('./microservicedaccam/workflow/workflow.module').then(m => m.MicroservicedaccamWorkflowModule)
+      },
+      {
+        path: 'tache-workflow',
+        loadChildren: () =>
+          import('./microservicedaccam/tache-workflow/tache-workflow.module').then(m => m.MicroservicedaccamTacheWorkflowModule)
+      },
+      {
+        path: 'candidat',
+        loadChildren: () => import('./microservicedaccam/candidat/candidat.module').then(m => m.MicroservicedaccamCandidatModule)
+      },
+      {
+        path: 'candidat-lot',
+        loadChildren: () => import('./microservicedaccam/candidat-lot/candidat-lot.module').then(m => m.MicroservicedaccamCandidatLotModule)
+      },
+      {
+        path: 'decision',
+        loadChildren: () => import('./microservicedaccam/decision/decision.module').then(m => m.MicroservicedaccamDecisionModule)
+      },
+      {
+        path: 'reclamation',
+        loadChildren: () => import('./microservicedaccam/reclamation/reclamation.module').then(m => m.MicroservicedaccamReclamationModule)
+      },
+      {
+        path: 'reclamation-candidat-lot',
+        loadChildren: () => import('./microservicedaccam/reclamation-candidat-lot/reclamation-candidat-lot.module').then(m => m.MicroservicedaccamReclamationCandidatLotModule)
+      },
+      {
+        path: 'depouillement',
+        loadChildren: () =>
+          import('./microservicedaccam/depouillement/depouillement.module').then(m => m.MicroservicedaccamDepouillementModule)
+      },
+      {
+        path: 'deliberation',
+        loadChildren: () =>
+          import('./microservicedaccam/deliberation/deliberation.module').then(m => m.MicroservicedaccamDeliberationModule)
+      },
+      {
+        path: 'piece-candidat',
+        loadChildren: () =>
+          import('./microservicedaccam/piece-candidat/piece-candidat.module').then(m => m.MicroservicedaccamPieceCandidatModule)
+      },
+      {
+        path: 'piece',
+        loadChildren: () =>
+          import('./microservicedaccam/piece/piece.module').then(m => m.MicroservicedaccamPieceModule)
+      },
+      {
+        path: 'lot',
+        loadChildren: () =>
+          import('./microservicedaccam/lot/lot.module').then(m => m.MicroservicedaccamLotModule)
+      },
+      {
+        path: 'tache-etape',
+        loadChildren: () =>
+          import('./microservicedaccam/tache-etape/tache-etape.module').then(m => m.MicroservicedaccamTacheEtapeModule)
+      },
+      {
+        path: 'import-export',
+        loadChildren: () => import('./microserviceppm/import-export/import-export.module').then(m => m.MicroserviceppmImportExportModule)
+      },
+      {
+        path: 'nature-prestation-mode-passation',
+        loadChildren: () => import('./microserviceppm/nature-prestation-mode-passation/nature-prestation-mode-passation.module').then(m => m.NaturePrestationModePassationModule)
+      },
+      {
+        path: 'jour-ferier',
+        loadChildren: () => import('./microserviceppm/jour-ferier/jour-ferier.module').then(m => m.MicroserviceppmJourFerierModule)
+      },
+      {
+        path: 'besoin-activite',
+        loadChildren: () => import('./microserviceppm/besoin-activite/besoin-activite.module').then(m => m.MicroserviceppmBesoinActiviteModule)
+      },
+
+      /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
+    ])
+  ],
+  // declarations: [ReclamationCandidatLotComponent]
+})
+export class MarchepublicgatewayEntityModule {}

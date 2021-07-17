@@ -1,0 +1,177 @@
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES TYPES DE COMMISSION</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button type="button" pButton class="ui-button-secondary text-primary" icon="fa fa-plus"
+                            label="Type commission" (click)="addtype(null)">
+                    </button>
+                    <button type="button" pButton class="ui-button-secondary text-danger" [disabled]="typeSelect.length<1"
+                            icon="fa fa-times" label="Supprimer" (click)="supp()">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <!--<h2 id="page-heading">-->
+        <!--<span jhiTranslate="marchepublicgatewayApp.microservicedaccamTypeCommission.home.title">Type Commissions</span>-->
+        <!--<button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-type-commission" [routerLink]="['/type-commission/new']">-->
+            <!--<fa-icon [icon]="'plus'"></fa-icon>-->
+            <!--<span  jhiTranslate="marchepublicgatewayApp.microservicedaccamTypeCommission.home.createLabel">-->
+            <!--Create a new Type Commission-->
+            <!--</span>-->
+        <!--</button>-->
+    <!--</h2>-->
+    <br/>
+    <div class="alert alert-warning" *ngIf="typeCommissions?.length === 0">
+        <span jhiTranslate="marchepublicgatewayApp.microservicedaccamTypeCommission.home.notFound">No typeCommissions found</span>
+    </div>
+    <div class="table-responsive" *ngIf="typeCommissions?.length > 0">
+        <p-table #filtre [globalFilterFields]="['libelle']" [responsive]="true" [value]="typeCommissions" dataKey="id" [paginator]="true" [rows]="20"
+                  [(selection)]="typeSelect">
+            <ng-template pTemplate="caption">
+                <div class="p-grid">
+                    <div class="col-sm-6 pt-1 text-left">
+                    </div>
+                    <div class="col-sm-6 pt-1 text-right">
+                        <input type="text" pInputText size="50" placeholder="Rechercher"
+                               (input)="filtre.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                        <button type="button" pButton icon="fa fa-refresh" label="Actualiser"
+                                [ngbTooltip]="'Raffraichir'" [placement]="'top'" (click)="loadAll()">
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th style="width: 1em"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                    <th style="width: 12em">TYPE COMMISSION</th>
+                    <th class="text-center" width="39">Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-typeCommission let-columns="columns">
+                <tr [pSelectableRow]="typeCommission">
+                    <td><p-tableCheckbox [value]="typeCommission"></p-tableCheckbox></td>
+                    <td>{{typeCommission.libelle}}</td>
+                    <td class="text-center">
+                        <button type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning"
+                                label="Modifier" (click)="addtype(typeCommission)">
+                        </button>
+                        <button type="button" label="Supprimer" class="ui-button-secondary text-danger"
+                                 pButton icon="fa fa-remove" (click)="del(typeCommission.id)">
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    <!--<div class="table-responsive" *ngIf="typeCommissions?.length > 0">-->
+        <!--<table class="table table-striped" aria-describedby="page-heading">-->
+            <!--<thead>-->
+            <!--<tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">-->
+            <!--<th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>-->
+            <!--<th scope="col"  jhiSortBy="libelle"><span jhiTranslate="marchepublicgatewayApp.microservicedaccamTypeCommission.libelle">Libelle</span> <fa-icon [icon]="'sort'"></fa-icon></th>-->
+            <!--<th scope="col"  jhiSortBy="deleted"><span jhiTranslate="marchepublicgatewayApp.microservicedaccamTypeCommission.deleted">Deleted</span> <fa-icon [icon]="'sort'"></fa-icon></th>-->
+            <!--<th scope="col"></th>-->
+            <!--</tr>-->
+            <!--</thead>-->
+            <!--<tbody>-->
+            <!--<tr *ngFor="let typeCommission of typeCommissions ;trackBy: trackId">-->
+                <!--<td><a [routerLink]="['/type-commission', typeCommission.id, 'view' ]">{{typeCommission.id}}</a></td>-->
+                <!--<td>{{typeCommission.libelle}}</td>-->
+                <!--<td>{{typeCommission.deleted}}</td>-->
+                <!--<td class="text-right">-->
+                    <!--<div class="btn-group">-->
+                        <!--<button type="submit"-->
+                                <!--[routerLink]="['/type-commission', typeCommission.id, 'view' ]"-->
+                                <!--class="btn btn-info btn-sm">-->
+                            <!--<fa-icon [icon]="'eye'"></fa-icon>-->
+                            <!--<span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>-->
+                        <!--</button>-->
+                        <!--<button type="submit"-->
+                                <!--[routerLink]="['/type-commission', typeCommission.id, 'edit']"-->
+                                <!--class="btn btn-primary btn-sm">-->
+                            <!--<fa-icon [icon]="'pencil-alt'"></fa-icon>-->
+                            <!--<span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>-->
+                        <!--</button>-->
+                        <!--<button type="submit"-->
+                                <!--[routerLink]="['/type-commission', { outlets: { popup: typeCommission.id + '/delete'} }]"-->
+                                <!--replaceUrl="true"-->
+                                <!--queryParamsHandling="merge"-->
+                                <!--class="btn btn-danger btn-sm">-->
+                            <!--<fa-icon [icon]="'times'"></fa-icon>-->
+                            <!--<span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>-->
+                        <!--</button>-->
+                    <!--</div>-->
+                <!--</td>-->
+            <!--</tr>-->
+            <!--</tbody>-->
+        <!--</table>-->
+    <!--</div>-->
+    <!--div [hidden]="typeCommissions?.length === 0">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+        </div>
+    </div-->
+    </div>
+    <p-dialog header="Ajouter un type de commission" [(visible)]="displayAdd" [modal]="true" [responsive]="true" (onHide)="annuler()"
+              [style]="{width: '30%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+            <div class="form-group">
+                <label class="form-control-label" for="field_libelle">Libellé</label>
+                <input type="text" class="form-control" name="libelle" id="field_libelle"
+                       [(ngModel)]="typeCommission.libelle" (click)="displaych = true" required/>
+            </div>
+        </form>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                        label="Fermer" (click)='annuler()'></button>
+                <button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+                        [disabled]="editForm.invalid || isSaving"
+                        [disabled]="displaych!=true"
+                        (click)='save()' class="ui-button-secondary text-info">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+    <p-dialog header="Supprimer" [(visible)]="displaySupp" [modal]="true" [responsive]="true" (onHide)="annulerSupp"
+              [style]="{width: '30%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <h5>Voulez-vous vraiment supprimer ces types de commissions ?</h5>
+        <p-table [value]="typeSelect" dataKey="id">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>Type commission</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-typeCommission let-columns="columns">
+                <tr>
+                    <td>{{typeCommission.libelle}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                        label="Fermer" (click)='annulerSupp()'>
+                </button>
+                <button type="button" pButton icon="fa fa-check" label="Confirmer"
+                        (click)="deleteAll(typeSelect)" class="ui-button-secondary text-info">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+    <p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+        <p-footer>
+            <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON" (click)="cd.reject()"></button>
+            <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI" (click)="cd.accept()"></button>
+        </p-footer>
+    </p-confirmDialog>
+    <p-toast [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+</div>

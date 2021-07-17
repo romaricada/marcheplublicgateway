@@ -1,0 +1,28 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmExerciceBudgetaire": {
+      "home": {
+        "title": "ExerciceBudgetaires",
+        "createLabel": "Créer un nouveau Exercice Budgetaire",
+        "createOrEditLabel": "Créer ou éditer un Exercice Budgetaire",
+        "notFound": "Aucun Exercice Budgetaire trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Exercice Budgetaire {{ id }} ?"
+      },
+      "detail": {
+        "title": "Exercice Budgetaire"
+      },
+      "annee": "Annee",
+      "deleted": "Deleted",
+      "besoins": "Besoins"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmExerciceBudgetaire": {
+      "created": "Un nouveau Exercice Budgetaire a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Exercice Budgetaire avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Exercice Budgetaire avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="fr">
+    <head>
+        <title th:text="#{email.activation.title}">Création de compte sgimp</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="shortcut icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+    </head>
+    <body>
+        <p th:text="#{email.activation.greeting(${user.login})}">
+            Cher
+        </p>
+        <p th:text="#{email.creation.text1}">
+            Votre compte sgimp a été créé, veuillez cliquer sur l'URL ci-dessous pour y accéder:
+        </p>
+        <p>
+            <a th:with="url=(@{|${baseUrl}/account/reset/finish?key=${user.resetKey}|})" th:href="${url}"
+            th:text="${url}">Lien du login</a>
+        </p>
+        <p>
+            <span th:text="#{email.activation.text2}">Cordialement, </span>
+            <br/>
+            <em th:text="#{email.signature}">équipe sgimp.</em>
+        </p>
+    </body>
+</html>

@@ -1,0 +1,322 @@
+
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES RECEPTIONS DES OFFRES</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_RECEPTIONS_DES_OFFRES_ADD'" type="button" pButton
+                            class="ui-button-secondary text-primary"
+                            icon="fa fa-plus" label="Ajouter une offre" [disabled]="avisDac===null"
+                            (click)="add(null)">
+                    </button>
+                    <button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_RECEPTIONS_DES_OFFRES_DELETE'" type="button"
+                            pButton class="ui-button-secondary text-danger"
+                            [disabled]="receptionSelected?.length<1"
+                            icon="fa fa-times" label="Supprimer des offres" (click)="supprimerOffre()">
+                    </button>
+                    <!-- <button type="button" pButton class="ui-button-secondary text-danger"
+                             [disabled]="lot===null"
+                             class="far fa-file-search" label="Imprimer par lot" (click)="ImprimerLot()">
+                     </button>
+ -->
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <p-toolbar>
+        <div class="ui-toolbar-group-left">
+            <div class="ui-g ui-g-12 ui-g-nopad">
+                <!--
+
+                -->
+                <div class="ui-inputgroup mr-1">
+                    <span class="ui-inputgroup-addon"><span class="font-weight-bold">Avis DAC</span></span>
+                    <p-dropdown [options]="avisDacs" [(ngModel)]="avisDac"
+                                placeholder="Selectionner un numero DAC" [style]="{'width': '320px'}"
+                                filter="filter" showClear="showClear" optionLabel="nomAvisDac"
+                                (onChange)="loadAllReceptionbyAvisDac()"
+                                required>
+                    </p-dropdown>
+                </div>
+
+               <!-- <div class="ui-inputgroup mr-1">
+                    <span class="ui-inputgroup-addon"><span class="font-weight-bold">Lot</span></span>
+                    <p-dropdown [options]="lots" [(ngModel)]="lot" placeholder="Lot"
+                                [style]="{'width': '200px'}" filter="filter"
+                                showClear="showClear" optionLabel="description" [disabled]="avisDac===null"
+                                (onChange)="findReceptionByLot()" required>
+                    </p-dropdown>
+                </div>
+-->
+            </div>
+        </div>
+        <div class="ui-toolbar-group-right">
+            <div class="text-right">
+                <input type="text" pInputText size="50" placeholder="Rechercher une offre"
+                       (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                <button type="button" pButton icon="fa fa-refresh" label="Actualiser"
+                        [ngbTooltip]="'Raffraichir'"
+                        [placement]="'top'" (click)="ngOnInit()">
+                </button>
+            </div>
+        </div>
+    </p-toolbar>
+    <div>
+        <p-table #dataTable [responsive]="true" [value]="receptions" [(selection)]="receptionSelected" dataKey="id"
+                 [globalFilterFields]="['nom', 'prenom' , 'telephone' , 'email' , 'date' , 'heure' , 'lieu' , 'avisDacId']"
+                 [paginator]="true" rows="25">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th style="width: 3em">
+                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                    </th>
+                    <th>Nom</th>
+                    <th>Prenom</th>
+                    <th>Telephone</th>
+                    <th>Email</th>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Lieu</th>
+                    <th>Type</th>
+                    <th width="25%" class="text-center">Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-reception let-columns="columns">
+                <tr [pSelectableRow]="reception">
+                    <td>
+                        <p-tableCheckbox [value]="reception"></p-tableCheckbox>
+                    </td>
+                    <td>{{reception.nom}}</td>
+                    <td>{{reception.prenom}}</td>
+                    <td>{{reception.telephone}}</td>
+                    <td>{{reception.email}}</td>
+                    <td>{{reception.date | date:'mediumDate'}}</td>
+                    <td>{{reception.heure}}</td>
+                    <td>{{reception.lieu}}</td>
+                    <td>{{reception.typeReception}}</td>
+
+                    <td>
+                        <!--<button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_RECEPTIONS_DES_OFFRES_TYPE'" type="button" pButton icon="fa fa-refresh" class="ui-button-secondary text-primary"
+                                label="Type" [disabled]="activite==null"
+                                (click)="changeTypeReception(reception)">
+                        </button>-->
+                        <button type="button" pButton icon="fa fa-print" class="ui-button-secondary text-primary"
+                                label="Imprimé" [disabled]="avisDac==null"
+                                (click)="imprimer(reception)">
+                        </button>
+                        <button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_RECEPTIONS_DES_OFFRES_EDIT'" type="button"
+                                pButton icon="fa fa-edit" class="ui-button-secondary text-warning"
+                                label="Modifier" [disabled]="avisDac===null" (click)="add(reception)">
+                        </button>
+
+                        <button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_RECEPTIONS_DES_OFFRES_DELETE'" type="button"
+                                label="Supprimer" class="ui-button-secondary text-danger"
+                                pButton icon="fa fa-remove" [disabled]="avisDac==null"
+                                (click)="deleteElement(reception)">
+                        </button>
+                    </td>
+
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-columns>
+                <tr>
+                    <td colspan="10" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"><span
+                        class="text-danger"> Aucune offre  trouvée ! </span></td>
+                </tr>
+            </ng-template>
+
+        </p-table>
+    </div>
+    <p-dialog header="Ajouter une offre" [(visible)]="display" [modal]="true" [responsive]="true" (onHide)="annuler()"
+              [style]="{width: '60%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate #editForm="ngForm">
+
+
+            <div class="ui-dialog-content">
+                <div class="row">
+                    <!--<div class="col-sm-12">
+                        <div class="form-group" *ngIf="reception.id!==undefined">
+                            <label class="form-control-label" for="field_activite">Activité</label>
+                            <select class="form-control" id="field_activite" name="activite"
+                                    [(ngModel)]="reception.activiteId" required>
+
+                                <option selected *ngFor="let lotOption of activites"
+                                        [ngValue]="lotOption.id">{{lotOption.nomActivite}}</option>
+                            </select>
+                        </div>
+                    </div>-->
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_date">Date</label>
+                            <input id="field_date" type="date" class="form-control" name="date"
+                                   [(ngModel)]="reception.date" required/>
+                            <!-- <div class="input-group">
+                                 <span class="input-group-append">
+                             <button type="button" class="btn btn-secondary" (click)="dateDp.toggle()"><fa-icon
+                                 [icon]="'calendar-alt'"></fa-icon></button>
+                         </span>
+                             </div>-->
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_heure">Heure</label>
+                            <input type="time" class="form-control" name="heure" id="field_heure"
+                                   [(ngModel)]="reception.heure" required/>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_lieu">Lieu</label>
+                            <input type="text" class="form-control" name="lieu" id="field_lieu"
+                                   [(ngModel)]="reception.lieu" required/>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_reception">Type de réception</label>
+                            <select class="form-control" name="type_reception" id="field_reception"
+                                    [(ngModel)]="reception.typeReception" required>
+                                <option value="NORMAL">NORMAL</option>
+                                <!-- <option value="RETRAIT">RETRAIT</option>-->
+                                <option value="SUBTITUTION">SUBTITUTION</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_nom">Nom</label>
+                            <input type="text" class="form-control" name="nom" id="field_nom"
+                                   [(ngModel)]="reception.nom" (click)="enre()" required/>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="form-group">
+
+                            <label class="form-control-label" for="field_prenom">Prénom</label>
+                            <input type="text" class="form-control" name="prenom" id="field_prenom"
+                                   [(ngModel)]="reception.prenom" required/>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_telephone">Télephone</label>
+                            <input type="text" class="form-control" name="telephone" id="field_telephone"
+                                   [(ngModel)]="reception.telephone" required/>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="field_email">Email</label>
+                            <input type="email" class="form-control" name="email" id="field_email"
+                                   [(ngModel)]="reception.email"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                        label="Fermer" (click)='annuler()'>
+
+                </button>
+                <button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+                        [disabled]="editForm.invalid || isSaving"
+                        (click)='save()' class="ui-button-secondary text-info">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+    <p-dialog header="supprimer une offre" [(visible)]="displayDelete" [modal]="true" [responsive]="true"
+              (onHide)="annuler()"
+              [style]="{width: '50%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+        <p-table [value]="receptionSelected" dataKey="id">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prenom</th>
+                    <th>Telephone</th>
+                    <th>Email</th>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Lieu</th>
+                    <th>Type de réception</th>
+                    <th>Avis Dac</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-reception let-columns="columns">
+                <tr>
+                    <td>{{reception.nom}}</td>
+                    <td>{{reception.prenom}}</td>
+                    <td>{{reception.telephone}}</td>
+                    <td>{{reception.email}}</td>
+                    <td>{{reception.date | date:'mediumDate'}}</td>
+                    <td>{{reception.heure}}</td>
+                    <td>{{reception.lieu}}</td>
+                    <td>{{reception.typeReception}}</td>
+                    <td>{{reception.avisDac.objet}}</td>
+                </tr>
+            </ng-template>
+
+        </p-table>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-info"
+                        label="Fermer" (click)='annulerDelete()'>
+                </button>
+
+                <button type="button" pButton icon="fa fa-times" class="ui-button-secondary text-danger"
+                        label="Confirmer"
+                        [disabled]="editForm.valid || isSaving" (click)="deleteAll()">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+    <!-- modification du type de reception -->
+
+    <p-dialog header="schange type reception" [(visible)]="modiSatatus" [modal]="true" [responsive]="true"
+              (onHide)="annuler()"
+              [style]="{width: '50%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <div class="ui-dialog-content">
+            <div class="form-group">
+                <label class="form-control-label" for="field_reception2">Type de réception</label>
+                <select class="form-control" name="type_reception" id="field_reception2"
+                        [(ngModel)]="reception.typeReception" required>
+                    <option value="NORMAL">Normal</option>
+                    <option value="RETRAIT">RETRAIT</option>
+                    <option value="SUBTITUTION">SUBTITUTION</option>
+                </select>
+            </div>
+        </div>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-info"
+                        label="Fermer" (click)='fermer()'>
+                </button>
+                <button type="button" pButton icon="fa fa-times" class="ui-button-secondary text-primary"
+                        label="Modifier" (click)="modifier()">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+</div>
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+                (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI"
+                (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+<p-toast [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+

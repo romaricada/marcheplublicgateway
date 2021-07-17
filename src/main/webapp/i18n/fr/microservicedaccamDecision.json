@@ -1,0 +1,29 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamDecision": {
+      "home": {
+        "title": "Decisions",
+        "createLabel": "Créer un nouveau Decision",
+        "createOrEditLabel": "Créer ou éditer un Decision",
+        "notFound": "Aucun Decision trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Decision {{ id }} ?"
+      },
+      "detail": {
+        "title": "Decision"
+      },
+      "structure": "Structure",
+      "decision": "Decision",
+      "deleted": "Deleted",
+      "reclamation": "Reclamation"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamDecision": {
+      "created": "Un nouveau Decision a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Decision avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Decision avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

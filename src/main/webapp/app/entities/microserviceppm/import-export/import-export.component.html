@@ -1,0 +1,142 @@
+<div>
+    <div class="text-center">
+        <span class="font-weight-bold text-primary">GESTION DES IMPORTATIONS ET EXPORTATIONS DU PPM</span>
+    </div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <!--<p-dropdown [options]="exercices" placeholder="Selectionner une année" [style]="{'width': '200px'}" [(ngModel)]="exercice" (onChange)="filterActivite()" filter="filter" showClear="showClear" optionLabel="annee"></p-dropdown>-->
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <p-splitButton *jhiHasAnyAuthority="'ROLE_PPM_IMPORT_EXPORT_PPM_EXPORTER_UN_PLAN_DE_PASSATION'" id="splitbutton" [disabled]="exercice==null" [model]="items" icon="fa fa-download" label="Exporter un plan de passation"></p-splitButton>
+                    <!--<button type="button" pButton class="ui-button-secondary text-primary" icon="fa fa-download" label="Exporter le model PPM" (click)="exportModel()">
+                    </button>-->
+                    <button *jhiHasAnyAuthority="'ROLE_PPM_IMPORT_EXPORT_PPM_IMPORTER_UN_PLAN_DE_PASSATION'" type="button" [disabled]="exercice==null" pButton class="ui-button-secondary text-primary" icon="fa fa-upload" label="Importer PPM" (click)="displayModal()"></button>
+                    <!-- <button type="button" pButton class="ui-button-secondary text-primary" icon="fa fa-check" label="Valider PPM"></button>-->
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <br/>
+    <p-table #dataTable [value]="activites" dataKey="id" [paginator]="true" [rows]="20" [responsive]="true" [globalFilterFields]="['codeLignePlan','ppmActivite.montantDepenseEngageNonLiquide',
+    'naturePrestationLibelle','modePassationLibelle', 'gestionnaireCredit', 'ppmActivite?.creditDisponible','ppmActivite?.delaiExecutionPrevu']">
+        <ng-template pTemplate="caption">
+            <div class="p-grid">
+                <div class="col-sm-6 text-left">
+                    <span *ngIf="exercice!==null"> {{exercice?.annee + ': ' + activites?.length}} activités </span>
+                </div>
+                <div class="col-sm-6 pt-1 text-right">
+                    <input type="text" pInputText size="40" placeholder="Rechercher" (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                    <button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'" [placement]="'top'" (click)="loadAll()"></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th></th>
+                <th><span class="header-table">Code</span></th>
+                <th><span class="header-table">Montant depenses engagées non liquidées</span></th>
+                <th><span class="header-table">Crédit disponible</span></th>
+                <th><span class="header-table">Nature prestation</span></th>
+                <th><span class="header-table">Mode Passation</span></th>
+                <th><span class="header-table">Période de lancement de l'appel à concurrence</span></th>
+                <th><span class="header-table">Période Rémise des offres/propositions</span></th>
+                <th><span class="header-table">Temps nécessaire à l'évalution des offres/propositions</span></th>
+                <th><span class="header-table">Date probable de démarage des prestations</span></th>
+                <th><span class="header-table">Delai d'execution prévu(jour)</span></th>
+                <th><span class="header-table">Date buttoire</span></th>
+                <th><span class="header-table">Gestionnaire crédit</span></th>
+                <!--  <th><span class="header-table">Actions</span></th>-->
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns">
+            <tr>
+                <td>
+                    <a href="#" [pRowToggler]="rowData">
+                        <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">&nbsp;</i><i class="fa fa-eye">&nbsp;</i><span style="font-size: 10px">Lignes</span>
+                    </a>
+                </td>
+                <td>{{rowData?.codeLignePlan}}</td>
+                <td>{{rowData?.ppmActivite?.montantDepenseEngageNonLiquide | number}}</td>
+                <td>{{rowData?.ppmActivite?.creditDisponible | number}}</td>
+                <td>{{rowData?.naturePrestationLibelle}}</td>
+                <td>{{rowData?.modePassationLibelle}}</td>
+                <td>{{rowData?.ppmActivite?.periodeLancementAppel | date:'dd-MM-yyyy'}}</td>
+                <td>{{rowData?.ppmActivite?.periodeRemiseOffre | date:'dd-MM-yyyy'}}</td>
+                <td>{{rowData?.ppmActivite?.tempsNecessaireEvaluationOffre}}</td>
+                <td>{{rowData?.ppmActivite?.dateProblableDemaragePrestation | date:'dd-MM-yyyy'}}</td>
+                <td>{{rowData?.ppmActivite?.delaiExecutionPrevu}}</td>
+                <td>{{rowData?.ppmActivite?.dateButtoire | date:'dd-MM-yyyy'}}</td>
+                <td>{{rowData?.gestionnaireCredit}}</td>
+                <!--<td><button type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning"
+                            label="Modifier" (click)="modifierActiviter(activite)">
+                </button></td>-->
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+            <tr>
+                <td></td>
+                <td colspan="3" class="td-header">Budget</td>
+                <td colspan="5" class="td-header">Ligne crédit</td>
+                <td colspan="2" class="td-header">AE/CP</td>
+                <td colspan="2" class="td-header">Montant estimé</td>
+            </tr>
+            <tr *ngFor="let besoin1 of rowData.besoinLignes">
+                <td></td>
+                <td colspan="3">{{besoin1?.ligneBudget?.budget}}</td>
+                <td colspan="5">{{besoin1?.ligneBudget?.ligneCredit}}</td>
+                <td colspan="2">
+                    <span *ngIf="besoin1.aecp">AE</span>
+                    <span *ngIf="!besoin1.aecp">CP</span>
+                </td>
+                <td colspan="2">{{besoin1.montantEstime | number }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><span class="font-weight-bold">Total</span></td>
+                <td colspan="9"></td>
+                <td><span class="font-weight-bold">{{rowData.total | number }}</span></td>
+            </tr>
+        </ng-template>
+        <!-- <ng-template pTemplate="summary">
+             <div *ngIf="activites?.length>0">
+                 <div class="row justify-content-center">
+                     <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+                 </div>
+                 <div class="row justify-content-center">
+                     <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+                 </div>
+             </div>
+         </ng-template>-->
+    </p-table>
+
+    <p-dialog header="Importation du ppm" [(visible)]="display" [style]="{width: '600px', height: '200px'}">
+        <form name="editForm" role="form" novalidate #editForm="ngForm">
+            <div class="ui-dialog-content">
+                <div class="form-group">
+                    <label>Réference du ppm</label>
+                    <input type="text" class="form-control" name="reference" [(ngModel)]="reference" required>
+                </div>
+                <div class="form-group">
+                    <label>Fichier excel</label>
+                    <input type="file" name="file" class="form-control" [accept]="'.xlsx' || '.xls'" class="form-control" (change)="setFileData($event)" required>
+                </div>
+            </div>
+            <br>
+            <p-footer>
+                <span class="float-left"><img *ngIf="isSaving" src="../../../../content/images/ajax-loader.gif"/></span>
+                <span class="float-right">
+                    <button type="button" class="ui-button-secondary text-danger" pButton icon="fa fa-close"
+                            (click)="closeModal()" label="Fermer"></button>
+                    <button type="button" class="ui-button-secondary text-dark" pButton icon="fa fa-check"
+                            [disabled]="!isReloade" (click)="saveImportation()" label="Ecraser"></button>
+                    <button type="button" class="ui-button-secondary text-primary" pButton icon="fa fa-download"
+                            (click)="importData()" label="Importer"
+                            [disabled]="editForm.form.invalid || isSaving || isReloade"></button>
+                </span>
+            </p-footer>
+        </form>
+    </p-dialog>
+    <p-toast [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+</div>

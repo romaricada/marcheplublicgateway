@@ -1,0 +1,587 @@
+<div class="row justify-content-center">
+    <!--<div class="row justify-content-center" [ngSwitch]="isAuthenticated()">-->
+    <section class="section-intro text-center">
+        <!--<section class="section-intro text-center" *ngSwitchCase="false">-->
+        <div class="container">
+            <div class="row  justify-content-center">
+                <div class="col-md-9 myLoginPage">
+                    <div class="card o-hidden border-0 shadow-lg my-5" style="border-radius: 10%;">
+                        <div class="card-body p-0">
+                            <div class="container bg">
+                                <div class="login">
+                                    <img src="../../content/images/armoirie.png" alt="Armoirie">
+                                </div>
+                                <div>
+                                    <div class="alert alert-danger" *ngIf="authenticationError">
+                                        <strong>Echec de la connexion!</strong> SVP verifiez vos informations de connexion et reessayez.
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center">
+                                    <div class="col-sm-12">
+                                        <form class="form" role="form" (ngSubmit)="login()">
+                                            <div class="form-group">
+                                                <label class="username-label font-weight-bold float-left" for="username">
+                                                    <i class="fa fa-user fa-2x mr-2"></i>
+                                                    <span>Nom d'utilisateur</span>
+                                                </label>
+                                                <input type="text" class="form-control font-weight-bold bg-light inp" name="username" id="username" placeholder="Votre nom d'utilisateur" [(ngModel)]="username">
+                                            </div>
+                                            <div class="form-group mt-4 mb-4">
+                                                <label for="password" class="font-weight-bold float-left">
+                                                    <i class="fa fa-key fa-2x mr-2"></i>
+                                                    <span>Mot de passe</span>
+                                                </label>
+                                                <div class="input-group">
+                                                    <input [type]="passvisible? 'text':'password'" class="form-control font-weight-bold bg-light inp" name="password" id="password" placeholder="Votre mot de passe" [(ngModel)]="password">
+                                                    <button type="button" class="border-0" (click)="handleVisibility()" [disabled]="!password" style="
+                                                            max-height: 42px;
+                                                            background: lightgray;
+                                                            border-bottom: solid 0.10em #c8c8c8 !important;">
+                                                        <i class="fa fa-eye" *ngIf="!passvisible"></i>
+                                                        <i class="fa fa-eye-slash" *ngIf="passvisible"></i>
+                                                    </button>
+
+                                                </div>
+
+                                            </div>
+                                            <div class="form-check mb-4 float-left">
+                                                <label class="form-check-label" for="rememberMe">
+                                                    <input class="form-check-input ui-chkbox-box"
+                                                           type="checkbox" name="rememberMe"
+                                                           id="rememberMe"
+                                                           [(ngModel)]="rememberMe" checked>
+                                                    <span
+                                                        class="font-weight-bold">Garder ma session ouverte</span>
+                                                </label>
+                                            </div>
+                                            <br/>
+                                            <button pButton label="Se connecter" type="submit" class="ui-button-primary font-weight-bold border" icon="fa fa-unlock"></button>
+                                        </form>
+                                    </div>
+                                    <div class="text-center font-weight-bold alert mt-2" style="font-size: medium; background-color: #ffe2b8">
+                                        <a class="text-primary" (click)="requestResetPassword()">
+                                            Avez-vous oublié votrre mot de passe ?
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--<div *ngSwitchCase="true" class="container-fluid">
+        <div class="container-fluid" id="main">
+            <div class="row row-offcanvas row-offcanvas-left">
+                <div class="col main pt-2 mt-2">
+                    <h1 class="display-4 d-none d-sm-block">
+                        Bienvenue sur SGIMP
+                    </h1>
+                    <p class="lead d-none d-sm-block">Système de Gestion Intégrée des Marchés Publics du MENAPLN</p>
+                    <p-tabView (onChange)="onTabChange($event)">
+                        <p-tabPanel header="Accès Rapide" [selected]="true">
+                            <div class="container-fluid" style="height: 35em">
+                                <div class="row mb-3">
+                                    <div class="col-sm-4 mt-1">
+                                        <div class="card-deck">
+                                            <div class="card card-inverse card-danger text-center">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <button class="ui-button-secondary text-primary mybtn" routerLink="ppm">
+                                                                <p>Gestion des PPM</p>
+                                                                <img src="../../content/images/suivi.png" class="mod-img img-rounded img-fluid"
+                                                                     alt="gestion des Plans de Passation de Marchés(PPM)">
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <p class="font-weight-bold text-left"><span class="badge-pill badge-secondary" style="font-size: 1.2em"><a class="personalLink" routerLink="ppm">Gestion des PPM</a></span></p>
+                                                            <ul class="text-left">
+                                                                <li><a class="personalLinka" routerLink="besoin">Gestion des Sous PPM</a></li>
+                                                                <li><a class="personalLinka" routerLink="ppm">Gestion des Activités</a></li>
+                                                                <li><a class="personalLinka" routerLink="import-export">Import & Export PPM</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 mt-1">
+                                        <div class="card-deck">
+                                            <div class="card card-inverse card-danger text-center">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <button class="ui-button-secondary text-primary mybtn" routerLink="suivi-dac">
+                                                                <p>Suivie des DAC</p>
+                                                                <img src="../../content/images/dac.png" class="mod-img img-rounded img-fluid"
+                                                                     alt="gestion des Appels à Concurence(DAC)">
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <p class="font-weight-bold text-left"><span class="badge-pill badge-secondary" style="font-size: 1.2em"><a class="personalLink" routerLink="suivi-dac">Suivie des DAC</a></span></p>
+                                                            <ul class="text-left">
+                                                                <li><a class="personalLinka" routerLink="suivi-dac">Suivre les DAC</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 mt-1">
+                                        <div class="card-deck">
+                                            <div class="card card-inverse card-danger text-center">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <button class="ui-button-secondary text-primary mybtn" routerLink="reception">
+                                                                <p>Gestion des CAM</p>
+                                                                <img src="../../content/images/cam.jpg" class="mod-img img-rounded img-fluid"
+                                                                     alt="gestion des Appels à Concurence(DAC)">
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <p class="font-weight-bold text-left"><span class="badge-pill badge-secondary" style="font-size: 1.2em"><a class="personalLink" routerLink="#">Gestion des CAM</a></span></p>
+                                                            <ul class="text-left">
+                                                                <li><a class="personalLinka" routerLink="reception">Reception des offres</a></li>
+                                                                <li><a class="personalLinka" routerLink="depouillement">Depouillement</a></li>
+                                                                <li><a class="personalLinka" routerLink="deliberation">Déliberation</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 mt-1">
+                                        <div class="card-deck">
+                                            <div class="card card-inverse card-danger text-center">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <button class="ui-button-secondary text-primary mybtn" routerLink="suivi-execution">
+                                                                <p>Execution</p>
+                                                                <img src="../../content/images/exec.jpg" class="mod-img img-rounded img-fluid"
+                                                                     alt="gestion des Appels à Concurence(DAC)">
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <p class="font-weight-bold text-left"><span class="badge-pill badge-secondary" style="font-size: 1.2em"><a class="personalLink" routerLink="#">Execution</a></span></p>
+                                                            <ul class="text-left">
+                                                                <li><a class="personalLinka" routerLink="contrat">Suivie des contrat</a></li>
+                                                                <li><a class="personalLinka" routerLink="suivi-execution">Suivie de l'execution</a></li>
+                                                                <li><a class="personalLinka" routerLink="engagement">Engagement</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 mt-1">
+                                        <div class="card-deck">
+                                            <div class="card card-inverse card-danger text-center">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <button class="ui-button-secondary text-primary mybtn" routerLink="document">
+                                                                <p>Archivage</p>
+                                                                <img src="../../content/images/ged.png" class="mod-img img-rounded img-fluid"
+                                                                     alt="gestion des Appels à Concurence(DAC)">
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <p class="font-weight-bold text-left"><span class="badge-pill badge-secondary" style="font-size: 1.2em">
+                                                                <a class="personalLink" routerLink="entrepot">Archivage</a></span>
+                                                            </p>
+                                                            <ul class="text-left">
+                                                                <li><a class="personalLinka" routerLink="entrepot">Gestion des entrepots</a></li>
+                                                                <li><a class="personalLinka" routerLink="document">GArchivation</a></li>
+                                                                <li><a class="personalLinka" routerLink="serveur">Configuration du serveur</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 mt-1">
+                                        <div class="card-deck">
+                                            <div class="card card-inverse card-danger text-center">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <button class="ui-button-secondary text-primary mybtn" routerLink="admin/user-management">
+                                                                <p>Gestion des utilisateurs</p>
+                                                                <img src="../../content/images/user.png" class="mod-img img-rounded img-fluid"
+                                                                     alt="gestion des Appels à Concurence(DAC)">
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <p class="font-weight-bold text-left"><span class="badge-pill badge-secondary" style="font-size: 1em"><a class="personalLink" routerLink="admin/user-management">Gestion des utilisateurs</a></span></p>
+                                                            <ul class="text-left">
+                                                                <li><a class="personalLinka" routerLink="admin/profil">Gestion des profil</a></li>
+                                                                <li><a class="personalLinka" routerLink="admin/profil">Configuration des droits</a></li>
+                                                                <li><a class="personalLinka" routerLink="admin/user-management">Création des utulisateurs</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </p-tabPanel>
+                        <p-tabPanel header="Indicateurs">
+                            <div class="row mb-3">
+                                <div class="col-xl col-sm-6 py-2">
+                                    <button class="monButon" type="button" (click)="onIncateurClick('AL')">
+                                        <div class="card bg-primary text-white h-100">
+                                            <div class="card-body bg-primary">
+                                                <div class="rotate">
+                                                    <i class="fa fa-asterisk fa-4x"></i>
+                                                </div>
+                                                <h6 class="text-uppercase">Toutes les lignes PPM</h6>
+                                                <h1 class="display-4">{{accueil?.allActivites?.length}}</h1>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                                <div class="col-xl col-sm-6 py-2">
+                                    <button class="monButon" type="button" (click)="onIncateurClick('EX')">
+                                        <div class="card bg-success text-white h-100">
+                                            <div class="card-body bg-success">
+                                                <div class="rotate">
+                                                    <i class="fa fa-check-square-o fa-4x"></i>
+                                                </div>
+                                                <h6 class="text-uppercase">Lignes PPM Exécutées</h6>
+                                                <h1 class="display-4">{{accueil?.activitesExecute?.length}}</h1>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                                <div class="col-xl col-sm-6 py-2">
+                                    <button class="monButon" type="button" (click)="onIncateurClick('EC')">
+                                        <div class="card text-white bg-info h-100">
+                                            <div class="card-body bg-info">
+                                                <div class="rotate">
+                                                    <i class="fa fa-line-chart fa-4x"></i>
+                                                </div>
+                                                <h6 class="text-uppercase">Lignes PPM en cours</h6>
+                                                <h1 class="display-4">{{accueil?.activitesEnCours?.length}}</h1>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                                <div class="col-xl col-sm-6 py-2">
+                                    <button class="monButon" type="button" (click)="onIncateurClick('EL')">
+                                        <div class="card text-white bg-warning h-100">
+                                            <div class="card-body bg-warning">
+                                                <div class="rotate">
+                                                    <i class="fa fa-cogs fa-4x"></i>
+                                                </div>
+                                                <h6 class="text-uppercase">Ligne PPM en litiges</h6>
+                                                <h1 class="display-4">{{accueil?.activitesEnLitige?.length}}</h1>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                                <div class="col-xl col-sm-6 py-2">
+                                    <button class="monButon" type="button" (click)="onIncateurClick('ER')">
+                                        <div class="card text-white bg-danger h-100">
+                                            <div class="card-body bg-danger">
+                                                <div class="rotate">
+                                                    <i class="fa fa-warning fa-4x"></i>
+                                                </div>
+                                                <h6 class="text-uppercase">Ligne PPM résiliés</h6>
+                                                <h1 class="display-4">{{accueil?.activitesResilie?.length}}</h1>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="row my-4">
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            Illustrations graphiques
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <div class="container-fluid">
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <div class="row">
+                                                                    <div class="col-sm-12 text-right">
+                                                                        <button type="button" class="ui-button-success text-white" pButton pTooltip="Affichage en courbe" tooltipPosition="left" icon="fa fa-pie-chart" (click)="changerGraphe('LINE')">
+                                                                        </button>
+                                                                        <button type="button" class="ui-button-success text-white" pButton pTooltip="Affichage en Battonés" tooltipPosition="left" icon="fa fa-bar-chart" (click)="changerGraphe('BAR')">
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="col-sm-12">
+                                                                        <div *ngIf="!isChartLine">
+                                                                            <p-chart type="bar" [data]="data"></p-chart>
+                                                                        </div>
+                                                                        <div *ngIf="isChartLine">
+                                                                            <p-chart type="pie" [data]="data1"></p-chart>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                &lt;!&ndash;&ndash;&gt;
+                                                                <div class="text-center mb-1">
+                                                                    <span *ngIf="type === 'AL'" class="badge-pill badge-secondary font-weight-bold">Tous les marchés</span>
+                                                                    <span *ngIf="type === 'EX'" class="badge-pill badge-secondary font-weight-bold">Les marchés exécutés</span>
+                                                                    <span *ngIf="type === 'EC'" class="badge-pill badge-secondary font-weight-bold">Les marchés en cours</span>
+                                                                    <span *ngIf="type === 'EL'" class="badge-pill badge-secondary font-weight-bold">Les marchés en litiges</span>
+                                                                    <span *ngIf="type === 'ER'" class="badge-pill badge-secondary font-weight-bold">Les marchés Résiliés</span>
+                                                                    <span *ngIf="type === 'D'" class="badge-pill badge-secondary font-weight-bold">Tableau récaputulatif</span>
+                                                                </div>
+                                                                <p-table [value]="activites" [paginator]="true" [rows]="7" selectionMode="single" [(selection)]="selectedActivite">
+                                                                    <ng-template pTemplate="header">
+                                                                        <tr>
+                                                                            <th width="40%">Marchés</th>
+                                                                            <th>Date Lancement</th>
+                                                                            <th>Date Butoire</th>
+                                                                            <th>Budget</th>
+                                                                            <th class="text-center" width="6%"></th>
+                                                                        </tr>
+                                                                    </ng-template>
+                                                                    <ng-template pTemplate="body" let-activite>
+                                                                        <tr [pSelectableRow]="activite">
+                                                                            <td>{{activite?.codeLignePlan+'-'+activite?.naturePrestationLibelle}}</td>
+                                                                            <td>{{activite?.ppmActivite?.periodeLancementAppel | date:'dd/MM/yyyy'}}</td>
+                                                                            <td>{{activite?.ppmActivite?.dateButtoire | date:'dd/MM/yyyy'}}</td>
+                                                                            <td>{{activite.ppmActivite?.creditDisponible | number}}</td>
+                                                                            <td class="text-center">
+                                                                                <button pButton class="ui-button-secondary text-info" icon="fa fa-eye" (click)="showDetailActivite(activite)">
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </ng-template>
+                                                                    <ng-template pTemplate="emptymessage" let-columns>
+                                                                        <tr>
+                                                                            <td colspan="4" align="center"><span class="text-danger"> Aucun marché trouvés ! </span></td>
+                                                                        </tr>
+                                                                    </ng-template>
+                                                                </p-table>
+                                                                <div class="mt-1 container progressClass" *ngIf="selectedActivite.id !== undefined">
+                                                                    <h6 class="text-center">Niveau de réalisation</h6>
+                                                                    <p-progressBar [value]="selectedActivite.etatAvancement"></p-progressBar>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </p-tabPanel>
+                        <p-tabPanel header="Etats">
+                            <p-tabView>
+                                <p-tabPanel header="Tous les marchés" (click)="onIncateurClick('')">
+                                    <p-table [value]="activites" [paginator]="true" [rows]="7" selectionMode="single" [(selection)]="selectedActivite">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th width="40%">Marchés</th>
+                                                <th>Date Lancement</th>
+                                                <th>Date Butoire</th>
+                                                <th>Budget</th>
+                                                <th class="text-center" width="6%">Etat</th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-activite>
+                                            <tr [pSelectableRow]="activite">
+                                                <td>{{activite?.codeLignePlan+'-'+activite?.naturePrestationLibelle}}</td>
+                                                <td>{{activite?.ppmActivite?.periodeLancementAppel | date:'dd/MM/yyyy'}}</td>
+                                                <td>{{activite?.ppmActivite?.dateButtoire | date:'dd/MM/yyyy'}}</td>
+                                                <td>{{activite?.ppmActivite?.creditDisponible | number}}</td>
+                                                <td>{{activite?.etat }}</td>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="emptymessage" let-columns>
+                                            <tr>
+                                                <td colspan="4" align="center"><span class="text-danger"> Aucun marché trouvés ! </span></td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                    <br/>
+                                    <button type="button" pButton class="ui-button-secondary text-primary"
+                                            label="Imprimer" (click)="imprimeAllMarche()">
+                                    </button>
+                                </p-tabPanel>
+                                <p-tabPanel header="Marchés en cours">
+                                    <button type="button" pButton class="ui-button-secondary text-primary"
+                                            label="Imprimer" (click)="imprimeAllMarche()">
+                                    </button>
+                                </p-tabPanel>
+                                <p-tabPanel header="Marchés exécutés">
+                                    <button type="button" pButton class="ui-button-secondary text-primary"
+                                            label="Imprimer" (click)="imprimeAllMarche()">
+                                    </button>
+                                </p-tabPanel>
+                                <p-tabPanel header="Marchés en litiges">
+                                    <button type="button" pButton class="ui-button-secondary text-primary"
+                                            label="Imprimer" (click)="imprimeAllMarche()">
+                                    </button>
+                                </p-tabPanel>
+                                <p-tabPanel header="Marchés résiliés">
+                                    <button type="button" pButton class="ui-button-secondary text-primary"
+                                            label="Imprimer" (click)="imprimeAllMarche()">
+                                    </button>
+                                </p-tabPanel>
+                            </p-tabView>
+                        </p-tabPanel>
+                        <p-tabPanel header="A Propos">
+                            Le Système de Gestion Intégrée des Marchés Publics (SGIMP) du MENAPLN est un outil de suivi de la mise en oeuvre des PPM du MENAPLN. Il offre une traçabilité dans la mise en oeuvre des activités, permet une gestion efficaces des marchés publics. Il intègre
+                            un système de notification et d'archivage.
+                        </p-tabPanel>
+                    </p-tabView>
+                </div>
+                &lt;!&ndash;/main col&ndash;&gt;
+            </div>
+        </div>
+    </div>-->
+</div>
+
+<!--<p-dialog header="Détail sur la ligne selectionnée" [(visible)]="display" [modal]="true" [responsive]="true"
+          [style]="{width: '60%', minWidth: '300px'}" [baseZIndex]="10000">
+    <p-tabView>
+        <p-tabPanel header="Les lots" leftIcon="fa fa-wpforms" [selected]="true">
+            <div style="height: 25em; overflow: auto">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                    La ligne PPM: <span class="font-weight-bold">{{selectedActivite?.codeLignePlan + '-' + selectedActivite?.naturePrestationLibelle}}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1" class="text-center">
+                                    Nombre de lot : <span class="font-weight-bold badge-pill badge-secondary">{{selectedActivite?.lotInfoDTOS?.length}}</span>
+                                </td>
+                                <td colspan="2" class="text-center">
+                                    Niveau avancement : <span class="font-weight-bold badge-pill badge-secondary">{{selectedActivite?.etatAvancement|number}}{{' %'}}</span>
+                                </td>
+                                <td colspan="1" class="text-center">
+                                    Etat : <span class="font-weight-bold badge-pill badge-secondary">{{selectedActivite?.etatMarche}}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Lot</td>
+                                <td>Contrat signé le</td>
+                                <td>Atributaire</td>
+                                <td>Situation</td>
+                            </tr>
+                            <tr *ngFor="let lot of selectedActivite?.lotInfoDTOS">
+                                <td>
+                                    <span class="font-weight-bold">{{lot?.libelle}}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="font-weight-bold">{{lot?.dateSignatureContrat | date:'dd/MM/yyyy'}}
+                                </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="font-weight-bold">{{lot?.titulaire?.candidat?.nomStructure}}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge-pill badge-info" *ngIf="lot?.situation.toString().includes('cours')">
+                                <span class="font-weight-bold">{{lot?.situation}}</span>
+                                    </span>
+                                    <span class="badge-pill badge-warning" *ngIf="lot?.situation.toString().includes('contentieux')">
+                                 <span class="font-weight-bold">{{lot?.situation}}</span>
+                                    </span>
+                                    <span class="badge-pill badge-danger" *ngIf="lot?.situation.toString().includes('resilié')">
+                                <span class="font-weight-bold">{{lot?.situation}}</span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </p-tabPanel>
+        <p-tabPanel header="Les taches" leftIcon="fa fa-tasks">
+            <div style="height: 25em; overflow: auto">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    La ligne PPM: <span class="font-weight-bold">{{selectedActivite?.codeLignePlan + '-' + selectedActivite?.naturePrestationLibelle}}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1" class="text-center">
+                                    Nombre de lot : <span class="font-weight-bold badge-pill badge-secondary">{{selectedActivite?.lotInfoDTOS?.length}}</span>
+                                </td>
+                                <td colspan="2" class="text-center">
+                                    Niveau avancement : <span class="font-weight-bold badge-pill badge-secondary">{{selectedActivite?.etatAvancement|number}}{{' %'}}</span>
+                                </td>
+                                <td colspan="2" class="text-center">
+                                    Etat : <span class="font-weight-bold badge-pill badge-secondary">{{selectedActivite?.etatMarche}}</span>
+                                </td>
+                            </tr>
+                            <tr class="text-center">
+                                <td>Tache</td>
+                                <td>Date debut</td>
+                                <td>Date fin</td>
+                                <td>Etat avancement</td>
+                                <td>Etat</td>
+                            </tr>
+                            <tr *ngFor="let tache of selectedActivite?.taches">
+                                <td><span class="font-weight-bold">{{tache?.libelle}}</span></td>
+                                <td>
+                                    <span class="font-weight-bold">
+                                {{tache?.dateDebut | date:'dd/MM/yyyy'}}
+                            </span>
+                                </td>
+                                <td>
+                                    <span class="font-weight-bold">
+                                {{tache?.dateFin | date:'dd/MM/yyyy'}}
+                            </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="font-weight-bold">
+                                <span class="badge-pill badge-secondary">
+                                    {{tache?.etatAvancement+' %'}}
+                                </span>
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="font-weight-bold">
+                                <span *ngIf="tache?.etatAvancement < 30">
+                                    <span class="badge-pill badge-warning">{{tache?.etat}}</span>
+                                    </span>
+                                    <span *ngIf="tache?.etatAvancement > 30 && tache?.etatAvancement < 70">
+                                    <span class="badge-pill badge-info">{{tache?.etat}}</span>
+                                    </span>
+                                    <span *ngIf="tache?.etatAvancement > 70">
+                                    <span class="badge-pill badge-success">{{tache?.etat}}</span>
+                                    </span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </p-tabPanel>
+    </p-tabView>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger" label="Fermer" (click)="showDetailActivite(null)"></button>
+        </div>
+    </p-footer>
+</p-dialog>-->

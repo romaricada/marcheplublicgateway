@@ -1,0 +1,534 @@
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DE DELIBERATION</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_DELIBERATION_ADD'" (click)="add(null)"
+                            [disabled]="lot===null || deliberations?.length > 0"
+                            class="ui-button-secondary text-primary"
+                            icon="fa fa-plus" label="Ajouter une deliberation" pButton
+                            type="button">
+                    </button>
+                    <button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_DELIBERATION_DELETE'" (click)="supprimer()"
+                            [disabled]="deliberationSelected?.length<1"
+                            class="ui-button-secondary text-danger"
+                            icon="fa fa-times"
+                            label="Supprimer des deliberations" pButton type="button">
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <p-toolbar>
+        <div class="ui-toolbar-group-left">
+            <div class="ui-g ui-g-12 ui-g-nopad">
+                <div class="ui-inputgroup mr-1">
+                    <span class="ui-inputgroup-addon"><span class="font-weight-bold">Avis dac</span></span>
+                    <p-dropdown (onChange)="loadLoByAvisDac()" [(ngModel)]="avisdac"
+                                [options]="avisdacs" [style]="{'width': '320px'}"
+                                filter="filter" optionLabel="nomAvisDac" placeholder="Selectionner un avis dac" required
+                                showClear="showClear">
+                    </p-dropdown>
+                </div>
+                <div class="ui-inputgroup mr-1">
+                    <span class="ui-inputgroup-addon"><span class="font-weight-bold">Lot</span></span>
+                    <p-dropdown (onChange)="lotChange()" [(ngModel)]="lot" [disabled]="avisdac===null" [options]="lots"
+                                [style]="{'width': '320px'}" filter="filter" optionLabel="description"
+                                placeholder="Selectionner un lot" required showClear="showClear">
+                    </p-dropdown>
+                </div>
+            </div>
+        </div>
+        <div class="ui-toolbar-group-right">
+            <div class="text-right">
+                <div *ngIf="index==0">
+                    <input (input)="dataTable1.filterGlobal($event.target.value, 'contains')" pInputText
+                           placeholder="Rechercher une delibération" size="30"
+                           style="width:auto" type="text">
+                    <button (click)="loadSoumissionnaire()" [ngbTooltip]="'Raffraichir'" [placement]="'top'"
+                            icon="fa fa-refresh"
+                            label="Actualiser"
+                            pButton type="button">
+                    </button>
+                </div>
+                <div *ngIf="index==1">
+                    <input (input)="dataTable2.filterGlobal($event.target.value, 'contains')" pInputText
+                           placeholder="Rechercher un attributaire" size="30"
+                           style="width:auto" type="text">
+                    <button (click)="actualisation()" [ngbTooltip]="'Raffraichir'" [placement]="'top'"
+                            icon="fa fa-refresh"
+                            label="Actualiser"
+                            pButton type="button">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <div class="header-position">
+        <p-tabView (onChange)="onTabChange($event)">
+            <p-tabPanel [disabled]="lot===null" [selected]="true" header="Deliberation d'un marché">
+                <div class="col-sm-12 my-header-content">
+                    <div class="table-responsive">
+                        <p-table #dataTable1 [(selection)]="deliberationSelected"
+                                 [globalFilterFields]="['description','id','valide','date']"
+                                 [paginator]="true"
+                                 [responsive]="true" [rows]="20" [value]="deliberations" aria-describedby="page-heading"
+                                 class="table table-striped" dataKey="id"
+                                 selectionMode="single">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width: 3em">
+                                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                    </th>
+                                    <th>Description</th>
+                                    <th>Date</th>
+                                    <th>Validation d'un marché</th>
+                                    <th>Etat du marché</th>
+                                    <th style="width:50em">Actions</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template let-deliberation pTemplate="body" style="width: 170em">
+                                <tr>
+                                    <td style="width: 70em">
+                                        <p-tableCheckbox [value]="deliberation"></p-tableCheckbox>
+                                    </td>
+                                    <td [innerHTML]="deliberation.description"></td>
+                                    <td>{{deliberation.date | date:'mediumDate'}}</td>
+                                    <td class="text-center" height="100%" width="70%">
+                                        <span *ngIf="!deliberation?.valide" class="badge badge-pill badge-danger">En attente de validation</span>
+                                        <span *ngIf="deliberation?.valide" class="badge badge-pill badge-success">Valider</span>
+                                    </td>
+                                    <td class="text-center" height="100%" width="70%">
+                                        <span *ngIf="!deliberation?.etatMarche" class="badge badge-pill badge-danger">Infructueux</span>
+                                        <span *ngIf="deliberation?.etatMarche" class="badge badge-pill badge-success">Fructueux</span>
+                                    </td>
+                                    <td class="text-right" >
+                                        <div class="btn-group">
+                                            <span *ngIf="!deliberation?.valide">
+                                                <button (click)="updateDeliberationIsvalide(deliberation,true)"
+                                                        class="ui-button-secondary text-success" icon="pi pi-check"
+                                                        label="Valider" pButton
+                                                        pTooltip="Valider"
+                                                        tooltipPosition="top">
+                                                </button>
+                                            </span>
+                                            <span *ngIf="deliberation?.valide">
+                                                 <button (click)="updateDeliberationIsvalide(deliberation,false)"
+                                                         class="ui-button-secondary text-danger" icon="pi pi-times"
+                                                         label="Invalider" pButton
+                                                         pTooltip="Invalider"
+                                                         tooltipPosition="top">
+                                                 </button>
+                                            </span>
+                                            <span *ngIf="!deliberation?.etatMarche">
+                                                <button (click)="updateDeliberationIsvalideetatMarche(deliberation,true)"
+                                                        class="ui-button-secondary text-success" icon="pi pi-check"
+                                                        label="Fructueux" pButton
+                                                        pTooltip=" Rendre fructueux"
+                                                        tooltipPosition="top">
+                                                </button>
+                                            </span>
+                                            <span *ngIf="deliberation?.etatMarche">
+                                                 <button (click)="updateDeliberationIsvalideetatMarche(deliberation,false)"
+                                                         class="ui-button-secondary text-danger" icon="pi pi-times"
+                                                         label="Infructueux" pButton
+                                                         pTooltip="Rendre infructueux"
+                                                         tooltipPosition="top">
+                                                 </button>
+                                            </span>
+
+                                            <button
+                                                [routerLink]="['/create-tache', {id1:avisdac?.id,id2:lot?.id,id3:deliberation?.id}]"
+                                                class="ui-button-secondary text-info" icon="fa fa-tasks"
+                                                label="Tâche"
+                                                pButton pTooltip="Tâche" tooltipPosition="right"
+                                                type="button">
+                                            </button>
+
+                                            <button (click)="getFiles(deliberation)" [disabled]="lot===null"
+                                                    class="ui-button-secondary text-warning"
+                                                    icon="fa fa-paperclip"
+                                                    pButton pTooltip="Joindre un fichier"
+                                                    type="button">
+
+                                            </button>
+                                            <button (click)="imprimerDelib(deliberation)" [disabled]="lot===null"
+                                                    class="ui-button-secondary text-warning"
+                                                    icon="fa fa-print"
+                                                    label="Imprimer" pButton
+                                                    type="button">
+                                            </button>
+                                            <button (click)="add(deliberation)" [disabled]="lot===null"
+                                                    class="ui-button-secondary text-warning"
+                                                    icon="fa fa-edit"
+                                                    label="Modifier" pButton
+                                                    type="button">
+                                            </button>
+
+                                            <button (click)="deleteElement(deliberation)"
+                                                    class="ui-button-secondary text-danger"
+                                                    icon="fa fa-remove"
+                                                    label="Supprimer" pButton type="button">
+                                            </button>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td align="center" colspan="5"><span
+                                        class="text-danger"> Aucune donnée trouvée ! </span></td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                    <p-dialog (onHide)="annuler()" [(visible)]="display" [baseZIndex]="10000"
+                              [maximizable]="true"
+                              [modal]="true" [responsive]="true" [style]="{width: '90%', heigth: '40%'}"
+                              header="Création/Modification d'une deliberation">
+                        <form #editForm="ngForm" (ngSubmit)="save()" name="editForm" novalidate role="form">
+                            <div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <h6 class="font-weight-bold">Description</h6>
+                                        <p-editor [(ngModel)]="deliberation.description" [style]="{'height':'70px'}"
+                                                  name="description" required>
+                                            <p-header>
+                            <span class="ql-formats">
+                                <button aria-label="Bold" class="ql-bold"></button>
+                                <button aria-label="Italic" class="ql-italic"></button>
+                                <button aria-label="Underline" class="ql-underline"></button>
+                            </span>
+                                            </p-header>
+                                        </p-editor>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label class="form-control-label" for="field_date">Date de
+                                                deliberation</label>
+                                            <div class="input-group">
+                                                <input #dateDp="ngbDatepicker" [(ngModel)]="deliberation.date"
+                                                       class="form-control" id="field_date"
+                                                       name="date"
+                                                       ngbDatepicker
+                                                       required type="text"/>
+                                                <span class="input-group-append">
+                            <button (click)="dateDp.toggle()" class="btn btn-secondary" type="button"><fa-icon
+                                [icon]="'calendar-alt'"></fa-icon></button>
+                        </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <fieldset>
+                            <legend>Liste des soumissionnaires</legend>
+                            <div class="table-responsive">
+                                <p-table [globalFilterFields]="['description','id','valide','date']"
+                                         [paginator]="true"
+                                         [rows]="7" [value]="deliberation.candidatLots" aria-describedby="page-heading"
+                                         class="table table-striped" dataKey="id"
+                                         selectionMode="single">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th>Nom de la structure</th>
+                                            <th>Adresse</th>
+                                            <th>Email</th>
+                                            <th>Montant lut de l'offre</th>
+                                            <th>Montant corrigé </th>
+                                            <th>Nombre de points</th>
+                                            <th>Rang</th>
+                                            <th>Observation</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template let-candidatLolListe pTemplate="body">
+                                        <tr [pEditableRow]="candidatLolListe">
+                                            <td>{{candidatLolListe?.candidat?.nomStructure}}</td>
+                                            <td>{{candidatLolListe?.candidat?.adresse}}</td>
+                                            <td>{{candidatLolListe?.candidat?.email}}</td>
+                                            <td>{{candidatLolListe?.montantLuTtc | formatTableValue:'number': true}}</td>
+                                            <td pEditableColumn>
+                                                <p-cellEditor>
+                                                    <ng-template pTemplate="input">
+                                                        <input [(ngModel)]="candidatLolListe.montantCorrigeTtc"
+                                                               name="nombrePoint" pInputText
+                                                               type="number">
+                                                    </ng-template>
+                                                    <ng-template pTemplate="output">
+                                                        {{candidatLolListe?.montantCorrigeTtc | formatTableValue:'number': true}}
+                                                    </ng-template>
+                                                </p-cellEditor>
+                                            </td>
+                                            <td pEditableColumn>
+                                                <p-cellEditor>
+                                                    <ng-template pTemplate="input">
+                                                        <input [(ngModel)]="candidatLolListe.nombrePoint"
+                                                               name="nombrePoint" pInputText
+                                                               type="number">
+                                                    </ng-template>
+                                                    <ng-template pTemplate="output">
+                                                        {{candidatLolListe?.nombrePoint}}
+                                                    </ng-template>
+                                                </p-cellEditor>
+                                            </td>
+                                            <td pEditableColumn>
+                                                <p-cellEditor>
+                                                    <ng-template pTemplate="input">
+                                                        <input [(ngModel)]="candidatLolListe.rang"
+                                                               name="rang" pInputText
+                                                               type="number">
+                                                    </ng-template>
+                                                    <ng-template pTemplate="output">
+                                                        {{candidatLolListe?.rang}}
+                                                    </ng-template>
+                                                </p-cellEditor>
+                                            </td>
+                                            <td pEditableColumn>
+                                                <p-cellEditor>
+                                                    <ng-template pTemplate="input">
+                                                        <input [(ngModel)]="candidatLolListe.observation"
+                                                               name="observation" pInputText
+                                                               type="text">
+                                                    </ng-template>
+                                                    <ng-template pTemplate="output">
+                                                        {{candidatLolListe?.observation}}
+                                                    </ng-template>
+                                                </p-cellEditor>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Joindre des fichiers</legend>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label>Fichiers à joindre</label>
+                                    <input type="file" name="file" class="form-control" multiple
+                                           (change)="setFileData($event)">
+                                    <ul>
+                                        <li *ngFor="let file of fichiers">
+                                            <span class="mt-2">{{file?.name}}</span>
+                                            <span class="mt-2">{{file?.size}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <p-footer>
+                            <div class="ui-dialog-buttonpane text-center">
+                                <button (click)='annuler()' class="ui-button-secondary text-danger" icon="fa fa-close"
+                                        label="Fermer"
+                                        pButton type="button"></button>
+                                <button (click)='save()' [disabled]="editForm.invalid || isSaving"
+                                        class="ui-button-secondary text-info" icon="fa fa-save"
+                                        label="Enregistrer"
+                                        pButton type="submit">
+                                </button>
+                            </div>
+                        </p-footer>
+                    </p-dialog>
+
+                    <p-dialog (onHide)="annuler()" [(visible)]="displayDelete" [baseZIndex]="10000" [maximizable]="true"
+                              [minY]="70"
+                              [modal]="true" [responsive]="true" [style]="{width: '50%', minWidth: '200px'}"
+                              header="Supprimer">
+
+                        <p-table [value]="deliberationSelected" dataKey="id">
+                            <ng-template let-columns pTemplate="header">
+                                <tr>
+                                    <th scope="col"><span>ID</span></th>
+                                    <th scope="col"><span>Description</span></th>
+                                    <th scope="col"><span>DATE</span></th>
+                                    <th scope="col"><span>Montant lu</span></th>
+                                    <th scope="col"><span>Montant corrigé</span></th>
+                                    <th scope="col"><span>Observation</span></th>
+                                    <th scope="col"><span>VALIDE</span></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template let-columns="columns" let-deliberation pTemplate="body">
+                                <tr>
+                                    <td>{{deliberation.id}}</td>
+                                    <td [innerHTML]="deliberation.description"></td>
+                                    <td>{{deliberation.date | date:'mediumDate'}}</td>
+                                    <td>
+                                        <span *ngIf="!deliberation.valide" class="badge badge-pill badge-danger">Invalider</span>
+                                        <span *ngIf="deliberation.valide"
+                                              class="badge badge-pill badge-success">Valider</span>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                        </p-table>
+                        <p-footer>
+                            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+                                <button (click)='annulerDelete()' class="ui-button-secondary text-info"
+                                        icon="fa fa-close" label="Fermer"
+                                        pButton type="button">
+                                </button>
+                                <button (click)="deleteAll()" [disabled]="editForm.valid || isSaving"
+                                        class="ui-button-secondary text-danger" icon="fa fa-times"
+                                        label="Confirmer"
+                                        pButton type="button">
+                                </button>
+                            </div>
+                        </p-footer>
+                    </p-dialog>
+
+                    <!-- Liste des fichier join -->
+                    <p-dialog [(visible)]="showFicModal" [style]="{width: '50%', height: '200px'}">
+                        <p-header>
+                            Fichiers
+                        </p-header>
+                        <p-table [value]="dataFiles" [scrollable]="true" scrollHeight="200px">
+                            <ng-template pTemplate="caption">
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <input type="file" name="file" class="form-control" multiple
+                                               (change)="setFileAddData($event)">
+                                    </div>
+
+                                    <div class="col-sm-4 text-right">
+                                        <span *ngIf="isSaving">
+                                            <img src="../../../../content/images/ajax-loader.gif"/>
+                                        </span>
+                                        <button type="button" class="ui-button-secondary text-primary"
+                                                [disabled]="fileListe==undefined || isSaving"
+                                                pButton (click)="addFile()"
+                                                label="Uploader" icon="fa fa-save">
+                                        </button>
+                                    </div>
+                                    <span class="text-center" *ngIf="isLoading">
+                                            <br>
+                                            <img src="../../../../content/images/ajax-loader.gif"/> Chargement en cours...
+                                        </span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Name</th>
+                                    <th width="30%">Action</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-fichier>
+                                <tr>
+                                    <td>{{fichier.fileName}}</td>
+                                    <td width="30%">
+                                        <button type="button" class="ui-button-secondary text-primary" pButton
+                                                (click)="dowloadFichier(fichier)"
+                                                label="Télécharger" icon="fa fa-download"></button>
+                                        <button type="button" class="ui-button-secondary text-danger" icon="fa fa-trash"
+                                                pButton
+                                                (click)="retirerFihier(fichier)"
+                                                label="Retirer"></button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <p-footer>
+                        </p-footer>
+                    </p-dialog>
+                </div>
+            </p-tabPanel>
+            <p-tabPanel [disabled]="lot===null" header="Attribution d'un marché">
+                <div class="col-sm-12 my-header-content">
+                    <div class="table-responsive">
+                        <p-table #dataTable2
+                                 [globalFilterFields]="['candidat.nomStructure','candidat.adresse','candidat.email','montant']"
+                                 [paginator]="true"
+                                 [rows]="20" [value]="soumissionnairesLot" aria-describedby="page-heading"
+                                 class="table table-striped" dataKey="id"
+                                 selectionMode="single">
+                            <ng-template pTemplate="caption">
+                                <span>Liste des somissionnaires au lot {{lot?.libelle}}</span>
+                            </ng-template>
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width: 3em">
+                                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                    </th>
+                                    <th>Nom de la structure</th>
+                                    <th>Adresse</th>
+                                    <th>Email</th>
+                                    <th>Montant</th>
+                                    <th>Nombre de points</th>
+                                    <th>Rang</th>
+                                    <th>Status du soumissionnaire</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template let-candidatLot pTemplate="body">
+                                <tr [pEditableRow]="candidatLot">
+                                    <td style="width: 3em">
+                                        <p-tableCheckbox [value]="candidatLot"></p-tableCheckbox>
+                                    </td>
+                                    <td>{{candidatLot?.candidat?.nomStructure}}</td>
+                                    <td>{{candidatLot?.candidat?.adresse}}</td>
+                                    <td>{{candidatLot?.candidat?.email}}</td>
+                                    <td>{{candidatLot?.montantCorrigeTtc | formatTableValue: 'number': true}}</td>
+                                    <td>{{candidatLot?.nombrePoint}}</td>
+                                    <td>{{candidatLot?.rang}}</td>
+                                    <td class="text-center" height="100%" width="70%">
+                                        <span *ngIf="!candidatLot?.attributaire" class="badge badge-pill badge-danger">Non Attributaire</span>
+                                        <span *ngIf="candidatLot?.attributaire" class="badge badge-pill badge-success">Attributaire</span>
+                                    </td>
+                                    <td class="text-center" width="30%">
+                        <span *ngIf="!candidatLot?.attributaire">
+                        <button (click)="selectionDeLattributaire(candidatLot,true)" class="ui-button-success"
+                                icon="pi pi-check"
+                                label="Attribuer" pButton
+                                pTooltip="Attribuer"
+                                tooltipPosition="top">
+                        </button>
+                        </span>
+                                        <span *ngIf="candidatLot?.attributaire">
+                             <button (click)="selectionDeLattributaire(candidatLot,false)" class="ui-button-danger"
+                                     icon="pi pi-times"
+                                     label="Retirer" pButton
+                                     pTooltip="Retirer"
+                                     tooltipPosition="top">
+                            </button>
+                        </span>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template let-columns pTemplate="emptymessage">
+                                <tr>
+                                    <td align="center" colspan="7"><span
+                                        class="text-danger"> Aucune donnée trouvée ! </span></td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </p-tabPanel>
+        </p-tabView>
+    </div>
+
+
+    <p-confirmDialog #cd class="text-warning" header="Confirmation" icon="pi pi-exclamation-triangle">
+        <p-footer>
+            <button (click)="cd.reject()" class="ui-button-secondary text-danger" icon="pi pi-times"
+                    label="NON"
+                    pButton
+                    type="button"></button>
+            <button (click)="cd.accept()" class="ui-button-secondary text-danger" icon="pi pi-check"
+                    label="OUI"
+                    pButton
+                    type="button"></button>
+        </p-footer>
+    </p-confirmDialog>
+    <p-toast [style]="{marginTop: '80px'}" key="myKey" position="top-center"></p-toast>
+</div>
+
+

@@ -1,0 +1,38 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmReferentielDelai": {
+      "home": {
+        "title": "Referentiel Delais",
+        "createLabel": "Create a new Referentiel Delai",
+        "createOrEditLabel": "Create or edit a Referentiel Delai",
+        "notFound": "No Referentiel Delais found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Referentiel Delai {{ id }}?"
+      },
+      "detail": {
+        "title": "Referentiel Delai"
+      },
+      "norme": "Norme",
+      "referentiel": "Referentiel",
+      "normeMin": "Norme Min",
+      "referentielMin": "Referentiel Min",
+      "normeMax": "Norme Max",
+      "referentielMax": "Referentiel Max",
+      "observation": "Observation",
+      "normeOuvrable": "Norme Ouvrable",
+      "referentielOuvrable": "Referentiel Ouvrable",
+      "deleted": "Deleted",
+      "etape": "Etape",
+      "acteur": "Acteur",
+      "modePassation": "Mode Passation"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmReferentielDelai": {
+      "created": "A new Referentiel Delai is created with identifier {{ param }}",
+      "updated": "A Referentiel Delai is updated with identifier {{ param }}",
+      "deleted": "A Referentiel Delai is deleted with identifier {{ param }}"
+    }
+  }
+}

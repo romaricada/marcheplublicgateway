@@ -1,0 +1,326 @@
+<div>
+    <!--le toolbar en haut de la page-->
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DU SUIVI DE L'EXECUTION DES
+                    MARCHES</label>
+            </div>
+            <!--
+                        <div class="ui-g-12 ui-md-5 p-2">
+                            <div class="float-right">
+                                <button type="button" pButton class="ui-button-secondary text-primary"
+                                        icon="fa fa-plus" (click)="creeTache()" label="Créer une tâche">
+                                </button>
+                            </div>
+                        </div>
+            -->
+        </div>
+    </p-toolbar>
+    <!--
+        <div class="text-center" [hidden]="activite">
+            <h4><span class="badge badge-secondary text-center">Selectionner les filtres pour voir les différentes tâches!!</span></h4>
+        </div>
+    -->
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="form-group ml-4">
+                <label class="form-control-label"> <span class="badge badge-primary">1</span>&nbsp;Exercice</label>
+                <p-dropdown [options]="exercices" [(ngModel)]="exercice" optionLabel="annee" filter="filter"
+                            showClear="showClear"
+                            placeholder="selectionner un exercice" [resetFilterOnHide]='true' [style]="{'width':'15em'}"
+                            (onChange)="exerciciceChange()">
+                </p-dropdown>
+            </div>
+        </div>
+        <div class="col-sm-2 mr-4">
+            <label class="form-control-label"> <span class="badge badge-primary">2</span>&nbsp;Activité</label>
+            <p-dropdown [options]="activites" [(ngModel)]="activite" optionLabel="nomActivite" filter="filter"
+                        showClear="showClear"
+                        [disabled]="!exercice" placeholder="Selectionner une activité" [resetFilterOnHide]="true"
+                        [style]="{'width':'19em'}" (onChange)="activiteChange()">
+            </p-dropdown>
+        </div>
+        <div class="col-sm-2">
+            <label class="form-control-label"> <span class="badge badge-primary">3</span>&nbsp;Lot</label>
+            <p-dropdown [options]="lots" [(ngModel)]="lot" optionLabel="libelle" filter="filter" showClear="showClear"
+                        [disabled]="activite?.id === undefined" placeholder="Selectionner un lot"
+                        [resetFilterOnHide]="true"
+                        [style]="{'width':'15em'}" (onChange)="filterTache()">
+            </p-dropdown>
+        </div>
+    </div>
+
+
+    <div class="container-fluid">
+
+        <p-tabView (onChange)="tabViewChange($event)">
+            <!--<p-table [value]="taches" rules="none" *ngIf="!etape">-->
+            <p-tabPanel header="Toutes les Tâches" leftIcon="fa fa-globe" [disabled]="activite?.id === undefined">
+                <p-dataView [value]="taches" emptyMessage="Aucune tâche trouvée !">
+                    <p-header>
+                                 <span [hidden]="!activite"><h5 class="font-weight-bold">Toutes les tâches de l'activité :<span
+                                     class="badge badge-secondary text-center">{{activite?.nomActivite}}</span><span
+                                     class="font-weight-bold" [hidden]="!lot">et du lot :<span
+                                     class="badge badge-secondary text-center">{{lot?.libelle}}</span></span></h5></span>
+                    </p-header>
+                    <ng-template let-tache pTemplate="listItem">
+                        <div class="car-details">
+                            <div class="row">
+                                <span class="col-sm-4">
+                                    <span class="font-weight-bold">{{tache.libelle}}</span><br>
+                                    <span [innerHTML]="tache.description"></span>
+                                </span>
+                                <span class="col-sm-2"><span
+                                    class="font-weight-bold">Date debut: </span> {{tache.dateDebut}}</span>
+                                <span class="col-sm-2"><span
+                                    class="font-weight-bold">Date fin: </span> {{tache.dateFin}}</span>
+                                <span class="col-sm-2"><span class="font-weight-bold">Etat: </span>
+                                                    <span *ngIf="tache.etat === 'INITIAL'"
+                                                          class="badge-warning badge-pill">Initial</span>
+                                                    <span *ngIf="tache.etat === 'ENCOURS'"
+                                                          class="badge-info badge-pill"> En cours</span>
+                                                    <span *ngIf="tache.etat === 'TERMINE'"
+                                                          class="badge-success badge-pill">Terminée</span>
+                                </span>
+                                <span class="col-sm-2 font-weight-bold"><span
+                                    class="font-weight-bold">Avancement: </span>
+                                    <span *ngIf="tache.etat === 'INITIAL'"
+                                          class="badge-warning badge-pill">{{tache.etatAvancement}} %</span>
+                                    <span *ngIf="tache.etat === 'ENCOURS'"
+                                          class="badge-info badge-pill"> {{tache.etatAvancement}} %</span>
+                                    <span *ngIf="tache.etat === 'TERMINE'"
+                                          class="badge-success badge-pill">{{tache.etatAvancement}} %</span>
+                                    </span>
+                            </div>
+                            <hr style="border: 1px solid">
+                        </div>
+                    </ng-template>
+                </p-dataView>
+            </p-tabPanel>
+            <p-tabPanel header="Tâches Initiées" leftIcon="fa fa-play" [disabled]="activite?.id === undefined">
+                <p-dataView [value]="taches" emptyMessage="Aucune tâche trouvée !">
+                    <p-header>
+                                 <span [hidden]="!activite"><h5 class="font-weight-bold">Les tâches initiées de l'activité :<span
+                                     class="badge badge-warning text-center">{{activite?.nomActivite}}</span><span
+                                     class="font-weight-bold" [hidden]="!lot">et du lot :<span
+                                     class="badge badge-warning text-center">{{lot?.libelle}}</span></span></h5></span>
+                    </p-header>
+                    <ng-template let-tache pTemplate="listItem">
+                        <div class="car-details">
+                            <div class="row">
+                                <span class="col-sm-4">
+                                    <span class="font-weight-bold">{{tache.libelle}}</span><br>
+                                    <span [innerHTML]="tache.description"></span>
+                                </span>
+                                <span class="col-sm-2"><span
+                                    class="font-weight-bold">Date debut: </span> {{tache.dateDebut}}</span>
+                                <span class="col-sm-2"><span
+                                    class="font-weight-bold">Date fin: </span> {{tache.dateFin}}</span>
+                                <span class="col-sm-2"><span class="font-weight-bold">Etat: </span>
+                                                    <span *ngIf="tache.etat === 'INITIAL'"
+                                                          class="badge-warning badge-pill">Initial</span>
+                                                    <span *ngIf="tache.etat === 'ENCOURS'"
+                                                          class="badge-info badge-pill"> En cours</span>
+                                                    <span *ngIf="tache.etat === 'TERMINE'"
+                                                          class="badge-success badge-pill">Terminée</span>
+                                </span>
+                                <span class="col-sm-2 font-weight-bold"><span
+                                    class="font-weight-bold">Avancement: </span>
+                                    <span *ngIf="tache.etat === 'INITIAL'"
+                                          class="badge-warning badge-pill">{{tache.etatAvancement}} %</span>
+                                    <span *ngIf="tache.etat === 'ENCOURS'"
+                                          class="badge-info badge-pill"> {{tache.etatAvancement}} %</span>
+                                    <span *ngIf="tache.etat === 'TERMINE'"
+                                          class="badge-success badge-pill">{{tache.etatAvancement}} %</span>
+                                    </span>
+                            </div>
+                            <hr style="border: 1px solid">
+                        </div>
+                    </ng-template>
+                </p-dataView>
+
+            </p-tabPanel>
+            <p-tabPanel header="Tâches en Cours" leftIcon="fa fa-recycle" [disabled]="activite?.id === undefined">
+                <p-dataView [value]="taches" emptyMessage="Aucune tâche trouvée !">
+                    <p-header>
+                                 <span [hidden]="!activite"><h5 class="font-weight-bold">Les tâches en cours de l'activité :<span
+                                     class="badge badge-info text-center">{{activite?.nomActivite}}</span><span
+                                     class="font-weight-bold" [hidden]="!lot">et du lot :<span
+                                     class="badge badge-info text-center">{{lot?.libelle}}</span></span></h5></span>
+                    </p-header>
+                    <ng-template let-tache pTemplate="listItem">
+                        <div class="car-details">
+                            <div class="row">
+                                <span class="col-sm-4">
+                                    <span class="font-weight-bold">{{tache.libelle}}</span><br>
+                                    <span [innerHTML]="tache.description"></span>
+                                </span>
+                                <span class="col-sm-2"><span
+                                    class="font-weight-bold">Date debut: </span> {{tache.dateDebut}}</span>
+                                <span class="col-sm-2"><span
+                                    class="font-weight-bold">Date fin: </span> {{tache.dateFin}}</span>
+                                <span class="col-sm-2"><span class="font-weight-bold">Etat: </span>
+                                                    <span *ngIf="tache.etat === 'INITIAL'"
+                                                          class="badge-warning badge-pill">Initial</span>
+                                                    <span *ngIf="tache.etat === 'ENCOURS'"
+                                                          class="badge-info badge-pill"> En cours</span>
+                                                    <span *ngIf="tache.etat === 'TERMINE'"
+                                                          class="badge-success badge-pill">Terminée</span>
+                                </span>
+                                <span class="col-sm-2 font-weight-bold"><span
+                                    class="font-weight-bold">Avancement: </span>
+                                    <span *ngIf="tache.etat === 'INITIAL'"
+                                          class="badge-warning badge-pill">{{tache.etatAvancement}} %</span>
+                                    <span *ngIf="tache.etat === 'ENCOURS'"
+                                          class="badge-info badge-pill"> {{tache.etatAvancement}} %</span>
+                                    <span *ngIf="tache.etat === 'TERMINE'"
+                                          class="badge-success badge-pill">{{tache.etatAvancement}} %</span>
+                                    </span>
+                            </div>
+                            <hr style="border: 1px solid">
+                        </div>
+                    </ng-template>
+                </p-dataView>
+            </p-tabPanel>
+            <p-tabPanel header="Tâches Terminées" leftIcon="fa fa-th-list" [disabled]="activite?.id === undefined">
+                <p-dataView [value]="taches" emptyMessage="Aucune tâche trouvée !">
+                    <p-header>
+                                 <span [hidden]="!activite"><h5 class="font-weight-bold">Les tâches terminées de l'activité :<span
+                                     class="badge badge-success text-center">{{activite?.nomActivite}}</span><span
+                                     class="font-weight-bold" [hidden]="!lot">et du lot :<span
+                                     class="badge badge-success text-center">{{lot?.libelle}}</span></span></h5></span>
+                    </p-header>
+                    <ng-template let-tache pTemplate="listItem">
+                        <div class="car-details">
+                            <div class="row">
+                                <span class="col-sm-4">
+                                    <span class="font-weight-bold">{{tache.libelle}}</span><br>
+                                    <span [innerHTML]="tache.description"></span>
+                                </span>
+                                <span class="col-sm-2"><span
+                                    class="font-weight-bold">Date debut: </span> {{tache.dateDebut}}</span>
+                                <span class="col-sm-2"><span
+                                    class="font-weight-bold">Date fin: </span> {{tache.dateFin}}</span>
+                                <span class="col-sm-2"><span class="font-weight-bold">Etat: </span>
+                                                    <span *ngIf="tache.etat === 'INITIAL'"
+                                                          class="badge-warning badge-pill">Initial</span>
+                                                    <span *ngIf="tache.etat === 'ENCOURS'"
+                                                          class="badge-info badge-pill"> En cours</span>
+                                                    <span *ngIf="tache.etat === 'TERMINE'"
+                                                          class="badge-success badge-pill">Terminée</span>
+                                </span>
+                                <span class="col-sm-2 font-weight-bold"><span
+                                    class="font-weight-bold">Avancement: </span>
+                                    <span *ngIf="tache.etat === 'INITIAL'"
+                                          class="badge-warning badge-pill">{{tache.etatAvancement}} %</span>
+                                    <span *ngIf="tache.etat === 'ENCOURS'"
+                                          class="badge-info badge-pill"> {{tache.etatAvancement}} %</span>
+                                    <span *ngIf="tache.etat === 'TERMINE'"
+                                          class="badge-success badge-pill">{{tache.etatAvancement}} %</span>
+                                    </span>
+                            </div>
+                            <hr style="border: 1px solid">
+                        </div>
+                    </ng-template>
+                </p-dataView>
+            </p-tabPanel>
+            <p-tabPanel header="Etat d'avancement" leftIcon="fa fa-step-forward"
+                        [disabled]="activite?.id === undefined">
+
+                        <span header="Les Etapes" leftIcon="fa  fa-list-ol">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="font-weight-bold">Voir les étapes d'une tâche</span>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group ml-4">
+                                <label class="form-control-label"> <span class="badge badge-primary">1</span>&nbsp;Tâche</label>
+                                <p-dropdown [options]="taches" [(ngModel)]="tache" optionLabel="libelle" filter="filter"
+                                            showClear="showClear"
+                                            placeholder="selectionner une tâche" [resetFilterOnHide]='true'
+                                            [style]="{'width':'105em'}" (onChange)="onTacheChange()">
+                                </p-dropdown>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="container">
+                                 <div class="mb-1 container progressClass col-sm-12"
+                                      *ngIf="tache?.tacheEtapes?.length>0">
+                            <h5 class="text-center"><span>Le niveau d'avancement de la tâche est de <span
+                                class="badge badge-primary">{{tache?.etatAvancement}}</span>%</span>
+                            </h5>
+                            <p-progressBar [value]="tache?.etatAvancement"></p-progressBar>
+                        </div>
+                            </div>
+                        </div>
+
+                                                <div class="card-body">
+                                                    <br>
+                                                    <p-table [value]="tache?.tacheEtapes" scrollHeight="200px"
+                                                             [(selection)]="refToRemove">
+                                                        <ng-template pTemplate="header" let-column>
+                                                            <tr>
+                                                                <th style="width: 40em">Etape</th>
+                                                                <th>Date debut</th>
+                                                                <th>Delai</th>
+                                                                <th>Date de fin</th>
+                                                                <th>etat d'avancement</th>
+
+                                                            </tr>
+                                                        </ng-template>
+                                                        <ng-template pTemplate="body" let-ref let-columns
+                                                                     let-i="rowIndex">
+                                                            <tr [pSelectableRow]="ref" class="ui-widget-header">
+                                                                <td>{{ref.etapeLibelle}}</td>
+                                                                <td>{{ref.dateDebut}}</td>
+                                                                <td>{{ref.delai}}</td>
+                                                                <td>{{ref.dateFin}}</td>
+                                                                <td class="text-center">
+                                                                    <span *ngIf="ref.estRealise"
+                                                                          class="badge-pill badge-success">Validé</span>
+                                                                    <span *ngIf="!ref.estRealise"
+                                                                          class="badge-pill badge-warning">Attente</span>
+                                                                </td>
+                                                            </tr>
+                                                        </ng-template>
+                                                        <ng-template pTemplate="emptymessage" let-columns>
+                                                            <tr>
+                                                                <td colspan="5" align="center"><span
+                                                                    class="text-danger"> Aucune etape trouvée ! </span></td>
+                                                            </tr>
+                                                        </ng-template>
+                                                    </p-table>
+                                                </div>
+                    </div>
+                </span>
+
+
+            </p-tabPanel>
+
+            <span *ngIf="etape" header="Les Etapes" leftIcon="fa  fa-list-ol">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="font-weight-bold">Selection des etapes</span>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <div class="form-group ml-4">
+                                <label class="form-control-label"> <span class="badge badge-primary">1</span>&nbsp;Tâche</label>
+                                <p-dropdown [options]="taches" [(ngModel)]="tache" optionLabel="libelle" filter="filter"
+                                            showClear="showClear"
+                                            placeholder="selectionner une tâche" [resetFilterOnHide]='true'
+                                            [style]="{'width':'15em'}" (onChange)="onTacheChange()">
+                                </p-dropdown>
+                            </div>
+                        </div>
+
+                    </div>
+                </span>
+        </p-tabView>
+
+    </div>
+
+</div>
+

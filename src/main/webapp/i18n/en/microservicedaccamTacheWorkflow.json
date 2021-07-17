@@ -1,0 +1,29 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamTacheWorkflow": {
+      "home": {
+        "title": "Tache Workflows",
+        "createLabel": "Create a new Tache Workflow",
+        "createOrEditLabel": "Create or edit a Tache Workflow",
+        "notFound": "No Tache Workflows found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Tache Workflow {{ id }}?"
+      },
+      "detail": {
+        "title": "Tache Workflow"
+      },
+      "date": "Date",
+      "deleted": "Deleted",
+      "tache": "Tache",
+      "workflow": "Workflow"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamTacheWorkflow": {
+      "created": "A new Tache Workflow is created with identifier {{ param }}",
+      "updated": "A Tache Workflow is updated with identifier {{ param }}",
+      "deleted": "A Tache Workflow is deleted with identifier {{ param }}"
+    }
+  }
+}

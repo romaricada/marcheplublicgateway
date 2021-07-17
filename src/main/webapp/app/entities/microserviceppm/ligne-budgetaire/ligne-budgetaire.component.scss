@@ -1,0 +1,37 @@
+.baniere {
+  border: solid 0.15em;
+  border-radius: 0.3em;
+  height: 3em;
+}
+
+.texte-baniere {
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+h5 {
+  color: #c21f39;
+  align-text: center;
+}
+label {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+fieldset.scheduler-border {
+  border: 1px groove #ddd !important;
+  padding: 0 1.4em 1.4em 1.4em !important;
+  margin: 0 1.5em 0 !important;
+  -webkit-box-shadow:  0px 0px 0px 0px #000;
+  box-shadow:  0px 0px 0px 0px #000;
+  width: 90em;
+}
+
+legend.scheduler-border {
+  border: 1px groove #ddd !important;
+  font-size: 1.4em !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  height: 1.8em;
+  background-color: lightblue;
+}

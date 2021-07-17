@@ -1,0 +1,33 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmTimbre": {
+      "home": {
+        "title": "Timbres",
+        "createLabel": "Create a new Timbre",
+        "createOrEditLabel": "Create or edit a Timbre",
+        "notFound": "No Timbres found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Timbre {{ id }}?"
+      },
+      "detail": {
+        "title": "Timbre"
+      },
+      "code": "Code",
+      "sigle": "Sigle",
+      "libelle": "Libelle",
+      "pays": "Pays",
+      "devise": "Devise",
+      "logo": "Logo",
+      "identiteMinistre": "Identite Ministre",
+      "titreMinistre": "Titre Ministre"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmTimbre": {
+      "created": "A new Timbre is created with identifier {{ param }}",
+      "updated": "A Timbre is updated with identifier {{ param }}",
+      "deleted": "A Timbre is deleted with identifier {{ param }}"
+    }
+  }
+}

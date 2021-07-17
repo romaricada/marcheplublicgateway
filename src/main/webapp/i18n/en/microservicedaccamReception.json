@@ -1,0 +1,35 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamReception": {
+      "home": {
+        "title": "Receptions",
+        "createLabel": "Create a new Reception",
+        "createOrEditLabel": "Create or edit a Reception",
+        "notFound": "No Receptions found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Reception {{ id }}?"
+      },
+      "detail": {
+        "title": "Reception"
+      },
+      "nom": "Nom",
+      "prenom": "Prenom",
+      "telephone": "Telephone",
+      "email": "Email",
+      "date": "Date",
+      "heure": "Heure",
+      "lieu": "Lieu",
+      "activiteId": "Activite Id",
+      "retirer": "Retirer",
+      "deleted": "Deleted"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamReception": {
+      "created": "A new Reception is created with identifier {{ param }}",
+      "updated": "A Reception is updated with identifier {{ param }}",
+      "deleted": "A Reception is deleted with identifier {{ param }}"
+    }
+  }
+}

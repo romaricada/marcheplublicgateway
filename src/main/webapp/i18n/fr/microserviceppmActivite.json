@@ -1,0 +1,32 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmActivite": {
+      "home": {
+        "title": "Activites",
+        "createLabel": "Créer un nouveau Activite",
+        "createOrEditLabel": "Créer ou éditer un Activite",
+        "notFound": "Aucun Activite trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Activite {{ id }} ?"
+      },
+      "detail": {
+        "title": "Activite"
+      },
+      "codeLignePlan": "Code Ligne Plan",
+      "gestionnaireCredit": "Gestionnaire Credit",
+      "deleted": "Deleted",
+      "besoinLignes": "Besoin Lignes",
+      "ppmActivites": "Ppm Activites",
+      "passation": "Passation",
+      "naturePrestation": "Nature Prestation"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmActivite": {
+      "created": "Un nouveau Activite a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Activite avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Activite avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

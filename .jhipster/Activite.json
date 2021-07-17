@@ -1,0 +1,62 @@
+{
+    "name": "Activite",
+    "fields": [
+        {
+            "fieldName": "codeLignePlan",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "gestionnaireCredit",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "deleted",
+            "fieldType": "Boolean"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "besoinLigneBudgetaire",
+            "otherEntityRelationshipName": "activite",
+            "relationshipName": "besoinLignes"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "ppmActivite",
+            "otherEntityRelationshipName": "activite",
+            "relationshipName": "ppmActivites"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "modePassation",
+            "otherEntityRelationshipName": "activites",
+            "relationshipName": "passation",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "naturePrestation",
+            "otherEntityRelationshipName": "activites",
+            "relationshipName": "naturePrestation",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20200424175234",
+    "entityTableName": "activite",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "clientRootFolder": "",
+    "applications": [
+        "marchepublicgateway"
+    ],
+    "skipServer": true,
+    "microserviceName": "microserviceppm"
+}

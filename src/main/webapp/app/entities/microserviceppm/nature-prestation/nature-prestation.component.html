@@ -1,0 +1,134 @@
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES NATURES DE PRESTATION</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button type="button" pButton class="ui-button-secondary text-primary"
+                            icon="fa fa-plus" label="Ajouter une Prestation" (click)="add(null)">
+                    </button>
+                    <button type="button" pButton class="ui-button-secondary text-danger"
+                            [disabled]="naturePrestationSelected.length<1"
+                            icon="fa fa-times" label="Nature de Prestation" (click)="supprimer()">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+        <p-table  #dataTable [responsive]="true" [value]="naturePrestations" [(selection)]="naturePrestationSelected"  dataKey="id"
+                  [globalFilterFields]="['libelle']" [paginator]="true"  rows="20" >
+            <ng-template pTemplate="caption">
+                <div class="p-grid">
+                    <div class="col-sm-12 pt-1 text-right">
+                        <input type="text" pInputText size="50" placeholder="Rechercher un nature prestation"
+                               (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                        <button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+                                [placement]="'top'" (click)="loadAll()">
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th style="width: 3em">
+                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                    </th>
+                    <th>Code</th>
+                    <th>libellé</th>
+                    <th>Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-naturePrestation let-columns="columns">
+                <tr [pSelectableRow]="naturePrestation">
+                    <td>
+                        <p-tableCheckbox [value]="naturePrestation"></p-tableCheckbox>
+                    </td>
+                    <td>{{naturePrestation.code}}</td>
+                    <td>{{naturePrestation.libelle}}</td>
+                    <td class="text-center">
+                        <button type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning"
+                                label="Modifier" (click)="add(naturePrestation)">
+                        </button>
+                        <button  [disabled]="naturePrestationSelected.length<1" type="button" label="Supprimer" class="ui-button-secondary text-danger"
+                                pButton icon="fa fa-remove" (click)="deleteElement(naturePrestation)">
+                        </button>
+
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+</div>
+    <p-dialog header="Ajouter/Modifier une nature de prestation" [(visible)]="display" [modal]="true" [responsive]="true" (onHide)="annuler()"
+               [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_code">Code </label>
+                    <input type="text" pInputText class="form-control" name="code" id="field_code"
+                           [(ngModel)]="naturePrestation.code" required/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_libelle">libelle </label>
+                    <input type="text"  pInputText class="form-control" name="libelle" id="field_libelle"
+                           [(ngModel)]="naturePrestation.libelle" required/>
+                </div>
+
+            </div>
+        </form>
+
+        <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)='annuler()'></button>
+            <button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+                    [disabled]="editForm.invalid || isSaving"
+                    (click)='save()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+        </p-footer>
+    </p-dialog>
+    <p-dialog header="Supprimer prestation(s)" [(visible)]="displayDelete" [modal]="true" [responsive]="true" (onHide)="annuler()"
+              [style]="{width: '50%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+        <p-table [value]="naturePrestationSelected" dataKey="id">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>Code</th>
+                    <th>Libellé</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-naturePrestation let-columns="columns">
+                <tr>
+                    <td>{{naturePrestation.code}}</td>
+                    <td>{{naturePrestation.libelle}}</td>
+
+                </tr>
+            </ng-template>
+
+        </p-table>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-info"
+                        label="Fermer" (click)='annulerDelete()'>
+                </button>
+                <button type="button" pButton icon="fa fa-times"  class="ui-button-secondary text-danger" label="Confirmer"
+                        [disabled]="editForm.valid || isSaving" (click)="deleteAll()" >
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON" (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI" (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+<p-toast [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+

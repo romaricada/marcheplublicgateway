@@ -1,0 +1,155 @@
+<div class="container-fluid">
+	<form name="editForm" role="form" novalidate>
+		<p-card class="card mb-3">
+			<div class="container-fluid">
+                <div class="card-title title-info">
+                <span *ngIf="avisdac!=null"
+                      class="font-weight-bold text-primary"> Contrat pour l'exécution du marché: {{avisdac.objet}} </span>
+                </div>
+				<div class="p-grid">
+					<div class="col-6">
+						<div class="form-group">
+							<label class="form-control-label" for="avisDacNumero">Numéro DAC</label>
+							<input id="avisDacNumero" type="text" class="form-control"
+							       name="avisDacNumero"
+							       [(ngModel)]="contrat.avisDacNumero" [disabled]="true">
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+							<label class="form-control-label" for="avisDacLibelle">Objet du marché</label>
+							<input id="avisDacLibelle" type="text" class="form-control"
+							       name="avisDacLibelle"
+							       [(ngModel)]="contrat.avisDacLibelle" [disabled]="true">
+						</div>
+                    </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_reference4">Reference</label>
+                                <input id="field_reference4" type="text" class="form-control"
+                                       name="reference"
+                                       [(ngModel)]="contrat.reference" [disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_natureMarche4">Nature du marché</label>
+                                <select class="form-control" name="natureMarche" id="field_natureMarche4" type="text"
+                                        [(ngModel)]="contrat.natureMarche"  [disabled]="true">
+                                    <option value="marché public"> Marché public</option>
+                                    <option value="marché à commande">Marché à commande</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_montant4">Montant</label>
+                                <input id="field_montant4" type="number" class="form-control"
+                                       name="montant"
+                                       [(ngModel)]="contrat.montant" [disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_numeroCompte4">Numéro du compte bancaire</label>
+                                <input id="field_numeroCompte4" type="number" class="form-control"
+                                       name="numeroCompte" [disabled]="true"
+                                       [(ngModel)]="contrat.numeroCompte">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_cleRib4">Clé rib</label>
+                                <input id="field_cleRib4" type="number" class="form-control"
+                                       name="cleRib" [disabled]="true"
+                                       [(ngModel)]="contrat.cleRib">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_libelleBanque4">Banque</label>
+                                <input id="field_libelleBanque4" type="text" class="form-control"
+                                       name="libelleBanque" [disabled]="true"
+                                       [(ngModel)]="contrat.libelleBanque">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_delaisExecution4">Délais d'exécution</label>
+                                <input id="field_delaisExecution4" type="number" class="form-control"
+                                       name="delaisExecution" [disabled]="true"
+                                       [(ngModel)]="contrat.delaisExecution">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_date_signataire1">Date de signature du
+                                    titulaire</label>
+                                <input id="field_date_signataire1" type="date" class="form-control"
+                                       name="dateSignatureSoumissionnaire"
+                                       [(ngModel)]="contrat.dateSignatureSoumissionnaire" [disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_date_dateReception4">Date de reception</label>
+                                <input id="field_date_dateReception4" type="date" class="form-control"
+                                       name="dateReceptionGC"
+                                       [(ngModel)]="contrat.dateReceptionGC" [disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_date_dateApprobation">Date
+                                    d'approbation</label>
+                                <input id="field_date_dateApprobation" type="date" class="form-control"
+                                       name="dateApprobation"
+                                       [(ngModel)]="contrat.dateApprobation" [disabled]="true">
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_date_dateDemarrage">Date de notification du marché</label>
+                                <input id="field_date_dateDemarrage" type="date" class="form-control"
+                                       name="dateDemarrage"
+                                       [(ngModel)]="contrat.dateDemarrage" [disabled]="true">
+                            </div>
+                        </div>
+					</div>
+					<div class="col-12">
+						<p-panel>
+							<p-header>Information sur les lignes budgetaire selectionnées pour ce contrat</p-header>
+							<p-table [responsive]="true" [value]="besoinLigneBudgetaires"
+							         dataKey="id">
+								<ng-template pTemplate="header" let-columns>
+									<tr>
+										<th>Ligne crédit</th>
+										<th>Montant estimé</th>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="body" let-rowData let-columns="columns"
+								             let-i="rowIndex">
+									<tr>
+										<td>{{rowData?.ligneCredit}}</td>
+										<td>{{rowData?.montantEstime | formatTableValue:'number': true }}</td>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="footer">
+									<tr>
+										<td>Toital</td>
+										<td>{{totaTMontant | formatTableValue:'number': true}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+						</p-panel>
+					</div>
+				</div>
+				<p-footer>
+					<div class="ui-dialog-buttonpane ui-helper-clearfix float-right mb-3">
+						<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+						        label="Retour" (click)='previousState()'></button>
+					</div>
+				</p-footer>
+		</p-card>
+	</form>
+</div>

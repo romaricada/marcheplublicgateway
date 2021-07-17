@@ -1,0 +1,32 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamMembre": {
+      "home": {
+        "title": "Membres",
+        "createLabel": "Créer un nouveau Membre",
+        "createOrEditLabel": "Créer ou éditer un Membre",
+        "notFound": "Aucun Membre trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Membre {{ id }} ?"
+      },
+      "detail": {
+        "title": "Membre"
+      },
+      "nom": "Nom",
+      "prenom": "Prenom",
+      "telephone": "Telephone",
+      "email": "Email",
+      "directionId": "Direction Id",
+      "deleted": "Deleted",
+      "commissions": "Commissions"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamMembre": {
+      "created": "Un nouveau Membre a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Membre avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Membre avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

@@ -1,0 +1,218 @@
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES AVENANTS</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button type="button" pButton class="ui-button-secondary text-primary"
+                            icon="fa fa-plus" label="Ajouter un avenant"
+                            [disabled]="" (click)="add(null)">
+                    </button>
+                    <button type="button" pButton class="ui-button-secondary text-danger"
+                            [disabled]="avenantSelected?.length<1"
+                            icon="fa fa-times" label="Supprimer des avenants" (click)="supprimer()">
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <br/>
+    <div class=" row p-grid">
+        <div class="col-sm-6 pt-1 text-left">
+            <p-dropdown [options]="contrats" [(ngModel)]="contrat"
+                        placeholder="Selectionner un contrat"
+                        [style]="{'width': '320px'}" filter="filter"
+                        showClear="showClear" optionLabel="reference" (onChange)="findAvenantByContrat()" required>
+            </p-dropdown>
+        </div>
+
+        <div class="col-sm-6 pt-1 text-right">
+            <input type="text" pInputText size="50" placeholder="Rechercher un avenant"
+                   (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+            <button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+                    [placement]="'top'" (click)="loadAll()">
+            </button>
+        </div>
+    </div>
+    <br/>
+    <p-table #dataTable [responsive]="true" [value]="avenants" [(selection)]="avenantSelected" dataKey="id"
+             [globalFilterFields]="['reference', 'motif' , 'montant' , 'temps' , 'date','typeAvenantId' , 'contratId']"
+             [paginator]="true" rows="20">
+
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th style="width: 3em">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th>Reference</th>
+                <th>Motif</th>
+                <th>montant</th>
+                <th>Temps</th>
+                <th>Date</th>
+                <!-- <th >Type d'avenant</th> -->
+                <th width="20%" class="text-center">Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-avenant let-columns="columns">
+            <tr [pSelectableRow]="avenant">
+                <td>
+                    <p-tableCheckbox [value]="avenant"></p-tableCheckbox>
+                </td>
+                <td>{{avenant.reference}}</td>
+                <td>{{avenant.motif}}</td>
+                <td>{{avenant.montant}}</td>
+                <td>{{avenant.temps}}</td>
+                <td>{{avenant.date | date:'mediumDate'}}</td>
+                <!-- <td>{{avenant.typeAvenant}}</td> -->
+
+                <td width="20%" class="text-center">
+
+                    <button type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning"
+                            label="Modifier" (click)="add(avenant)">
+                    </button>
+
+                    <button type="button" label="Supprimer" class="ui-button-secondary text-danger"
+                            pButton icon="fa fa-remove" (click)="deleteElement(avenant)">
+                    </button>
+                </td>
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td colspan="7" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"><span
+                    class="text-danger"> Aucun avenant  trouvée ! </span></td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+</div>
+
+<p-dialog header="Céation/Modification d'un avenant" [(visible)]="display" [modal]="true"
+          [responsive]="true"
+          (onHide)="fermerFormulaire()"
+          [style]="{width: '70%', minWidth: '100px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+    <div class="container">
+        <form name="editForm" role="form" novalidate #editForm="ngForm">
+
+            <div class="ui-dialog-content" style="height: 300px">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-control-label">Contrat</label>
+                                <p-dropdown [options]="contrats" [(ngModel)]="contrat"
+                                            placeholder="Selectionner un contrat"
+                                            [style]="{'width': '320px'}" filter="filter" name="contrat"
+                                            showClear="showClear" optionLabel="reference">
+                                </p-dropdown>
+                            </div>
+                        </div>
+                       <div class="col-sm-6" *ngIf="!ajouterTypeAvenant">
+                            <div class="form-group">
+                                <label class="form-control-label">Type de avenant</label>
+                                <div class="input-group">
+                                    <p-dropdown [options]="typeAvenants" [(ngModel)]="avenant.typeAvenant"
+                                                placeholder="Selectionner un type d'avenant"
+                                                [style]="{'width': '320px'}" filter="filter" name="typeAvenant"
+                                                showClear="showClear" optionLabel="libelle">
+                                    </p-dropdown>
+                                    <span class="input-group-append">
+                            <button
+                                type="button" (click)="selectTypeAvenant()" class="btn btn-primary btn-sm">
+                                <fa-icon [icon]="'plus'"></fa-icon>
+                            </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" *ngIf="ajouterTypeAvenant">
+                            <div class="form-group">
+                                <label class="form-control-label">Type de avenant</label>
+                                <div class="input-group">
+                                    <input id="field_typeAvenant" type="text" class="form-control" name="field_typeAvenant"
+                                           [(ngModel)]="avenant.typeAvenant.libelle" required>
+                                    <span class="input-group-append">
+                            <button
+                                type="button" class="btn btn-primary btn-sm" (click)="selectTypeAvenant()">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_reference">Reference</label>
+                                <input type="text" class="form-control"
+                                       name="reference" id="field_reference"
+                                       [(ngModel)]="avenant.reference" required/>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_motif">Motif</label>
+                                <input type="text" class="form-control" name="motif" id="field_motif"
+                                       [(ngModel)]="avenant.motif" required/>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_montant">Montant</label>
+                                <input type="number" class="form-control" name="montant" id="field_montant"
+                                       [(ngModel)]="avenant.montant" required/>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_temps">Temps</label>
+                                <input type="text" class="form-control" name="temps" id="field_temps"
+                                       [(ngModel)]="avenant.temps" required/>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_date">Date</label>
+                                <div class="input-group">
+                                    <input id="field_date" type="text" class="form-control" type="date" name="date"
+                                           [(ngModel)]="avenant.date" required/>
+                                    <span class="input-group-append">
+
+                        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)='annuler()'></button>
+            <button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+                    [disabled]="editForm.invalid || isSaving"
+                    (click)='save()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+<p-confirmDialog [style]="{width: '50%'}" #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+                (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-primary" pButton icon="pi pi-check" label="OUI"
+                (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+
+

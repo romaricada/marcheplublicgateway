@@ -1,0 +1,6 @@
+export enum TypeIncidentExecution {
+  LITIGES = "LITIGES",
+  CONTENTIEUX = "CONTENTIEUX",
+  AVENANTS = "AVENANTS",
+  ARBITRAGE = "ARBITRAGE"
+}

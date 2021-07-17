@@ -1,0 +1,28 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamPieceCandidat": {
+      "home": {
+        "title": "PieceCandidats",
+        "createLabel": "Créer un nouveau Piece Candidat",
+        "createOrEditLabel": "Créer ou éditer un Piece Candidat",
+        "notFound": "Aucun Piece Candidat trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Piece Candidat {{ id }} ?"
+      },
+      "detail": {
+        "title": "Piece Candidat"
+      },
+      "deleted": "Deleted",
+      "candidatLot": "Candidat Lot",
+      "piece": "Piece"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamPieceCandidat": {
+      "created": "Un nouveau Piece Candidat a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Piece Candidat avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Piece Candidat avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

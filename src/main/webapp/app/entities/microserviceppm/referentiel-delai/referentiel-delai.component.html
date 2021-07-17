@@ -1,0 +1,295 @@
+<div>
+
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES REFERENTIELS DES DELAIS</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button type="button" pButton class="ui-button-secondary text-primary" icon="fa fa-plus" label="Referentiel" (click)="addReferentiel()">
+                    </button>
+                    <button type="button" pButton class="ui-button-secondary text-danger" [disabled]="referentielDelaisSelect.length<1" icon="fa fa-times" label="Supprimer réferentiel" (click)="supprimer()">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <div class="table-responsive">
+        <p-table #filtre [value]="modepassationsList" dataKey="id" [paginator]="true" [rows]="20" [globalFilterFields]="['libellePassation']">
+            <ng-template pTemplate="caption">
+                <div class="p-grid">
+                    <div class="col-sm-6 pt-1 text-left">
+                    </div>
+                    <div class="col-sm-6 pt-1 text-right">
+                        <input type="text" pInputText size="50" placeholder="Rechercher" (input)="filtre.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                        <button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'" [placement]="'top'" (click)="loadAll()">
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th colspan="5">Mode de passation</th>
+                    <th> Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns">
+                <tr>
+                    <td colspan="5">
+                        <a href="#" [pRowToggler]="rowData">
+                            <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">&nbsp;</i>
+                            <span> {{rowData?.libellePassation }}</span>
+                        </a>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group">
+                            <button type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning" label="Modifier" (click)="update(rowData)">
+                            </button>
+                            <button type="button" label="Supprimer" class="ui-button-secondary text-danger" (click)="supprimerElement(rowData)" replaceUrl="true" queryParamsHandling="merge" pButton icon="fa fa-remove">
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+                <tr >
+                    <th>ORDRE</th>
+                    <th style="width: 12em">ETAPE</th>
+                    <th style="width: 4em">NORME (en jour)</th>
+                    <th style="width: 4em">REFERENCE(en jour)</th>
+                    <th style="width: 7em">ACTEURS</th>
+                    <th style="width: 20em">OBSERVATIONS</th>
+                </tr>
+                <tr *ngFor="let referentielDelai of rowData.referenciels">
+                    <td>{{referentielDelai?.etape?.ordre}}</td>
+                    <td>{{referentielDelai?.etape?.libelle}}</td>
+                    <td>
+                        <span *ngIf="referentielDelai.normeReference.norme!=null">{{referentielDelai.normeReference.norme }}</span>
+                        <span *ngIf="referentielDelai.normeReference.norme==null && referentielDelai.normeReference.normeMin!=null">{{ referentielDelai.normeReference.normeMin + "-" + referentielDelai.normeReference.normeMax }}</span>
+                        <span *ngIf="referentielDelai.normeReference.norme==null && referentielDelai.normeReference.normeMin==null"></span>
+                        <span *ngIf="referentielDelai.normeReference.normeOuvrable">*</span>
+                    </td>
+                    <td>
+                        <span *ngIf="referentielDelai.normeReference.referentiel!=null">{{referentielDelai.normeReference.referentiel }}</span>
+                        <span *ngIf="referentielDelai.normeReference.referentiel==null && referentielDelai.normeReference.referentielMin!=null">{{ referentielDelai.normeReference.referentielMin + "-" + referentielDelai.normeReference.referentielMax }}</span>
+                        <span *ngIf="referentielDelai.normeReference.referentiel==null && referentielDelai.normeReference.referentielMin==null"></span>
+                        <span *ngIf="referentielDelai.normeReference.referentielOuvrable">*</span>
+                    </td>
+                    <td>{{referentielDelai?.acteur?.libelle}}</td>
+                    <td>{{referentielDelai?.observation}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <p-dialog header="Ajouter/modifier un referentiel" [(visible)]="displayAdd" [modal]="true" [responsive]="true" (onHide)="annulle()" [style]="{width: '97%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate  #editForm="ngForm">
+            <div class="row">
+                <div class="col-sm-9">
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_modePassation">Mode Passation</label>
+                        <select class="form-control" id="field_modePassation" name="modePassation" [(ngModel)]="modepassationId" (change)="modeSelect(modepassationId)" required>
+                            <option [ngValue]="null"></option>
+                            <option [ngValue]="modepassationOption.id"
+                                    *ngFor="let modepassationOption of modepassations">{{modepassationOption?.libellePassation}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-3 text-right">
+                    <div class="form-group add">
+                        <button class="ui-button-secondary text-primary" label="Ajouter" type="button" pButton (click)="addLigne(modepassationId)" icon="fa fa-plus"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-dialog-content" style="height: 40em">
+                <p-table [value]="referentielDelaisForm" [resizableColumns]="true">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th pResizableColumn width="50em" class="header-table">[0-x]</th>
+                            <th pResizableColumn width="60em" class="header-table">Ordre</th>
+                            <th pResizableColumn class="header-table">Etape</th>
+                            <th pResizableColumn width="60em" class="header-table">Norme</th>
+                            <th pResizableColumn width="60em" class="header-table">Reference</th>
+                            <th pResizableColumn width="60em" class="header-table">N. min</th>
+                            <th pResizableColumn width="60em" class="header-table">N. max</th>
+                            <th pResizableColumn width="60em" class="header-table">Ref. min</th>
+                            <th pResizableColumn width="60em" class="header-table">Ref. max</th>
+                            <th pResizableColumn width="60em" class="header-table">Jr/ouvr.</th>
+                            <th pResizableColumn width="100em" class="header-table">Acteur(s)</th>
+                            <th pResizableColumn class="header-table">Observation</th>
+                            <th width="100em"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-refDelai let-i="rowIndex">
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="check-box" [name]="'valeurName'+i" [(ngModel)]="refDelai.normeReference.intervalle" title="Intervalle oui ou non" (change)="initValue(refDelai)" />
+                            </td>
+                            <td pEditableColumn>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="number" name="ordre" [(ngModel)]="refDelai.etape.ordre" required="required">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{refDelai?.etape?.ordre}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td pEditableColumn>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" name="libelle" [(ngModel)]="refDelai.etape.libelle" required>
+                                    </ng-template>
+                                    <ng-template pTemplate="output" required="true">
+                                        {{refDelai?.etape?.libelle}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td pEditableColumn>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="number" name="norme" [(ngModel)]="refDelai.normeReference.norme" [disabled]="refDelai.intervalle">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{refDelai?.normeReference?.norme}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td pEditableColumn>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="number" name="reference" [(ngModel)]="refDelai.normeReference.referentiel" [disabled]="refDelai?.normeReference?.intervalle" required="required">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{refDelai?.normeReference?.referentiel}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td pEditableColumn>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="number" name="normeMin" [(ngModel)]="refDelai.normeReference.normeMin" [disabled]="!refDelai?.normeReference?.normeMin">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{refDelai?.normeReference?.normeMin}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td pEditableColumn>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" name="normeMax" [(ngModel)]="refDelai.normeReference.normeMax" [disabled]="!refDelai?.normeReference?.intervalle">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{refDelai?.normeReference?.normeMax}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td pEditableColumn>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" name="referentielMin" [(ngModel)]="refDelai.normeReference.referentielMin" [disabled]="!refDelai?.normeReference?.intervalle">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{refDelai?.normeReference?.referentielMin}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td pEditableColumn>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" name="referentielMax" [(ngModel)]="refDelai.normeReference.referentielMax" [disabled]="!refDelai?.normeReference?.intervalle">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{refDelai?.normeReference?.referentielMax}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td>
+                                <input type="checkbox" [name]="'ouvrable'+i" [(ngModel)]="refDelai.normeReference.referentielOuvrable" />
+                            </td>
+                            <td pEditableColumn>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <select name="acteur" [(ngModel)]="refDelai.acteur" [style]="{'width': '90%'}">
+                                            <option [ngValue]="null">...</option>
+                                            <option *ngFor="let val of acteurs" [ngValue]="val">{{val.libelle}}</option>
+                                        </select>
+                                        <!--<p-dropdown [options]="acteurs" name="acteur" [(ngModel)]="refDelai.acteur" placeholder="" [style]="{'width': '90%'}" optionLabel="libelle"></p-dropdown> -->
+                                        <!--<input pInputText type="text" name="acteur" [(ngModel)]="refDelai.acteur.libelle">-->
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{refDelai?.acteur?.libelle}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td pEditableColumn>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" name="observation" (keydown)="addByKey($event)" [(ngModel)]="refDelai.observation">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{refDelai.observation}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td>
+                                <button pButton type="button" (click)="retirer(refDelai)" icon="fa fa-close" class="ui-button-secondary text-danger" label="Retirer">
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <br>
+            <p-footer>
+                <div class="ui-dialog-buttonpane ui-helper-clearfix text-right">
+                    <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger" label="Fermer" (click)='annulle()'>
+                    </button>
+                    <button type="submit" pButton icon="fa fa-save" label="Enregistrer"   [disabled]="editForm.invalid || isSaving" (click)='save()' class="ui-button-secondary text-info">
+                    </button>
+                </div>
+            </p-footer>
+        </form>
+    </p-dialog>
+
+    <p-dialog header="Supprimer" [(visible)]="displaySupprimer" [modal]="true" [responsive]="true" (onHide)="annulleSuppri()" [style]="{width: '60%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <h5>Voulez-vous vraiment supprimer ces reference ?</h5>
+        <p-table [value]="referentielDelaisSelect" dataKey="id">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>Etape</th>
+                    <th>Norme</th>
+                    <th>Reference</th>
+                    <th>Acteurs</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-referentielDelai let-columns="columns">
+                <tr>
+                    <td>{{referentielDelai?.etapeLibelle}}</td>
+                    <td>{{referentielDelai?.norme}}</td>
+                    <td>{{referentielDelai?.referentiel}}</td>
+                    <td>{{referentielDelai?.acteurLibelle}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+                <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-info" label="Fermer" (click)='annulleSuppri()'>
+                </button>
+                <button type="button" pButton icon="fa fa-times" label="Confirmer" (click)="deleteAll(referentielDelaisSelect)" class="ui-button-secondary text-danger">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+    <p-toast [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+</div>
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON" (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI" (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>

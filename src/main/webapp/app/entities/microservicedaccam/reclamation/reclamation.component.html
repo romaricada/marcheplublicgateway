@@ -1,0 +1,449 @@
+<span>
+
+                <label class="col-sm-12 font-weight-bold text-primary text-center">GESTION DES RECOURS</label>
+</span>
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_RECOURS_ADD'" pButton class="ui-button-secondary text-primary float-right" icon="fa fa-plus"
+                            label="Ajouter un recours" (click)="showModal()" [disabled]="!avisDac">
+
+                    </button>
+<!--
+                    <button  type="button" pButton label="Imprimer"
+                            class="ui-button-secondary text-warning" [disabled]="!avisDac"
+                            (click)="imprimerRecours(reclamation)"
+                            icon="fa fa-print">
+
+                    </button>
+-->
+                    <!-- <button type="button" pButton class="ui-button-secondary text-primary" icon="fa fa-check" label="Valider PPM"></button>-->
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <p-table #tableReclamation [value]="reclamations" [paginator]="true" [rows]="20" [responsive]="true"
+             [globalFilterFields]="['description','date']" >
+        <ng-template pTemplate="caption">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <div class="ui-inputgroup mr-1">
+                    <span class="ui-inputgroup-addon"><span class="font-weight-bold">Avis DAC</span></span>
+                    <p-dropdown  [options]="avisDacs" [(ngModel)]="avisDac"
+                                 placeholder="Selectionner un avis dac"
+                                 [style]="{'width': '250px'}" filter="filter" name="avisdac"
+                                 showClear="showClear" optionLabel="nomAvisDac" (onChange)="filterByAvisdac()"  required [disabled]="!exercice">
+                    </p-dropdown>
+                    <!-- <span class="ui-inputgroup-addon"><span class="font-weight-bold">Activite</span></span>
+                   <p-dropdown [options]="activites" placeholder="Selectionner une activité" [style]="{'width': '270px'}"
+                                [(ngModel)]="activite" (onChange)="activiteChange()" [disabled]="!exercice" filter="filter"
+                                showClear="showClear"
+                                optionLabel="nomActivite"></p-dropdown>
+                    <span class="ui-inputgroup-addon"><span class="font-weight-bold">Lot</span></span>
+                    <p-dropdown [options]="lots" placeholder="Selectionner un lot" [style]="{'width': '200px'}"
+                                [(ngModel)]="lot" (onChange)="filterDepouillement()" [disabled]="!activite" filter="filter"
+                                showClear="showClear"
+                                optionLabel="libelle">
+                    </p-dropdown> -->
+                </div>
+            </div>
+            <div class="ui-g-12 ui-md-5 pt-3">
+                <div class="float-right">
+                    <input type="text" pInputText size="50" placeholder="Rechercher un recours"
+                           (input)="tableReclamation.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                    <button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+                            [placement]="'top'" (click)="filterByAvisdac()">
+                    </button>
+                </div>
+
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th style="width:30em">Description du recours</th>
+                <th>Date du recours</th>
+                <th style="width:25em">Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-reclamat let-columns="columns">
+            <tr>
+                <td>
+                    <div [innerHTML]="reclamat.description"></div>
+                </td>
+                <td>{{reclamat?.date | date:'mediumDate'}}</td>
+                <td>
+                    <!--<button type="button" pButton label="Voir" class="ui-button-secondary text-info" icon="fa fa-eye"
+                            (click)="voirDepouillement(depouillement)"></button>-->
+                    <p-footer>
+                       <!-- <button type="button" pButton icon="fa fa-tasks" class="ui-button-secondary text-info"
+                                label="Tâche" pTooltip="Tâche" tooltipPosition="right"
+                                [routerLink]="['/create-tache', {id1:activite?.id,id2:lot?.id,id3:reclamat.id}]"
+                                [disabled]="!avisDac">
+                        </button>-->
+<!--
+                        <button  type="button" pButton label="Imprimer"
+                                class="ui-button-secondary text-warning" [disabled]="!avisDac"
+                                (click)="imprimerRecours(reclamat)"
+                                icon="fa fa-print">
+
+                        </button>
+-->
+                        <button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_RECOURS_EDIT'" type="button" pButton label="Modifier"
+                                class="ui-button-secondary text-warning" [disabled]="!avisDac"
+                                (click)="updateReclamation(reclamat)"
+                                icon="fa fa-edit">
+
+                        </button>
+                        <button *jhiHasAnyAuthority="'ROLE_CAM_GESTION_DES_RECOURS_DELETE'" type="button" pButton label="Supprimer" class="ui-button-secondary text-danger"
+                                (click)="deleteElement(reclamat)" icon="fa fa-trash">
+
+                        </button>
+                    </p-footer>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+          <!--  <tr>
+                <td colspan="3" align="center"><span class="text-danger"> Aucune reclamation trouvée ! </span></td>
+            </tr>-->
+        </ng-template>
+    </p-table>
+
+        <p-dialog header="Création/Modification d'un recours" [(visible)]="display" [modal]="true" [responsive]="true"
+              (onHide)="annuler()"
+              [style]="{width: '95%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+            <div class="ui-dialog-content" style="height: 85%">
+                <div>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <h6 class="font-weight-bold">Description du recours</h6>
+                            <p-editor [(ngModel)]="reclamation.description" [style]="{'height':'70px'}"
+                                      name="description" required>
+                                <p-header>
+                            <span class="ql-formats">
+                                <button class="ql-bold" aria-label="Bold"></button>
+                                <button class="ql-italic" aria-label="Italic"></button>
+                                <button class="ql-underline" aria-label="Underline"></button>
+                            </span>
+                                </p-header>
+                            </p-editor>
+                        </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <h6><label class="form-control-label font-weight-bold" for="field_date">Date de
+                                recours</label></h6>
+                            <div class="input-group">
+                                <input id="field_date" type="date" class="form-control" name="date"
+                                       [(ngModel)]="reclamation.date" required/>
+                            </div>
+                        </div>
+                    </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-control-label font-weight-bold">Lot</label>
+                            <p-multiSelect [options]="lots" [optionLabel]="'description'" name="lot"
+                                           [(ngModel)]="selectedLots" [style]="{width:'100%'}" dataKey="id" filter="filter"
+                                           defaultLabel="Sélectionner les lots" required>
+                            </p-multiSelect>
+                        </div>
+
+<!--
+                    <div class="col-sm-6">
+                        <h6><label class="form-control-label font-weight-bold">Lot</label></h6>
+                            <p-dropdown [options]="lots" [(ngModel)]="lot" placeholder="Selectionner un lot"
+                                         (onChange)="loadAllSoummissionnaire()" [disabled]="!avisDac" filter="filter" name="lot"
+                                        showClear="showClear"
+                                        optionLabel="libelle" [style]="{'width': '500px'}">
+                            </p-dropdown>
+                    </div>
+-->
+                    </div>
+                </div>
+                <div class="text-right">
+                    <button type="button" class="ui-button-secondary text-primary" pButton icon="fa fa-plus"
+                            (click)="showSoumissionnaireModal()" [disabled]="!selectedLots"
+                            label="Ajouter soumissionnaire"></button>
+                </div>
+                <fieldset>
+                    <legend>Liste des recours</legend>
+                    <div class="col-sm-12">
+                        <p-table #soumFilter [value]="reclamation.reclamationCandidatLots" dataKey="id"
+                                 [globalFilterFields]="['candidat.nomStructure','candidat.contact','candidat.adresse', 'candidat.email']"
+                                 editMode="row">
+                            <ng-template pTemplate="caption">
+                                <div class="row">
+                                    <div class="col-sm-12 text-right">
+                                        <input type="text" pInputText size="50" placeholder="Rechercher"
+                                               (input)="soumFilter.filterGlobal($event.target.value, 'contains')"
+                                               style="width:auto">
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th style="width: 2em">N°</th>
+                                    <th>Nom du soumissionnaire</th>
+                                    <th>Adresse</th>
+                                    <th>Email</th>
+                                    <th>Motif du recours</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-reclamationCandidatLot let-editing="editing"
+                                         let-expanded="expanded" let-columns="columns"
+                                         let-i="rowIndex">
+                                <tr [pSelectableRow]="reclamationCandidatLot" [pEditableRow]="reclamationCandidatLot">
+                                    <td>{{i + 1}}</td>
+
+                                    <td>
+                                        <a href="#" [pRowToggler]="reclamationCandidatLot">
+                                            <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                                            &nbsp; <i class="fa fa-eye"></i>
+                                            <span>{{reclamationCandidatLot?.candidatLot?.candidat?.nomStructure}}</span></a>
+                                    </td>
+                                    <td>{{reclamationCandidatLot?.candidatLot?.candidat?.adresse}}</td>
+                                    <td>{{reclamationCandidatLot?.candidatLot?.candidat?.email}}</td>
+                                    <td pEditableColumn required>
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <input pInputText type="text" name="motif"
+                                                       [(ngModel)]="reclamationCandidatLot.motif" required>
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                {{reclamationCandidatLot?.motif}}
+                                            </ng-template>
+                                        </p-cellEditor>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage" let-columns>
+                                <tr>
+                                    <td colspan="5" align="center"><span
+                                        class="text-danger"> Aucun candidat trouvé ! </span></td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </fieldset>
+                <br>
+                <div class="text-right">
+                <button type="button" class="ui-button-secondary text-primary" pButton
+                        icon="fa fa-plus" (click)="showDecision()"
+                        label="Décision">
+                </button>
+                </div>
+
+                <!-- tableau d'affichage des decisions liées a un recours -->
+                <fieldset>
+                    <legend>Liste des décisions</legend>
+                    <p-table  [value]="reclamation.decisions" [paginator]="true" [rows]="20" [responsive]="true" dataKey="id"
+                              [globalFilterFields]="['','']" >
+
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th>Autorité de décision</th>
+                                <th>Verdict de la décision</th>
+                                <th>référence de la décision</th>
+                                <th>Date de la décision</th>
+                                <th>Action</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-decision let-columns="columns" let-i="rowIndex">
+                            <tr>
+                                <td>{{decision?.structure}}</td>
+                                <td>{{decision?.decision}}</td>
+                                <td>{{decision?.reference}}</td>
+                                <td>{{decision?.date | date:'mediumDate'}}</td>
+                                <td>
+                                    <div class="col-sm-12 text-right add">
+                                        <button type="button" pButton icon="fa fa-edit"
+                                                class="ui-button-secondary text-warning"
+                                                [pTooltip]="'Modifier'"
+                                                (click)="updateLot(decision, i)">
+                                        </button>
+                                        <button type="button" pButton icon="fa fa-close"
+                                                class="ui-button-secondary text-warning"
+                                                [pTooltip]="'Rétirer'"
+                                                (click)="retire(l, i)">
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+
+
+                        <ng-template pTemplate="emptymessage" let-columns>
+                            <!--  <tr>
+                                  <td colspan="3" align="center"><span class="text-danger"> Aucune reclamation trouvée ! </span></td>
+                              </tr>-->
+                        </ng-template>
+                    </p-table>
+                </fieldset>
+
+                <br>
+                <fieldset>
+                    <legend>Joindre des fichiers</legend>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label>Fichiers à joindre</label>
+                            <input type="file" name="file" class="form-control" multiple
+                                   (change)="setFileData($event)">
+                            <ul>
+                                <li *ngFor="let file of fichiers">
+                                    <span class="mt-2">{{file?.name}}</span>
+                                    <span class="mt-2">{{file?.size}}</span>
+                                </li>
+                            </ul>
+                    </div>
+                    </div>
+                </fieldset>
+            </div>
+            <br>
+            <p-footer>
+                <div class="ui-dialog-buttonpane ui-helper-clearfix text-center">
+                    <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                            label="Fermer" (click)='annuler()'></button>
+                    <button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+                            [disabled]="editForm.invalid || isSaving"
+                            (click)='save()' class="ui-button-secondary text-info">
+                    </button>
+                </div>
+            </p-footer>
+        </form>
+    </p-dialog>
+
+    <!-- Liste des soummisionaire disponible pour le lot -->
+    <p-dialog header="Soumissionnaire à selectioner" [(visible)]="displaySoumissionnaireModal" [modal]="true"
+              [responsive]="true"
+              (onHide)="annulerSomissionaire()"
+              [style]="{width: '60%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <div class="ui-dialog-content">
+            <span class="badge badge-pill badge-danger">veuillez selectionner les soumissionnaires à ajouter en cliquant directement sur le tableau</span>
+            <p-table #filter [value]="reclamationCandidatLots" selectionMode="multiple"
+                     [(selection)]="soumissionnairesSelected"
+                     dataKey="candidatLot.id"
+                     [globalFilterFields]="['candidatLot.candidat.nomStructure','candidatLot.candidat.contact','candidatLot.candidat.adresse', 'candidatLot.candidat.email']"
+                     editMode="row">
+                <ng-template pTemplate="caption">
+                    <div class="row">
+                        <div class="col-sm-12 text-right">
+                            <input type="text" pInputText size="50" placeholder="Rechercher"
+                                   (input)="filter.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                        </div>
+
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header" let-columns>
+                    <tr>
+                        <th width="20px">N°</th>
+                        <th>Nom de la structure</th>
+                        <th>Adresse</th>
+                        <th>Email</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-reclamationCandidatLot let-editing="editing" let-i="rowIndex">
+                    <tr [pSelectableRow]="reclamationCandidatLot" [pEditableRow]="reclamationCandidatLot">
+                        <td>{{i + 1}}</td>
+                        <td>{{reclamationCandidatLot?.candidatLot?.candidat?.nomStructure}}</td>
+                        <td>{{reclamationCandidatLot?.candidatLot?.candidat?.adresse}}</td>
+                        <td>{{reclamationCandidatLot?.candidatLot?.candidat?.email}}</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage" let-columns>
+                    <tr>
+                        <td colspan="4" align="center"><span class="text-danger"> Aucun candidat trouvé ! </span></td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <div class="text-center pied-table">
+            <span class="badge-success"> {{soumissionnairesSelected?.length}}
+                elément(s) selectionné(s)</span>
+        </div>
+        <p-footer>
+            <div class="text-center">
+                <button class="ui-button-secondary text-danger" (click)="annulerSomissionaire()" pButton
+                        label="Fermer"></button>
+                <button class="ui-button-secondary text-primary" pButton (click)="valider()" label="Valider"></button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+    <!-- modal des pieces -->
+
+    <p-dialog header="Ajouter/Modifier une décision" [(visible)]="displayAddDecision" [responsive]="true"
+              (onHide)="annulerDecision()"
+              [style]="{width: '80%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+        <div class="form-group">
+            <label>Autorité de décision</label>
+            <input type="text" class="form-control" [(ngModel)]="decision.structure" name="structure" required>
+        </div>
+
+
+       <!--  <div class="form-group">
+            <label>Verdict de décision</label>
+            <input type="text" class="form-control" [(ngModel)]="decision.decision" name="objet" required>
+        </div>-->
+
+        <div class="form-group">
+            <label>Verdict de la décision</label>
+            <select class="form-control" name="objet"
+                    [(ngModel)]="decision.decision"  required>
+                <option value="Favorable">Favorable</option>
+                <option value="Defavorable">Défavorable</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>référence de la décision</label>
+            <input type="text" class="form-control" [(ngModel)]="decision.reference" name="reference" required>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_dateD"> Date de la decision </label>
+            <div class="input-group">
+                <input id="field_dateD" type="date" class="form-control" name="date"
+                       [(ngModel)]="decision.date" required/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Fichier à joindre</label>
+            <input type="file" class="form-control" name="file" multiple>
+        </div>
+
+           <!--  <div class="text-right">
+                <button class="ui-button-secondary text-primary" [disabled]="!decision.date" pButton
+                        (click)="ajouterDecision()"
+                        label="Ajouter"></button>
+            </div>-->
+
+        <p-footer>
+            <div class="text-center">
+                <button class="ui-button-secondary text-danger" (click)="annulerDecision()" pButton
+                        label="Fermer"></button>
+                <button class="ui-button-secondary text-primary" [disabled]="!decision.date" pButton
+                        (click)="ajouterDecision()"
+                        label="Valider"></button>
+            </div>
+        </p-footer>
+
+
+
+    </p-dialog>
+    <p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning"
+                     [baseZIndex]="10000">
+        <p-footer>
+            <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+                    (click)="cd.reject()"></button>
+            <button type="button" class="ui-button-secondary text-primary" pButton icon="pi pi-check" label="OUI"
+                    (click)="cd.accept()"></button>
+        </p-footer>
+    </p-confirmDialog>
+    <p-toast [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+</div>

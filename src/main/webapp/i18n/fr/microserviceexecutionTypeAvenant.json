@@ -1,0 +1,28 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceexecutionTypeAvenant": {
+      "home": {
+        "title": "TypeAvenants",
+        "createLabel": "Créer un nouveau Type Avenant",
+        "createOrEditLabel": "Créer ou éditer un Type Avenant",
+        "notFound": "Aucun Type Avenant trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Type Avenant {{ id }} ?"
+      },
+      "detail": {
+        "title": "Type Avenant"
+      },
+      "libelle": "Libelle",
+      "deleted": "Deleted",
+      "avenants": "Avenants"
+    }
+  },
+  "microserviceexecutionApp": {
+    "microserviceexecutionTypeAvenant": {
+      "created": "Un nouveau Type Avenant a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Type Avenant avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Type Avenant avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

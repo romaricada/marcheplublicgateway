@@ -1,0 +1,30 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamCandidat": {
+      "home": {
+        "title": "Candidats",
+        "createLabel": "Créer un nouveau Candidat",
+        "createOrEditLabel": "Créer ou éditer un Candidat",
+        "notFound": "Aucun Candidat trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Candidat {{ id }} ?"
+      },
+      "detail": {
+        "title": "Candidat"
+      },
+      "nomStructure": "Nom Structure",
+      "adresse": "Adresse",
+      "email": "Email",
+      "deleted": "Deleted",
+      "candidatLots": "Candidat Lots"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamCandidat": {
+      "created": "Un nouveau Candidat a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Candidat avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Candidat avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

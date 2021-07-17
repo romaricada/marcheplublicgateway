@@ -1,0 +1,78 @@
+<div>
+    <h2 id="page-heading">
+        <span jhiTranslate="marchepublicgatewayApp.microservicedaccamPieceCandidat.home.title">Piece Candidats</span>
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-piece-candidat" [routerLink]="['/piece-candidat/new']">
+            <fa-icon [icon]="'plus'"></fa-icon>
+            <span  jhiTranslate="marchepublicgatewayApp.microservicedaccamPieceCandidat.home.createLabel">
+            Create a new Piece Candidat
+            </span>
+        </button>
+    </h2>
+    <jhi-alert-error></jhi-alert-error>
+    <jhi-alert></jhi-alert>
+    <br/>
+    <div class="alert alert-warning" *ngIf="pieceCandidats?.length === 0">
+        <span jhiTranslate="marchepublicgatewayApp.microservicedaccamPieceCandidat.home.notFound">No pieceCandidats found</span>
+    </div>
+    <div class="table-responsive" *ngIf="pieceCandidats?.length > 0">
+        <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+            <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
+            <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="deleted"><span jhiTranslate="marchepublicgatewayApp.microservicedaccamPieceCandidat.deleted">Deleted</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="candidatLot.id"><span jhiTranslate="marchepublicgatewayApp.microservicedaccamPieceCandidat.candidatLot">Candidat Lot</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="piece.id"><span jhiTranslate="marchepublicgatewayApp.microservicedaccamPieceCandidat.piece">Piece</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let pieceCandidat of pieceCandidats ;trackBy: trackId">
+                <td><a [routerLink]="['/piece-candidat', pieceCandidat.id, 'view' ]">{{pieceCandidat.id}}</a></td>
+                <td>{{pieceCandidat.deleted}}</td>
+                <td>
+                    <div *ngIf="pieceCandidat.candidatLot">
+                        <a [routerLink]="['/candidat-lot', pieceCandidat.candidatLot?.id, 'view' ]" >{{pieceCandidat.candidatLot?.id}}</a>
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="pieceCandidat.piece">
+                        <a [routerLink]="['/piece', pieceCandidat.piece?.id, 'view' ]" >{{pieceCandidat.piece?.id}}</a>
+                    </div>
+                </td>
+                <td class="text-right">
+                    <div class="btn-group">
+                        <button type="submit"
+                                [routerLink]="['/piece-candidat', pieceCandidat.id, 'view' ]"
+                                class="btn btn-info btn-sm">
+                            <fa-icon [icon]="'eye'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/piece-candidat', pieceCandidat.id, 'edit']"
+                                class="btn btn-primary btn-sm">
+                            <fa-icon [icon]="'pencil-alt'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/piece-candidat', { outlets: { popup: pieceCandidat.id + '/delete'} }]"
+                                replaceUrl="true"
+                                queryParamsHandling="merge"
+                                class="btn btn-danger btn-sm">
+                            <fa-icon [icon]="'times'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div [hidden]="pieceCandidats?.length === 0">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+        </div>
+    </div>
+</div>

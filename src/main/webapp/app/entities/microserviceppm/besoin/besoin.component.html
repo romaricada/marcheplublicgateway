@@ -1,0 +1,529 @@
+<div>
+	<p-toolbar>
+		<div class="ui-g ui-g-12 ui-g-nopad">
+			<div class="ui-g-12 ui-md-7  pt-3 pl-3">
+				<label class="col-sm-7 font-weight-bold text-primary">GESTION DES SOUS PPM</label>
+			</div>
+			<div class="ui-g-12 ui-md-5 p-2">
+				<div class="float-right">
+					<button *jhiHasAnyAuthority="'ROLE_PPM_SOUS_PPM_ADD'" type="button" pButton
+					        class="ui-button-secondary text-primary"
+					        [disabled]="besoinSelecteds?.length > 1 || uniteAdministrative==null"
+					        icon="fa fa-plus" label="Ajouter un Sous PPM" (click)="add(null)">
+					</button>
+					<button *jhiHasAnyAuthority="'ROLE_PPM_SOUS_PPM_DELETE'" type="button" pButton
+					        class="ui-button-secondary text-danger"
+					        [disabled]="besoins?.length < 1"
+					        icon="fa fa-times" label="Supprimer Sous PPM" (click)="supprimer()">
+					</button>
+				</div>
+			</div>
+		</div>
+	</p-toolbar>
+	<br/>
+	<div class=" row p-grid">
+		<div class="col-sm-6 pt-1 text-left">
+			<p-dropdown [options]="uniteadministratives" [(ngModel)]="uniteAdministrative"
+			            placeholder="Selectionner une unité administrative"
+			            [style]="{'width': '30em'}" filter="filter"
+			            showClear="showClear" optionLabel="abbreviation" (onChange)="filterData()"></p-dropdown>
+		</div>
+		<div class="col-sm-6 pt-1 text-right">
+			<input type="text" pInputText size="50" placeholder="Rechercher"
+			       (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+			<button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+			        [placement]="'top'" (click)="actualiser()">
+			</button>
+		</div>
+	</div>
+	<p-toast key="myKey1" position="top-center"></p-toast>
+	<!-- <jhi-alert></jhi-alert>-->
+	<br/>
+	<div class="alert alert-danger" *ngIf="exercice?.id === null">
+		<span class="text-primary align-content-center">Vous ne pouvez ajouter aucun Sous-PPM car aucun exercice n'est activé à cet effet !</span>
+	</div>
+	<div class="table-responsive">
+		<p-table #dataTable [value]="besoins" [(selection)]="besoinSelecteds" dataKey="id" [paginator]="true"
+		         [rows]="20"
+		         [globalFilterFields]="['libelle', 'quantite', 'anneeExercice', 'libelleUniteAdministrative', 'libellenaturePrestation']">
+			<ng-template pTemplate="header">
+				<tr>
+					<th style="width: 3em">
+						<p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+					</th>
+					<!--<td style="width: 3em">N°</td>-->
+					<th scope="col"> Objet
+						<fa-icon [icon]="'sort'"></fa-icon>
+					</th>
+					<!-- <th scope="col"><span
+						jhiTranslate="marchepublicgatewayApp.microserviceppmBesoin.quantite">Quantité</span>
+						<fa-icon [icon]="'sort'"></fa-icon>
+					</th> -->
+					<th scope="col" style="width: 8em"><span>Exercice</span>
+						<fa-icon [icon]="'sort'"></fa-icon>
+					</th>
+					<th scope="col"><span>Unité Administrative</span>
+						<fa-icon [icon]="'sort'"></fa-icon>
+					</th>
+					<th scope="col"><span>Type de marché</span>
+						<fa-icon [icon]="'sort'"></fa-icon>
+					</th>
+					<th style="width: 18em">Actions</th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-besoin let-columns="columns" let-rowIndex="rowIndex"
+			             let-expanded="expanded">
+				<tr [pSelectableRow]="besoin" class="ui-widget-header">
+					<td>
+						<p-tableCheckbox [value]="besoin"></p-tableCheckbox>
+					</td>
+					<td>
+						<a href="#" [pRowToggler]="besoin">
+							<i [ngClass]="expanded ? 'fa fa-fw fa-chevron-circle-down' : 'fa fa-fw fa-chevron-circle-right'"></i>
+							{{besoin.libelle}}
+						</a>
+					</td>
+					<!-- <td>{{besoin.quantite}}</td> -->
+					<td style="width: 8em">{{besoin.anneeExercice}}</td>
+					<td>{{besoin.libelleUniteAdministrative}}</td>
+					<td>{{besoin.libellenaturePrestation}}</td>
+					<td class="text-right" style="width: 18em">
+						<div class="btn-group">
+							<button *jhiHasAnyAuthority="'ROLE_PPM_SOUS_PPM_EDIT'" type="button" pButton
+							        icon="fa fa-edit" class="ui-button-secondary text-warning"
+							        label="Modifier" (click)="add(besoin)">
+							</button>
+
+							<button *jhiHasAnyAuthority="'ROLE_PPM_SOUS_PPM_DELETE'" type="button" label="Supprimer"
+							        class="ui-button-secondary text-danger"
+							        (click)="deleteElementBesoin(besoin)"
+							         pButton icon="fa fa-remove">
+							</button>
+						</div>
+					</td>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="rowexpansion" let-besoin let-columns="columns">
+				<tr *ngIf="besoin.ligneBudgetaires?.length > 0">
+					<th></th>
+					<!--<th>Section</th>
+					<th>Programme</th>
+					<th>Action</th>
+					<th>Chapitre</th>
+					<th>Budget</th>-->
+
+					<th>Activité</th>
+					<th>Article</th>
+					<th>Paragraphe</th>
+					<th>Dotation initiale</th>
+					<th>Dotation Corrigée</th>
+                    <th>Montant estimé</th>
+				</tr>
+				<tr *ngFor="let ligneBudgetaire of besoin?.besoinLignes">
+					<td></td>
+					<!--<td>{{ligneBudgetaire.section}}</td>
+					<td>{{ligneBudgetaire.programme}}</td>
+					<td>{{ligneBudgetaire.action}}</td>
+					<td>{{ligneBudgetaire.chapitre}}</td>
+					<td>{{ligneBudgetaire.budget}}</td>-->
+
+					<td>{{ligneBudgetaire?.ligneBudget?.activite}}</td>
+					<td>{{ligneBudgetaire?.ligneBudget?.article}}</td>
+					<td>{{ligneBudgetaire?.ligneBudget?.paragraphe}}</td>
+					<td>{{ligneBudgetaire?.ligneBudget?.dotInitAE}}</td>
+					<td>{{ligneBudgetaire?.ligneBudget?.dotCorAE}}</td>
+                    <td>{{ligneBudgetaire?.montantEstime}}</td>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="emptymessage" let-columns>
+				<tr>
+					<td colspan="6" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"><span
+							class="text-danger"> Aucun sous PPM trouvé ! </span></td>
+				</tr>
+			</ng-template>
+		</p-table>
+
+	</div>
+	<div>
+		<p-dialog header="Création/Ajout d'un besoin" [(visible)]="display" [modal]="true" [responsive]="true"
+		          (onHide)="annuler()"
+		          [style]="{width: '89%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+			<form  role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+				<fieldset class="scheduler-border">
+					<legend class="scheduler-border">Sous PPM</legend>
+					<div class="row">
+						<!--<div class="col-sm-4">
+							<div class="form-group">
+								<label class="form-control-label">Unité Administrative</label>
+								<p-dropdown [options]="dropDownuniteadministratives" [(ngModel)]="besoin.uniteAdministrativeId"
+								            placeholder="Selectionner une unité administrative"
+								            id="field_uniteAdministrative" [required]="true"
+								            [style]="{'width': '100%'}" filter="filter" name="uniteAdministrative"
+								            showClear="showClear">
+								</p-dropdown>
+							</div>
+						</div>-->
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label class="form-control-label">Type de marché</label>
+								<p-dropdown [options]="dropDownnatureprestations" [(ngModel)]="besoin.naturePrestationId"
+								            placeholder="Selectionner le type de marché" [required]="true"
+								            [style]="{'width': '100%'}" filter="filter" name="naturePrestation"
+								            showClear="showClear">
+								</p-dropdown>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label class="form-control-label">Montant Estimé</label>
+								<p-spinner [(ngModel)]="besoin.montantEstime" [formatInput]="true" thosandSeparator=","
+								           name="montantEstime" decimalSeparator="." required></p-spinner>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label class="form-control-label" for="field_libelle">Objet</label>
+								<input type="text" class="form-control" name="libelle" id="field_libelle"
+								       [(ngModel)]="besoin.libelle" required/>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label class="form-control-label" id="calendar" for="field_date_debut">Date probable de
+									réception</label>
+								<br>
+								<input type="date" [(ngModel)]="besoin.dateDebut" name="dateDebut" id="field_date_debut"
+								       style="width: 100%; height: 2.8em;" required>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+				<hr>
+				<div class="col-sm-12 text-right add">
+					<button class="ui-button-secondary text-primary" label="Indexer ligne budgétaire" type="button"
+					        pButton
+					        (click)="addLigne()" icon="fa fa-plus"></button>
+				</div>
+				<div class="col-sm-12">
+					<p-table [value]="besoin.ligneBudgetaires" dataKey="id">
+						<ng-template pTemplate="header" let-columns>
+							<tr><th>Budget</th>
+								<th>Programme</th>
+								<th>Action</th>
+								<th>Chapitre</th>
+                                <th>Section</th>
+								<th>Activité</th>
+								<th>Article</th>
+								<th>Paragraphe</th>
+								<th>Dotation Initiale</th>
+								<th>Dotation Corrigée</th>
+                                <th>Montant estimé</th>
+								<th scope="col"></th>
+							</tr>
+						</ng-template>
+						<ng-template pTemplate="body" let-ligneBudgetaire>
+							<tr>
+                                <td>{{ligneBudgetaire?.budget}}</td>
+								<td>{{ligneBudgetaire?.programme}}</td>
+								<td>{{ligneBudgetaire?.action}}</td>
+								<td>{{ligneBudgetaire?.chapitre}}</td>
+                                <td>{{ligneBudgetaire?.section}}</td>
+								<td>{{ligneBudgetaire?.activite}}</td>
+								<td>{{ligneBudgetaire?.article}}</td>
+								<td>{{ligneBudgetaire?.paragraphe}}</td>
+								<td>{{ligneBudgetaire?.dotInitAE}}</td>
+								<td>{{ligneBudgetaire?.dotCorAE}}</td>
+                                <td>{{ligneBudgetaire?.montantEstime}}</td>
+								<td class="text-right">
+									<div class="btn-group">
+										<button pButton type="button"
+										        (click)="retirer(ligneBudgetaire)" icon="fa fa-close"
+										        class="ui-button-secondary text-danger" label="Retirer">
+										</button>
+									</div>
+								</td>
+							</tr>
+
+						</ng-template>
+						<ng-template pTemplate="emptymessage" let-columns>
+							<tr>
+								<td colspan="11"
+								    style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"><span
+										class="text-danger"> Aucune ligne budgétaire indexée ! </span></td>
+							</tr>
+						</ng-template>
+						<ng-template pTemplate="summary">
+							<tr *ngIf="montant > 0">
+								<td style="width: 45em;" [attr.colspan]="3">Montant total du Sous PPM</td>
+								<td [attr.colspan]="2">{{montant}}</td>
+							</tr>
+						</ng-template>
+					</p-table>
+				</div>
+
+				<br>
+				<p-footer>
+					<div class="text-center">
+						<button type="button" pButton class="ui-button-secondary text-danger" icon="fa fa-ban"
+						        (click)="annuler()" label="Fermer"></button>
+						<button type="submit" pButton [disabled]="editForm.invalid || isSaving"
+						        icon="fa fa-save"
+						        class="ui-button-secondary text-primary" label="Enregistrer"></button>
+					</div>
+				</p-footer>
+			</form>
+		</p-dialog>
+
+		<p-dialog header="Selection des lignes de crédits" [(visible)]="displayLigne" [modal]="true" [responsive]="true"
+		          (onHide)="annulerLigne()"
+		          [style]="{width: '85%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+			<button type="button" pButton class="ui-button-secondary text-primary" icon="fa fa-plus"
+			        label="Ligne Budget" (click)="addligne(null)"></button>
+			<div class="ui-dialog-content" style="overflow: scroll; height: 300px">
+				<p-toast key="myKey3" position="top-center"></p-toast>
+				<p-table [value]="ligneBudgetaires" [(selection)]="ligneBudgetaireSelecteds" dataKey="id" #filter
+				         [globalFilterFields]="['annee', 'budget', 'ligneCredit', 'section', 'montantEstime', 'programme', 'action', 'chapitre', 'activite', 'article', 'paragraphe']">
+					<ng-template pTemplate="caption">
+						<div class="p-grid">
+							<div class="col-sm-12 pt-1 text-right">
+								<input type="text" pInputText size="50" placeholder="Rechercher une ligne budgétaire"
+								       (input)="filter.filterGlobal($event.target.value, 'contains')"
+								       style="width:auto">
+							</div>
+						</div>
+					</ng-template>
+					<ng-template pTemplate="header">
+						<tr>
+							<th style="width: 3em">
+								<p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+							</th>
+                            <th>Budget</th>
+							<th>Programme</th>
+							<th>Action</th>
+							<th>Chapitre</th>
+
+							<th>Activité</th>
+							<th>Article</th>
+							<th>Paragraphe</th>
+							<th>Dotation Corrigée CP</th>
+							<th>Dotation Corrigée AE</th>
+							<!--<th style="width: 6em;">AE/CP</th>-->
+                            <th>Dotation Corrigée CP restant</th>
+                            <th>Dotation Corrigée AE restant</th>
+                            <th>Montant estimé</th>
+						</tr>
+					</ng-template>
+					<ng-template pTemplate="body" let-lingeBudgetaire let-columns="columns" let-rowIndex="rowIndex">
+						<tr [pSelectableRow]="lingeBudgetaire">
+							<td>
+								<p-tableCheckbox [value]="lingeBudgetaire"
+								                 (click)="ligneSelected(lingeBudgetaire)"></p-tableCheckbox>
+							</td>
+                            <td>{{lingeBudgetaire.budget}}</td>
+							<td>{{lingeBudgetaire.programme}}</td>
+							<td>{{lingeBudgetaire.action}}</td>
+                            <td>{{lingeBudgetaire.chapitre}}</td>
+							<td>{{lingeBudgetaire.activite}}</td>
+							<td>{{lingeBudgetaire.article}}</td>
+							<td>{{lingeBudgetaire.paragraphe}}</td>
+							<td>{{lingeBudgetaire.dotCorCP}}</td>
+							<td>{{lingeBudgetaire.dotCorAE}}</td>
+							<!--<td style="width: 6em;">
+								<select class="form-control" [name]="'ae_cp_' + rowIndex" style="width: 100%"
+								        [(ngModel)]="lingeBudgetaire.besoinLigneBuget.aecp" required>
+									<option [ngValue]="true">AE</option>
+									<option [ngValue]="false">CP</option>
+								</select>
+							</td>-->
+							<!--<td style="width: 10em;">
+								<input type="number" class="form-control" [name]="'montant_' + rowIndex"
+								       [disabled]="!lingeBudgetaire.selected"
+								       [(ngModel)]="lingeBudgetaire.besoinLigneBuget.montantEstime" style="width: 100%"
+								       (change)="verifierLigne(lingeBudgetaire)">
+							</td>-->
+                            <td>{{lingeBudgetaire?.dotCorCPRestant}}</td>
+                            <td>{{lingeBudgetaire?.dotCorAERestant}}</td>
+                            <td>
+                                <p-spinner [(ngModel)]="lingeBudgetaire.montantEstime" [formatInput]="true" thosandSeparator=","
+                                           decimalSeparator="." required [name]="'montantEstimeS_' + rowIndex" [disabled]="!lingeBudgetaire.selected"></p-spinner>
+                            </td>
+						</tr>
+
+					</ng-template>
+				</p-table>
+			</div>
+			<p-footer>
+				<div class="text-center">
+					<button type="button" pButton class="ui-button-secondary text-danger" (click)="annulerSelectLigne()"
+					        icon="fa fa-times" label="Annuler">
+					</button>
+					<button type="button" pButton class="ui-button-secondary text-primary"
+					        [disabled]="ligneBudgetaireSelecteds?.length < 1 || ligneValide"
+					        icon="fa fa-check" label="Valider" (click)="valider()">
+					</button>
+				</div>
+			</p-footer>
+		</p-dialog>
+
+		<p-dialog header="Ajouter/modifier une ligne budgetaire" [(visible)]="displayAddligne" [modal]="true"
+		          [responsive]="true" (onHide)="annulleLine()"
+		          [style]="{width: '90%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+			<form name="editForm1" role="form" novalidate (ngSubmit)="saveLigne()" #editForm1="ngForm">
+				<jhi-alert-error></jhi-alert-error>
+
+				<fieldset class="scheduler-border">
+					<legend class="scheduler-border">Ligne Bugétaire</legend>
+					<div class="row">
+						<div class="form-group col-sm-4">
+							<label class="form-control-label" for="field_exercice">Exercice budgétaire</label>
+							<select class="form-control" id="field_exercice" name="exercice"
+							        [(ngModel)]="ligneBudgetaire.exerciceId" required>
+								<option [ngValue]="null">...</option>
+								<option [ngValue]="exerciceOption.id"
+								        *ngFor="let exerciceOption of exercicebudgetaires">{{exerciceOption.annee}}</option>
+							</select>
+						</div>
+						<div class="form-group col-sm-4">
+							<label class="form-control-label" for="field_section">Section</label>
+							<input type="text" class="form-control" name="section" id="field_section"
+							       [(ngModel)]="ligneBudgetaire.section" required/>
+						</div>
+						<div class="form-group col-sm-4">
+							<label class="form-control-label" for="field_programme">Programme</label>
+							<input type="text" class="form-control" name="programme" id="field_programme"
+							       [(ngModel)]="ligneBudgetaire.programme" required/>
+						</div>
+						<div class="form-group col-sm-4">
+							<label class="form-control-label" for="field_action">Action</label>
+							<input type="text" class="form-control" name="action" id="field_action"
+							       [(ngModel)]="ligneBudgetaire.action" required/>
+						</div>
+						<div class="form-group col-sm-4">
+							<label class="form-control-label" for="field_chapitre">Chapitre</label>
+							<input type="text" class="form-control" name="chapitre" id="field_chapitre"
+							       [(ngModel)]="ligneBudgetaire.chapitre" required/>
+						</div>
+						<div class="form-group col-sm-4">
+							<label class="form-control-label" for="field_activite">Activité</label>
+							<input type="text" class="form-control" name="activite" id="field_activite"
+							       [(ngModel)]="ligneBudgetaire.activite" required/>
+						</div>
+						<div class="form-group col-sm-4">
+							<label class="form-control-label" for="field_article">Article</label>
+							<input type="text" class="form-control" name="article" id="field_article"
+							       [(ngModel)]="ligneBudgetaire.article" required/>
+						</div>
+						<div class="form-group col-sm-4">
+							<label class="form-control-label" for="field_paragraphe">Paragraphe</label>
+							<input type="text" class="form-control" name="paragraphe" id="field_paragraphe"
+							       [(ngModel)]="ligneBudgetaire.paragraphe" required/>
+						</div>
+						<div class="form-group col-sm-4">
+							<label class="form-control-label" for="field_budget">Budget</label>
+							<input type="text" class="form-control" name="budget" id="field_budget"
+							       [(ngModel)]="ligneBudgetaire.budget" required/>
+						</div>
+					</div>
+				</fieldset>
+				<hr>
+				<fieldset class="scheduler-border">
+					<legend class="scheduler-border">Dotations</legend>
+					<div class="row">
+
+						<div class="form-group col-sm-6">
+							<label class="form-control-label" for="field_dotInitAE">Dotation AE Initiale</label>
+							<input min="0" (change)="verifier()" type="number" class="form-control" name="dotInitAE"
+							       id="field_dotInitAE" [(ngModel)]="ligneBudgetaire.dotInitAE" required/>
+						</div>
+						<div class="form-group col-sm-6">
+							<label class="form-control-label" for="field_dotInitCP">Dotation CP Initiale</label>
+							<input min="0" (change)="verifier()" type="number" class="form-control" name="dotInitCP"
+							       id="field_dotInitCP" [(ngModel)]="ligneBudgetaire.dotInitCP" required/>
+						</div>
+
+						<div class="form-group col-sm-6">
+							<label class="form-control-label" for="field_dotCorAE">Dotation AE Corrigée</label>
+							<input min="0" (change)="verifier()" type="number" class="form-control" name="dotCorAE"
+							       id="field_dotCorAE" [(ngModel)]="ligneBudgetaire.dotCorAE" required/>
+						</div>
+						<div class="form-group col-sm-6">
+							<label class="form-control-label" for="field_dotCorCP">Dotation CP Corrigée</label>
+							<input min="0" (change)="verifier()" type="number" class="form-control" name="dotCorCP"
+							       id="field_dotCorCP" [(ngModel)]="ligneBudgetaire.dotCorCP" required/>
+						</div>
+					</div>
+				</fieldset>
+
+			</form>
+			<p-footer style="text-align: center;">
+				<div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+					<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+					        label="Annuler" (click)='annulleLine()'>
+					</button>
+					<button type="button" pButton icon="fa fa-check" label="Enregistrer" (click)="saveLigne()"
+					        class="ui-button-secondary text-info" [disabled]="editForm1.form.invalid || isSaving">
+					</button>
+				</div>
+			</p-footer>
+		</p-dialog>
+
+		<p-dialog header="Suppression de besoins" [(visible)]="displayDelete" [modal]="true" [responsive]="true"
+		          (onHide)="annulerDel()"
+		          [style]="{width: '70%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+			<div class="row">
+				<span class="delete-text">{{deteteTexte}}</span>
+			</div>
+			<hr>
+			<p-table [value]="besoinSelecteds" dataKey="id">
+				<ng-template pTemplate="header" let-lingeBudgetaire>
+					<tr>
+						<th scope="col">Objet
+							<fa-icon [icon]="'sort'"></fa-icon>
+						</th>
+						<th scope="col"><span>Quantité</span>
+							<fa-icon [icon]="'sort'"></fa-icon>
+						</th>
+						<th scope="col"><span>Exercice</span>
+							<fa-icon [icon]="'sort'"></fa-icon>
+						</th>
+						<th scope="col"><span>Unité Administrative</span>
+							<fa-icon [icon]="'sort'"></fa-icon>
+						</th>
+						<th scope="col"><span>Nature de passation</span>
+							<fa-icon [icon]="'sort'"></fa-icon>
+						</th>
+
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-besoin let-columns="columns">
+					<tr>
+						<td>{{besoin.libelle}}</td>
+						<td>{{besoin.quantite}}</td>
+						<td>{{besoin.anneeExercice}}</td>
+						<td>{{besoin.libelleUniteAdministrative}}</td>
+						<td>{{besoin.libellenaturePrestation}}</td>
+					</tr>
+				</ng-template>
+			</p-table>
+			<br>
+			<button type="button" pButton class="ui-button-secondary text-danger" (click)="annulerDel()"
+			        icon="fa fa-times" label="Annuler">
+			</button>
+			<button type="button" pButton class="ui-button-secondary text-primary"
+			        [disabled]="besoinSelecteds?.length <= 0 "
+			        icon="fa fa-plus" label="Confirmer" (click)="confirmerDelete()">
+			</button>
+		</p-dialog>
+	</div>
+	<p-toast key="myKey2" position="top-center"></p-toast>
+</div>
+
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON" (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI" (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+<p-toast [style]="{marginTop: '80px'}" position="top-center"></p-toast>

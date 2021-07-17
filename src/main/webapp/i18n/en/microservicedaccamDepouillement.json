@@ -1,0 +1,33 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicedaccamDepouillement": {
+      "home": {
+        "title": "Depouillements",
+        "createLabel": "Create a new Depouillement",
+        "createOrEditLabel": "Create or edit a Depouillement",
+        "notFound": "No Depouillements found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Depouillement {{ id }}?"
+      },
+      "detail": {
+        "title": "Depouillement"
+      },
+      "description": "Description",
+      "date": "Date",
+      "heureDebut": "Heure Debut",
+      "heureFin": "Heure Fin",
+      "lieu": "Lieu",
+      "salle": "Salle",
+      "deleted": "Deleted",
+      "candidatLots": "Candidat Lots"
+    }
+  },
+  "microservicedaccamApp": {
+    "microservicedaccamDepouillement": {
+      "created": "A new Depouillement is created with identifier {{ param }}",
+      "updated": "A Depouillement is updated with identifier {{ param }}",
+      "deleted": "A Depouillement is deleted with identifier {{ param }}"
+    }
+  }
+}

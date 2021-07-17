@@ -1,0 +1,31 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmBesoin": {
+      "home": {
+        "title": "Besoins",
+        "createLabel": "Create a new Besoin",
+        "createOrEditLabel": "Create or edit a Besoin",
+        "notFound": "No Besoins found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Besoin {{ id }}?"
+      },
+      "detail": {
+        "title": "Besoin"
+      },
+      "libelle": "Libelle",
+      "quantite": "Quantite",
+      "deleted": "Deleted",
+      "besoinLignes": "Besoin Lignes",
+      "exercice": "Exercice",
+      "uniteAdministrative": "Unite Administrative"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmBesoin": {
+      "created": "A new Besoin is created with identifier {{ param }}",
+      "updated": "A Besoin is updated with identifier {{ param }}",
+      "deleted": "A Besoin is deleted with identifier {{ param }}"
+    }
+  }
+}

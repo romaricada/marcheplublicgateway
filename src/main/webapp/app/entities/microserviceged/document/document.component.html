@@ -1,0 +1,349 @@
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES DOCUMENTS</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button type="button" pButton class="ui-button-secondary text-primary"
+                            icon="fa fa-plus" label="Ajouter un document" *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_ARCHIVES_ADD'" (click)="showDialogToAddDocument()">
+                    </button>
+                    <button type="button" pButton class="ui-button-secondary text-danger"
+                            [disabled]="documentSelected?.length < 1 "
+                            icon="fa fa-times" label="Supprimer document" *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_ARCHIVES_DELETEALL'"(click)="supprimer()">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-inputgroup mr-1">
+                <span class="ui-inputgroup-addon"><span class="font-weight-bold">Emplacement</span></span>
+                <p-dropdown [options]="locales" placeholder="Selectionner un emplacement"
+                            [(ngModel)]="locale" (onChange)="LoadLocalite()" filter="filter" showClear="showClear" optionLabel="libelle">
+                </p-dropdown>
+            </div>
+            <div class="ui-inputgroup mr-1">
+                <span class="ui-inputgroup-addon"><span class="font-weight-bold">Type Document</span></span>
+                <p-dropdown [options]="typeDocuments" placeholder="Selectionner type Document"
+                            [(ngModel)]="typeDocument" (onChange)="LoadDocument()" filter="filter" showClear="showClear"
+                            optionLabel="libelle">
+                </p-dropdown>
+            </div>
+            <div class="ui-inputgroup mr-1">
+                <span class="ui-inputgroup-addon"><span class="font-weight-bold">Type d'Archive</span></span>
+                <p-dropdown [options]="typeArchivages" placeholder="Selectionner type Archivage"
+                            [(ngModel)]="typeArchivage" (onChange)="LoadDocumentArchive()" [disabled]="typeDocument?.id === undefined"
+                            filter="filter" showClear="showClear" optionLabel="libelle">
+                </p-dropdown>
+            </div>
+            <div class="ui-inputgroup mr-1">
+                <span class="ui-inputgroup-addon"><span class="font-weight-bold">Entrepôt</span></span>
+                <p-dropdown [options]="entrepots" placeholder="Selectionner un Entrepot"
+                            [(ngModel)]="entrepot1"  (onChange)="LoadDocumentEntropot()" [disabled]="typeArchivage?.id === undefined"
+                            filter="filter" showClear="showClear" optionLabel="libelle">
+                </p-dropdown>
+            </div>
+        </div>
+    </p-toolbar>
+</div>
+
+<div class="table-responsive mt-1">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-8">
+                <p-table #dataTable [value]="documents" [(selection)]="documentSelected" dataKey="id"
+                         [paginator]="true" [rows]="20"
+                         [globalFilterFields]="['code','libelle']">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 3em">
+                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                            </th>
+                            <th scope="col">Code
+
+                            </th>
+                            <th scope="col">Document
+                            </th>
+                            <th scope="col"><span>Date</span>
+
+                            </th>
+                            <th scope="col"><span>Direction</span>
+
+                            </th>
+                            <th style="width: 18em">Actions</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-document let-columns="columns" let-rowIndex="rowIndex"
+                                 let-expanded="expanded">
+                        <tr [pSelectableRow]="document" class="ui-widget-header">
+                            <td>
+                                <p-tableCheckbox [value]="document"></p-tableCheckbox>
+                            </td>
+                            <td>{{document.code}}</td>
+                            <td>{{document.libelle}}</td>
+                            <td>{{document.date | date:'mediumDate'}}</td>
+                            <td>{{findUniteById(document?.uniteAdministrativeId)?.abbreviation}}</td>
+                            <td class="text-right" style="width: 18em">
+                                <div class="btn-group">
+                                    <button type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning"
+                                            label="Modifier"  *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_ARCHIVES_EDIT'"(click)="showDialogToModifDocument(document)">
+                                    </button>
+
+                                    <button type="button" label="Supprimer" class="ui-button-secondary text-danger" *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_ARCHIVES_DELETE'"
+                                            (click)="deleteComission(document)"
+                                            pButton icon="fa fa-remove">
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage" let-columns>
+                        <tr>
+                            <td colspan="6" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"><span
+                                class="text-danger"> Aucun document trouvé! </span></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div class="col-sm-4">
+                <span class="font-weight-bold"> Rechercher dossier ou fichier</span>
+                <p-tree [value]="files" selectionMode="checkbox" [(selection)]="selectedFiles" [propagateSelectionUp]="false"
+                        [propagateSelectionDown]="false" [filter]="true" [style]="{width: '100%'}">
+                </p-tree>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <p-dialog header="Céation/Ajout d'un document" [(visible)]="display" [modal]="true"
+              [responsive]="true"
+              (onHide)="fermerFormulaire()"
+              [style]="{width: '70%', minWidth: '100px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+        <form name="editForm" role="form" novalidate #editForm="ngForm">
+            <div class="ui-dialog-content" style="height: 500px">
+                <div class="container">
+                    <div class="p-grid" style="margin-top: .5em">
+                        <div class="p-col" *ngFor="let type of typeEntrepots; let i=index">
+                            <div class="box">
+                                <label class="form-control-label">{{type?.libelle}}</label>
+                                <p-dropdown [options]="entrepotes[i]" [(ngModel)]="entrepot[i]"
+                                            (onChange)="onEntrepotChange(i)"
+                                            [style]="{'width': '100%'}" filter="filter"
+                                            placeholder="Choisir un  Entrepot"
+                                            [name]="'typeEntrepost' + i " showClear="showClear"
+                                            optionLabel="libelle">
+                                </p-dropdown>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_uniteadministrative">Unité
+                                    Administrative</label>
+                                <select class="form-control" id="field_uniteadministrative"
+                                        name="uniteadministrative" [(ngModel)]="document.uniteAdministrativeId"
+                                        required>
+                                    <option [ngValue]="null">...</option>
+                                    <option [ngValue]="uniteAdministrativeOpen.id"
+                                            *ngFor="let uniteAdministrativeOpen of uniteadministratives">{{uniteAdministrativeOpen.abbreviation}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-4" *ngIf="ajout === false">
+                            <div class="form-group">
+                                <label class="form-control-label">Type Archivage</label>
+                                <div class="input-group">
+                                    <select [(ngModel)]="document.typeArchivageId" class="form-control"
+                                            name="typeArchive">
+                                        <option [ngValue]="null"></option>
+                                        <option [ngValue]="type.id"
+                                                *ngFor="let type of typeArchivages"> {{type.libelle}}</option>
+                                    </select>
+                                    <span class="input-group-append">
+                                         <button
+                                             type="button" (click)="ajouter()" class="btn btn-primary btn-sm"><fa-icon
+                                             [icon]="'plus'"></fa-icon></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4" *ngIf="ajout !== false">
+                            <div class="form-group">
+                                <label class="form-control-label">Type Archivage</label>
+                                <div class="input-group">
+                                    <input class="form-control" [(ngModel)]="document.typeArchive.libelle"
+                                           name="typeA" type="text"
+                                           required/>
+                                    <span class="input-group-append">
+                                         <button type="button" (click)="ajouter()" class="btn btn-primary btn-sm"><fa-icon
+                                             [icon]="'plus'"></fa-icon></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4" *ngIf="ajout1 === false">
+                            <div class="form-group">
+                                <label class="form-control-label">Type Document</label>
+                                <div class="input-group">
+                                    <p-dropdown [options]="typeDocuments" [(ngModel)]="typeDocument"
+                                                [style]="{'width': '21.6em'}" filter="filter"
+                                                placeholder="Choisir un type document"
+                                                name="typeDocument" showClear="showClear" optionLabel="libelle">
+                                    </p-dropdown>
+                                    <span class="input-group-append">
+                                         <button type="button" (click)="ajouter1()" class="btn btn-primary btn-sm"><fa-icon
+                                             [icon]="'plus'"></fa-icon></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4" *ngIf="ajout1 !== false">
+                            <div class="form-group">
+                                <label class="form-control-label">Type Document</label>
+                                <div class="input-group">
+                                    <input class="form-control" [(ngModel)]="document.typeDocument.libelle"
+                                           name="typeDoc" type="text" required/>
+                                    <span class="input-group-append">
+                                         <button type="button" (click)="ajouter1()" class="btn btn-primary btn-sm"><fa-icon
+                                             [icon]="'plus'"></fa-icon></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_code">Code</label>
+                                <input type="text" class="form-control"
+                                       name="code" id="field_code"
+                                       [(ngModel)]="document.code" required/>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_libelle">Document</label>
+                                <input type="text" class="form-control"
+                                       name="libelle" id="field_libelle"
+                                       [(ngModel)]="document.libelle" required/>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-control-label" for="field_date">Date</label>
+                                <br>
+                                <input type="date" class="form-control" name="field_date" id="field_date"
+                                       [(ngModel)]="document.date"/>
+                                <!--<p-calendar dateFormat="yy/mm/dd" [(ngModel)]="document.date" [showIcon]="true"
+                                            name="date" id="field_date" yearRange="2000:2030"></p-calendar>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label>Fichier à joindre</label>
+                                <input type="file" name="file" class="form-control"
+                                       (change)="setFileData($event)">
+                                <ul>
+                                    <li *ngFor="let file of fichiers">
+                                        <span class="mt-2">{{file?.name}}</span>
+                                        <span class="mt-2">{{file?.size}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <p-footer>
+            <div class="text-center">
+                <button type="button" pButton class="ui-button-secondary text-danger" icon="fa fa-ban"
+                        (click)="fermerFormulaire()"
+                        label="Fermer">
+                </button>
+                <button type="button" pButton
+                        (click)="saveDocument()"
+                        icon="fa fa-save" class="ui-button-secondary text-primary" label="Enregistrer">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+    <p-dialog header="Suppression des documents" [(visible)]="displayDelete" [modal]="true"
+              [responsive]="true"
+              (onHide)="annulerDel()"
+              [style]="{width: '50%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+        <p-table [value]="documentSelected" dataKey="id">
+            <ng-template pTemplate="header" let-document>
+                <tr>
+                    <th scope="col">Code
+                        <fa-icon [icon]="'sort'"></fa-icon>
+                    </th>
+                    <th scope="col">Document
+                        <fa-icon [icon]="'sort'"></fa-icon>
+                    </th>
+                    <th scope="col">Entrepot
+                        <fa-icon [icon]="'sort'"></fa-icon>
+                    </th>
+                    <th scope="col"><span>Date</span>
+                        <fa-icon [icon]="'sort'"></fa-icon>
+                    </th>
+                    <th scope="col"><span>Type Archive</span>
+                        <fa-icon [icon]="'sort'"></fa-icon>
+                    </th>
+                    <th scope="col"><span>Type Document</span>
+                        <fa-icon [icon]="'sort'"></fa-icon>
+                    </th>
+                    <th scope="col"><span>Direction</span>
+                        <fa-icon [icon]="'sort'"></fa-icon>
+                    </th>
+
+
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-document let-columns="columns">
+                <tr>
+                    <td>{{document.code}}</td>
+                    <td>{{document.libelle}}</td>
+                    <td>{{document.entrepotId}}</td>
+                    <td>{{document.date}}</td>
+                    <td>{{document.typeArchivageId}}</td>
+                    <td>{{document.typeDocumentId}}</td>
+                    <td>{{findUniteById(document.uniteAdministrativeId).abbreviation}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <button type="button" pButton class="ui-button-secondary text-danger" (click)="annulerDel()"
+                        icon="fa fa-times" label="Annuler">
+                </button>
+                <button type="button" pButton class="ui-button-secondary text-primary"
+                        [disabled]="documentSelected?.length <= 0 "
+                        icon="fa fa-plus" label="Confirmer" (click)="confirmerDelete()">
+                </button>
+            </div>
+        </p-footer>
+    </p-dialog>
+</div>
+
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+                (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI"
+                (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+
+

@@ -1,0 +1,542 @@
+<div class="card" style="min-height: 45em">
+    <div class="card-header text-center">
+        <span class="font-weight-bold">Gérer la Tâche:
+            <span *ngIf="tache?.etatAvancement < 30">
+                <span class="badge-pill badge-warning">{{tache?.etatAvancement+'%'}}</span>
+                de réalisation des étapes
+            </span>
+            <span *ngIf="tache?.etatAvancement > 30 && tache?.etatAvancement < 70">
+                <span class="badge-pill badge-info">{{tache?.etatAvancement+'%'}}</span>
+                de réalisation des étapes
+            </span>
+            <span *ngIf="tache?.etatAvancement > 70">
+                <span class="badge-pill badge-success">{{tache?.etatAvancement+'% '}}</span>
+                de réalisation des étapes
+            </span>
+        </span>
+        <span>
+            <span *ngIf="tache?.etatAvancement == 0">
+                Etat: <span class="badge-pill badge-info">{{tache?.etat}}</span>
+            </span>
+            <span *ngIf="tache?.etatAvancement > 0 && tache?.etatAvancement < 100">
+                Etat: <span class="badge-pill badge-warning">{{tache?.etat}}</span>
+            </span>
+            <span *ngIf="tache?.etatAvancement == 100">
+                Etat: <span class="badge-pill badge-success">{{tache?.etat}}</span>
+            </span>
+        </span>
+        <span *ngIf="isSaving">
+                <span class="text-info">Chargement...</span><img src="../../../../content/images/ajax-loader.gif"/>
+        </span>
+    </div>
+    <div class="card-body">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm"
+              [style]="{'max-height':'100px','overflow':'auto'}">
+            <p-tabView>
+                <p-tabPanel header="Information" leftIcon="fa fa-tasks">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <span class="ui-inputgroup-addon">Date debut</span>
+                            <input type="date" name="design" id="date_debut_tache" style="width: 100%;"
+                                   pInputText [(ngModel)]="tache.dateDebut">
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="ui-inputgroup-addon">Date fin</span>
+                            <input type="date" name="design" id="date_fin_tache" style="width: 100%;"
+                                   pInputText  [(ngModel)]="tache.dateFin">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold" for="libelle">Résumé</label>
+                        <input class="form-control" required id="libelle" name="libelle"
+                               pInputText type="text" [(ngModel)]="tache.libelle"/>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-inline">
+                            <p-toggleButton onLabel="Cacher la description" offLabel="Ajoute une description" onIcon="fa fa-minus" id="ifdef" name="ifdef" offIcon="fa fa-plus" iconPos="left" [(ngModel)]="ifDescrib">
+                            </p-toggleButton>
+                        </div>
+                        <div *ngIf="ifDescrib">
+                            <p-editor name="desc" id="description" [(ngModel)]="tache.description" [style]="{'height':'150px'}">
+                                <p-header>
+                                                <span class="ql-formats">
+                                                    <button class="ql-bold" aria-label="Bold"></button>
+                                                    <button class="ql-italic" aria-label="Italic"></button>
+                                                    <button class="ql-underline" aria-label="Underline"></button>
+                                                </span>
+                                </p-header>
+                            </p-editor>
+                        </div>
+                    </div>
+                </p-tabPanel>
+                <p-tabPanel header="Les membres" leftIcon="fa fa-users">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="font-weight-bold">Affectation des Membres de commission</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-11">
+                                    <div class="form-group" *ngIf="!addNewType">
+                                        <!--<label class="form-control-label font-weight-bold" for="type-commission">Choisir le type de commission</label>-->
+                                        <div class="ui-inputgroup">
+                                            <span class="ui-inputgroup-addon" style="width: 15em">Choisir le type de commission</span>
+                                            <p-dropdown id="type-commission" [options]="typeComissions" autoWidth="false" [style]="{'width':'83em'}" [(ngModel)]="typeComission" [showClear]="true"
+                                                        optionLabel="libelle" name="typeComiss" [filter]="true" placeholder="Type Commission"
+                                                        (onChange)="onTypeChange()" [resetFilterOnHide]='true'>
+                                            </p-dropdown>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" *ngIf="addNewType">
+                                        <div class="ui-inputgroup">
+                                            <span class="ui-inputgroup-addon" style="width: 15em">Type commission</span>
+                                            <input type="text" name="typeCom" id="libelle_type" style="width: 100%;"
+                                                   pInputText placeholder="Saisir type commission" [(ngModel)]="typeComission.libelle">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="button" (click)="addType()" pButton icon="fa fa-plus" class="ui-button-secondary text-primary">
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-right">
+                                    <button (click)="showDialoToaddMembre()" [disabled]="!typeComission" type="button" icon="fa fa-user-plus"
+                                            pButton class="ui-button-secondary text-primary mb-1" label="Ajouter un nouveau membre">
+                                    </button>
+                                    <button (click)="removeSelectedMembre()" [disabled]="membreCommissionsToRemove.length < 1" type="button" icon="fa fa-trash"
+                                            pButton class="ui-button-secondary text-danger mb-1" label="Retirer les membres selectionnés">
+                                    </button>
+                                    <button (click)="ajouteMembre()" [disabled]="!typeComission" type="button" icon="fa fa-users"
+                                            pButton class="ui-button-secondary text-primary mb-1" label="Ajouter des membres">
+                                    </button>
+                                </div>
+                                <p-table [value]="tache.membreCommissions" scrollHeight="200px" [(selection)]="membreCommissionsToRemove">
+                                    <ng-template pTemplate="header" let-column>
+                                        <tr>
+                                            <th style="width: 3em"></th>
+                                            <th>Nom Prénom</th>
+                                            <th>Téléphone</th>
+                                            <th>Email</th>
+                                            <th>Poste</th>
+                                            <th style="width: 8em"></th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-memebreCommiss let-columns>
+                                        <tr [pSelectableRow]="memebreCommiss" class="ui-widget-header">
+                                            <td>
+                                                <p-tableCheckbox [value]="memebreCommiss"> </p-tableCheckbox>
+                                            </td>
+                                            <td>{{memebreCommiss.membre?.nom+" "+memebreCommiss.membre?.prenom}}</td>
+                                            <td>{{memebreCommiss.membre?.telephone}}</td>
+                                            <td>{{memebreCommiss.membre?.email}}</td>
+                                            <td>{{memebreCommiss.poste}}</td>
+                                            <td class="text-center">
+                                                <button (click)="removeMembre(memebreCommiss)" [disabled]="" type="button" icon="fa fa-trash"
+                                                        pButton class="ui-button-secondary text-danger mb-1" label="Retirer">
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage" let-columns>
+                                        <tr>
+                                            <td colspan="5" align="center"><span class="text-danger"> Aucun membre trouvé ! </span></td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                                <div class="text-center pied-table">
+                                            <span class="badge-info"> {{membreCommissionsToRemove?.length}}
+                                                elément(s) selectionné(s)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </p-tabPanel>
+                <p-tabPanel header="Les Etapes" leftIcon="fa  fa-list-ol">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="font-weight-bold">Selection des etapes</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-1 container progressClass" *ngIf="tache?.tacheEtapes?.length>0">
+                                <h6 class="text-center">Niveau de réalisation des etapes</h6>
+                                <p-progressBar [value]="etaValide"></p-progressBar>
+                            </div>
+                            <div class="card mb-1" *ngIf="toSaisi">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="ui-inputgroup">
+                                                <span class="ui-inputgroup-addon" style="width: 15em">Desigantion de l'etape</span>
+                                                <input type="text" name="design" id="designe_field" style="width: 100%;"
+                                                       pInputText placeholder="Saisir la designation de l'étape" [(ngModel)]="tacheEtape.etapeLibelle">
+                                            </div>
+                                        </div>
+                                        <!--<div class="col-sm-1">
+                                            <div class="ui-inputgroup">
+                                                <select class="form-control" name="field_typeDelai1" id="field_typeDelai"
+                                                        [(ngModel)]="tacheEtape.typDelai" style="height: 3em;border: 0.02em solid #bdbdbd;font-size: 0.8em;width: 9em;">
+                                                    <option [value]="typeD" *ngFor="let typeD of typeDelais">
+                                                        {{typeD}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>-->
+                                        <div class="col-sm-5">
+                                            <span class="ui-inputgroup-addon">Date debut</span>
+                                            <input type="date" name="date_debut" id="date_debut_field" style="width: 100%;"
+                                                   pInputText [(ngModel)]="tacheEtape.dateDebut">
+                                        </div>
+                                        <div class="col-sm-2 mt-3 pt-1">
+                                            <div class="ui-inputgroup">
+                                                <span class="ui-inputgroup-addon" style="width: 7em; height: 2.7em">Délais</span>
+                                                <input type="number" name="delai" id="designe_delai" style="width: 100%;"
+                                                       pInputText placeholder="Saisir le delai" [disabled]="tacheEtape.dateDebut === undefined" (change)="calculDateFin(tacheEtape)"
+                                                       (keyup)="calculDateFin(tacheEtape)" [(ngModel)]="tacheEtape.delai">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-5">
+                                            <span class="ui-inputgroup-addon">Date fin</span>
+                                            <input type="date" name="date_fin" id="date_fin_field" style="width: 100%;"
+                                                   pInputText  [(ngModel)]="tacheEtape.dateFin" [disabled]="tacheEtape.dateDebut === undefined">
+                                        </div>
+                                        <div class="col-sm-12 text-right mt-1">
+                                            <button pButton type="button" icon="pi pi-plus"
+                                                    [disabled]="tacheEtape.etapeLibelle === undefined || tacheEtape.dateDebut === undefined"
+                                                    label="Ajouter" (click)="ajouterEtapeSaisie()" class="ui-button-secondary text-primary">
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-right">
+                                            <span class="text-left">
+                                                <i class="fa fa-info" aria-hidden="true"></i>Cliquez sur la cellule pour modifier les informations
+                                            </span>
+                                    <button (click)="saisirEtape()" *ngIf="!toSaisi" type="button" icon="fa fa-plus"
+                                            pButton class="ui-button-secondary text-primary mb-1" label="Saisir une étape">
+                                    </button>
+                                    <button (click)="saisirEtape()" *ngIf="toSaisi" type="button" icon="fa fa-minus"
+                                            pButton class="ui-button-secondary text-primary mb-1" label="Cacher le champs">
+                                    </button>
+                                    <button (click)="removeSelectedRef()" [disabled]="refToRemove.length < 1" type="button" icon="fa fa-trash"
+                                            pButton class="ui-button-secondary text-danger mb-1" label="Retirer les étapes selectionnées">
+                                    </button>
+                                    <!--<button (click)="ajouteRef()" type="button" icon="fa fa-users" [disabled]="!activite"
+                                            pButton class="ui-button-secondary text-primary mb-1" label="Ajouter des etapes apartir du référenciel">
+                                    </button>-->
+                                </div>
+                            </div>
+                            <p-table [value]="tache?.tacheEtapes" scrollHeight="200px" [(selection)]="refToRemove">
+                                <ng-template pTemplate="header" let-column>
+                                    <tr>
+                                        <th style="width: 3em"></th>
+                                        <th>Etape</th>
+                                        <th style="width: 8em">Date debut</th>
+                                        <th style="width: 5em">Delai</th>
+                                        <th style="width: 8em">Date de fin</th>
+                                        <th style="width: 6em"></th>
+                                        <th style="width: 6em"></th>
+                                        <th style="width: 8em"></th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-ref let-columns let-i="rowIndex">
+                                    <tr [pSelectableRow]="ref" class="ui-widget-header">
+                                        <td>
+                                            <p-tableCheckbox [value]="ref"> </p-tableCheckbox>
+                                        </td>
+                                        <td pEditableColumn pTooltip="Cliquez pour modifier" tooltipPosition="top">
+                                            <p-cellEditor>
+                                                <ng-template pTemplate="input">
+                                                    <input pInputText id={{(i+3)*3}} name={{(i+3)*7}} type="text" [(ngModel)]="ref.etapeLibelle">
+                                                </ng-template>
+                                                <ng-template pTemplate="output">
+                                                    {{ref.etapeLibelle}}
+                                                </ng-template>
+                                            </p-cellEditor>
+                                        </td>
+                                        <td pEditableColumn pTooltip="Cliquez pour modifier" tooltipPosition="top">
+                                            <p-cellEditor>
+                                                <ng-template pTemplate="input">
+                                                    <input pInputText id={{(i+3)*2}} name={{(i+3)*3}} type="date" [(ngModel)]="ref.dateDebut">
+                                                </ng-template>
+                                                <ng-template pTemplate="output">
+                                                    {{ref.dateDebut}}
+                                                </ng-template>
+                                            </p-cellEditor>
+                                        </td>
+                                        <td pEditableColumn pTooltip="Cliquez pour modifier" tooltipPosition="top">
+                                            <p-cellEditor>
+                                                <ng-template pTemplate="input">
+                                                    <input pInputText id={{(i+4)*3}} name={{(i+4)*5}} type="text" (keyup)="calculDateFin(ref)" pKeyFilter="int" [(ngModel)]="ref.delai">
+                                                </ng-template>
+                                                <ng-template pTemplate="output">
+                                                    {{ref.delai}}
+                                                </ng-template>
+                                            </p-cellEditor>
+                                        </td>
+                                        <td>
+                                            <p-cellEditor>
+                                                <ng-template pTemplate="input">
+                                                    <input pInputText id={{(i+2)*5}} name={{(i+2)*9}} type="date" [(ngModel)]="ref.dateFin">
+                                                </ng-template>
+                                                <ng-template pTemplate="output" pEditableColumn pTooltip="Cliquez pour modifier"
+                                                             tooltipPosition="top">
+                                                    {{ref.dateFin}}
+                                                </ng-template>
+                                            </p-cellEditor>
+                                        </td>
+                                        <td class="text-center">
+                                            <span *ngIf="ref.estRealise" class="badge-pill badge-success">Validé</span>
+                                            <span *ngIf="!ref.estRealise" class="badge-pill badge-warning">Attente</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <p-toggleButton class="ui-button-secondary text-primary" onLabel="OK" offLabel="NOK" onIcon="fa fa-times" id={{(i+1)*7}} name={{(i+1)*3}} offIcon="fa fa-check-square-o"
+                                                            iconPos="left" [(ngModel)]="ref.estRealise" (onChange)="calculerEtatValidite()">
+                                            </p-toggleButton>
+                                        </td>
+                                        <td class="text-center">
+                                            <button (click)="removeRef(ref)" [disabled]="ref.estRealise" type="button" icon="fa fa-trash"
+                                                    pButton class="ui-button-secondary text-danger mb-1" label="Retirer">
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage" let-columns>
+                                    <tr>
+                                        <td colspan="8" align="center"><span class="text-danger"> Aucune etape trouvée ! </span></td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                            <div class="text-center pied-table">
+                                            <span class="badge-info"> {{refToRemove?.length}}
+                                                elément(s) selectionné(s)</span>
+                            </div>
+                        </div>
+                    </div>
+                </p-tabPanel>
+            </p-tabView>
+            <div class="font-weight-bold">
+                Les fichiers joints
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <p-table [value]="fichiers" [scrollable]="true" scrollHeight="100px" >
+                        <ng-template pTemplate="caption">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <input type="file" name="file" class="form-control" multiple
+                                           (change)="setFileData($event)">
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>Name</th>
+                                <th width="15%">Action</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-fichier let-i="rowIndex">
+                            <tr>
+                                <td>{{fichier.fileName}}</td>
+                                <td width="15%">
+                                    <button type="button" class="ui-button-secondary text-primary" pButton
+                                            (click)="dowloadFichier(fichier)"
+                                            label="Téléharger" icon="fa fa-download"></button>
+                                    <button type="button" class="ui-button-secondary text-danger" icon="fa fa-trash" pButton
+                                            (click)="retirerFihier(i)"
+                                            label="Retirer"></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-right">
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="button" pButton icon="fa fa-reply" class="ui-button-secondary text-primary"
+                    label="Retour" (click)="previousState()">
+            </button>
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)="annuler()">
+            </button>
+            <button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+                    [disabled]="editForm.invalid"
+                    (click)='save()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </div>
+    <p-toast key="key2" [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+</div>
+
+<p-dialog header="Ajout nouveau membre" [(visible)]="displayAddMembre" [modal]="true" [responsive]="true"
+          (onHide)="annulerAjouMembre()"
+          [style]="{width: '40%', minWidth: '300px'}" [baseZIndex]="10000">
+    <form name="editForm" role="form" novalidate (ngSubmit)="saveMembre()" #editForm2="ngForm">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="form-control-label"  for="field_uniteadministrative">Unité Administrative</label>
+                        <select class="form-control" id="field_uniteadministrative" name="uniteadministrative" [(ngModel)]="newMembreCommission.membre.directionId" required>
+                            <option [ngValue]="null">...</option>
+                            <option [ngValue]="uniteAdministrativeOpen.id" *ngFor="let uniteAdministrativeOpen of uniteadministratives">{{uniteAdministrativeOpen.libelle}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_ref">Référence</label>
+                        <input type="text"  pInputText class="form-control" name="ref" id="field_ref"
+                               [(ngModel)]="newMembreCommission.referenceArrete" required/>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_nom">Nom </label>
+                        <input type="text"  pInputText class="form-control" name="nom" id="field_nom"
+                               [(ngModel)]="newMembreCommission.membre.nom" required/>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_prenom">Prenom </label>
+                        <input type="text"  pInputText class="form-control" name="prenom" id="field_prenom"
+                               [(ngModel)]="newMembreCommission.membre.prenom" required/>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_telephone">Telephone </label>
+                        <input type="text"  pInputText class="form-control" name="telephone" id="field_telephone"
+                               [(ngModel)]="newMembreCommission.membre.telephone" required/>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_email">Email </label>
+                        <input type="text"  pInputText class="form-control" name="email" id="field_email"
+                               [(ngModel)]="newMembreCommission.membre.email" required/>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="form-control-label" for="field_post1">Poste</label>
+                        <select class="form-control" name=field_post id=field_post1
+                                [(ngModel)]="newMembreCommission.poste" required>
+                            <option [value]="post" *ngFor="let post of postes">
+                                {{post}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)="annulerAjouMembre()"></button>
+            <button type="submit" pButton icon="fa fa-plus" label="Ajouter"
+                    [disabled]="editForm2.invalid"
+                    (click)='saveMembre()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+<p-dialog header="Ajout des membres" [(visible)]="display2" [modal]="true" [responsive]="true" (onHide)="closeMembreDiaglog()"
+          [style]="{width: '40%', minWidth: '300px'}" [baseZIndex]="10000">
+    <div class="ui-dialog-content">
+        <p-table [value]="membreCommissionNoteAffected" scrollHeight="200px" [(selection)]="membreCommissionsToAffecte">
+            <ng-template pTemplate="header" let-column>
+                <tr>
+                    <th style="width: 3em"></th>
+                    <th>Nom Prénom</th>
+                    <th>Téléphone</th>
+                    <th>Email</th>
+                    <th style="width: 8em"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-memebreCommiss let-columns>
+                <tr [pSelectableRow]="memebreCommiss" class="ui-widget-header">
+                    <td>
+                        <p-tableCheckbox [value]="memebreCommiss"> </p-tableCheckbox>
+                    </td>
+                    <td>{{memebreCommiss.membre?.nom+" "+memebreCommiss.membre?.prenom}}</td>
+                    <td>{{memebreCommiss.membre?.telephone}}</td>
+                    <td>{{memebreCommiss.membre?.email}}</td>
+                    <td class="text-center">
+                        <button (click)="addMembre(memebreCommiss)" type="button" icon="fa fa-user-plus"
+                                pButton class="ui-button-secondary text-info mb-1" label="Ajouter">
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-columns>
+                <tr>
+                    <td colspan="5" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"> <span class="text-danger"> Aucune Activité trouvée ! </span> </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)="closeMembreDiaglog()"></button>
+            <button type="submit" pButton icon="fa fa-plus" label="Ajouter les membres selectionnés"
+                    [disabled]="editForm.invalid"
+                    (click)='addSelectedMembre()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+<p-dialog header="Selection des etapes" [(visible)]="display3" [modal]="true" [responsive]="true" (onHide)="closeRefDiaglog()"
+          [style]="{width: '40%', minWidth: '300px'}" [baseZIndex]="10000">
+    <div class="ui-dialog-content">
+        <p-table [value]="refNoteAffected" scrollHeight="200px" [(selection)]="refToAffecte">
+            <ng-template pTemplate="header" let-column>
+                <tr>
+                    <th style="width: 3em"></th>
+                    <th>Etape</th>
+                    <th style="width: 8em"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-ref let-columns>
+                <tr [pSelectableRow]="ref" class="ui-widget-header">
+                    <td>
+                        <p-tableCheckbox [value]="ref"> </p-tableCheckbox>
+                    </td>
+                    <td>{{ref.etapeLibelle}}</td>
+                    <td class="text-center">
+                        <button (click)="addRef(ref)" type="button" icon="fa fa-user-plus"
+                                pButton class="ui-button-secondary text-info mb-1" label="Ajouter">
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-columns>
+                <tr>
+                    <td colspan="3" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"> <span class="text-danger"> Aucune Activité trouvée ! </span> </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)="closeRefDiaglog()"></button>
+            <button type="submit" pButton icon="fa fa-plus" label="Ajouter les etapes selectionnées"
+                    [disabled]="editForm.invalid"
+                    (click)='addSelectedRef()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+<p-toast key="key1" [style]="{marginTop: '80px'}" position="top-center"></p-toast>

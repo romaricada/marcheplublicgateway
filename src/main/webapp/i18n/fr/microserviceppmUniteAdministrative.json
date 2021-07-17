@@ -1,0 +1,32 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmUniteAdministrative": {
+      "home": {
+        "title": "UniteAdministratives",
+        "createLabel": "Créer un nouveau Unite Administrative",
+        "createOrEditLabel": "Créer ou éditer un Unite Administrative",
+        "notFound": "Aucun Unite Administrative trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Unite Administrative {{ id }} ?"
+      },
+      "detail": {
+        "title": "Unite Administrative"
+      },
+      "libelle": "Libelle",
+      "abbreviation": "Abbreviation",
+      "adresse": "Adresse",
+      "contact": "Contact",
+      "identiteResponsable": "Identite Responsable",
+      "deleted": "Deleted",
+      "besoins": "Besoins"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmUniteAdministrative": {
+      "created": "Un nouveau Unite Administrative a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Unite Administrative avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Unite Administrative avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

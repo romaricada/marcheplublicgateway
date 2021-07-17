@@ -1,0 +1,251 @@
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES REPORTS D'ACTIVITEE(S)</label>
+            </div>
+        </div>
+    </p-toolbar>
+    <p-tabView (onChange)="tabViewChange($event)">
+        <p-tabPanel class="ui-button-secondary text-primary" header="reporté une ligne PPM">
+            <div class="card jh-card">
+                <p-toolbar id="import-export-toolba">
+                    <div class="ui-toolbar-group-left">
+                      <!--  <label class="form-control-label"> <span class="badge badge-primary">1</span>&nbsp;Exercice</label>
+                        <p-dropdown [options]="exercices" placeholder="Année budgetaire" [(ngModel)]="exercice"
+                                    (onChange)="loadAllReportExercice(false)" filter="filter" showClear="showClear"
+                                    optionLabel="annee"></p-dropdown>-->
+                    </div>
+
+                    <div class="ui-toolbar-group-right">
+                        <label class="form-control-label"> <span class="badge badge-primary"></span>&nbsp;Recherche</label>
+                        <input type="text" pInputText size="50" placeholder="Rechercher"
+                               (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                        <button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+                                [placement]="'top'" (click)="loadAllReportExercice(false)">
+                        </button>
+                    </div>
+                </p-toolbar>
+                <br/>
+                <div class="table-responsive table">
+                    <p-table #dataTable [value]="activites" dataKey="id" [paginator]="true" [rows]="20"
+                             [globalFilterFields]="['codeLignePlan','ppmActivite.montantDepenseEngageNonLiquide', 'naturePrestationLibelle','modePassationLibelle', 'gestionnaireCredit']">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th></th>
+                                <th><span class="header-table">Code</span></th>
+                                <th><span class="header-table">Montant depenses engagées non liquidées</span></th>
+                                <th><span class="header-table">Crédit disponible</span></th>
+                                <th><span class="header-table">Nature prestation</span></th>
+                                <th><span class="header-table">Mode Passation</span></th>
+                                <th><span class="header-table">Période de lancement de l'appel à concurrence</span></th>
+                                <th><span class="header-table">Période Rémise des offres/propositions</span></th>
+                                <th><span class="header-table">Temps nécessaire à l'évalution des offres/propositions</span>
+                                </th>
+                                <th><span class="header-table">Date probalble de démarage des prestations</span></th>
+                                <th><span class="header-table">Delai d'execution prévu(jour)</span></th>
+                                <th><span class="header-table">Date buttoire</span></th>
+                                <th><span class="header-table">Gestionnaire crédit</span></th>
+                                <th><span class="header-table">Actions</span></th>
+                                <!--<th>Actions</th>-->
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-activite let-expanded="expanded" let-columns="columns">
+                            <tr>
+                                <td>
+                                    <a href="#" [pRowToggler]="activite">
+                                        <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">&nbsp;</i><i
+                                        class="fa fa-eye">&nbsp;</i><span style="font-size: 10px">Lignes</span>
+                                    </a>
+                                </td>
+                                <td>{{activite?.codeLignePlan}}</td>
+                                <td>{{activite?.ppmActivite?.montantDepenseEngageNonLiquide | formatTableValue:'number': true}}</td>
+                                <td>{{activite?.ppmActivite?.creditDisponible | formatTableValue:'number': true}}</td>
+                                <td>{{activite?.naturePrestationLibelle}}</td>
+                                <td>{{activite?.modePassationLibelle}}</td>
+                                <td>{{activite?.ppmActivite?.periodeLancementAppel}}</td>
+                                <td>{{activite?.ppmActivite?.periodeRemiseOffre}}</td>
+                                <td>{{activite?.ppmActivite?.tempsNecessaireEvaluationOffre}}</td>
+                                <td>{{activite?.ppmActivite?.dateProblableDemaragePrestation}}</td>
+                                <td>{{activite?.ppmActivite?.delaiExecutionPrevu}}</td>
+                                <td>{{activite?.ppmActivite?.dateButtoire}}</td>
+                                <td>{{activite?.gestionnaireCredit}}</td>
+                                <td>
+                                    <button *jhiHasAnyAuthority="'ROLE_PPM_DEPENSES_ENGAGEES_NON_LIQUIDES_REPORTE_UNE_LIGNE_PPM'" id="jh-create-entity" type="button" pButton class="ui-button-secondary text-primary"
+                                            (click)="ajouterUnOuPlusieurReport(activite)"
+                                            icon="fa fa-plus" label="Reporter"></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="rowexpansion" let-activite let-columns="columns">
+                            <tr>
+                                <td></td>
+                                <td class="td-header" colspan="3">Budget</td>
+                                <td class="td-header" colspan="3">Ligne crédit</td>
+                                <td class="td-header" colspan="3">AE/CE</td>
+                                <td class="td-header" colspan="4">Montant estimé</td>
+                            </tr>
+                            <tr *ngFor="let ligne of activite.besoinLignes">
+                                <td></td>
+                                <td colspan="3">{{ligne.budgetLigneBudget}}</td>
+                                <td colspan="3">{{ligne.ligneCreditLigneBudget}}</td>
+                                <td colspan="3">{{ligne.aecpLigneBudget}}</td>
+                                <td colspan="4">{{ligne.montantEstimeLigneBudget | formatTableValue:'number': true}}</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td colspan="9"><span class="font-weight-bold">Total</span></td>
+                                <td colspan="4"><span class="font-weight-bold">{{activite.total}}</span></td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage" let-columns>
+                            <tr> <td colspan="14" style="text-align: center; font-size: 1.2em; color: red; font-weight: bold;"> <span class="text-danger"> Aucune dépense engagée non liquidée trouvée ! </span> </td> </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+
+                <p-dialog header="Report d'une activitée" [(visible)]="displayAdd" [style]="{width: '600px', height: '300px'}">
+                    <form name="editForm" role="form" novalidate #editFormReport="ngForm">
+                        <div class="ui-dialog-content">
+
+                            <div class="form-group">
+                                <label>Montant dépense engagé non liquidé</label>
+                                <p-spinner [(ngModel)]="ppmActivite.montantDepenseEngageNonLiquide"
+                                           [formatInput]="true" thosandSeparator="," decimalSeparator="."
+                                           name="montant" required></p-spinner>
+                            </div>
+                            <div class="form-group">
+                                <label>Crédit disponisble</label>
+                                <p-spinner [(ngModel)]="ppmActivite.creditDisponible"
+                                           [formatInput]="true" thosandSeparator="," decimalSeparator="."
+                                           name="credit" required></p-spinner>
+                            </div>
+                        </div>
+                        <br>
+                        <p-footer>
+                <span class="float-right">
+                    <button type="button" pButton icon="fa fa-close" (click)="annuler()" label="Annuler"></button>
+                    <button type="button" pButton icon="fa fa-plus" (click)="saveReport(ppmActivite)" label="reporter" class="ui-button-secondary"></button>
+                </span>
+                        </p-footer>
+                    </form>
+                </p-dialog>
+            </div>
+        </p-tabPanel>
+        <p-tabPanel header="Liste des lignes reportés">
+            <div class="card jh-card">
+                <h1 class="titre">Liste des lignes PPM reportées</h1>
+                <p-toolbar id="import-expot-toolbar">
+                    <div class="ui-toolbar-group-left">
+                       <!-- <label class="form-control-label"> <span class="badge badge-primary">1</span>&nbsp;Exercice</label>
+                        <p-dropdown [options]="exercices" placeholder="Année budgetaire" [(ngModel)]="exercice"
+                                    (onChange)="loadAllReportExercice(true)" filter="filter" showClear="showClear"
+                                    optionLabel="annee"></p-dropdown>-->
+                    </div>
+
+                    <div class="ui-toolbar-group-right">
+                        <label class="form-control-label"> <span class="badge badge-primary"></span>&nbsp;Recherche</label>
+                        <input type="text" pInputText size="50" placeholder="Rechercher"
+                               (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                        <button *jhiHasAnyAuthority="'ROLE_PPM_DEPENSES_ENGAGEES_NON_LIQUIDES_LISTE_DES_LIGNES_REPORTE'" type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+                                [placement]="'top'" (click)="loadAllReportExercice(true)">
+                        </button>
+                    </div>
+                </p-toolbar>
+                <br/>
+                <div class="table-responsive table">
+                    <p-table #dataTable [value]="activites" dataKey="id" [paginator]="true" [rows]="20"
+                             [globalFilterFields]="['codeLignePlan','ppmActivite.montantDepenseEngageNonLiquide', 'naturePrestationLibelle','modePassationLibelle', 'gestionnaireCredit']">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th></th>
+                                <th><span class="header-table">Code</span></th>
+                                <th><span class="header-table">Montant depenses engagées non liquidées</span></th>
+                                <th><span class="header-table">Crédit disponible</span></th>
+                                <th colspan="2"><span class="header-table">Nature prestation</span></th>
+                                <th><span class="header-table">Mode Passation</span></th>
+                                <th><span class="header-table">Période de lancement de l'appel à concurrence</span></th>
+                                <th><span class="header-table">Période Rémise des offres/propositions</span></th>
+                                <th><span class="header-table">Temps nécessaire à l'évalution des offres/propositions</span>
+                                </th>
+                                <th><span class="header-table">Date probalble de démarage des prestations</span></th>
+                                <th><span class="header-table">Delai d'execution prévu(jour)</span></th>
+                                <th><span class="header-table">Date buttoire</span></th>
+                                <th><span class="header-table">Gestionnaire crédit</span></th>
+                                <th><span class="header-table">Actions</span></th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-activite let-expanded="expanded" let-columns="columns">
+                            <tr *ngIf="activite.reported===true">
+                                <td>
+                                    <a href="#" [pRowToggler]="activite">
+                                        <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">&nbsp;</i><i
+                                        class="fa fa-eye">&nbsp;</i><span style="font-size: 10px">Lignes</span>
+                                    </a>
+                                </td>
+                                <td>{{activite?.codeLignePlan}}</td>
+                                <td>{{activite?.ppmActivite?.montantDepenseEngageNonLiquide | formatTableValue:'number': true}}</td>
+                                <td>{{activite?.ppmActivite?.creditDisponible | formatTableValue:'number': true}}</td>
+                                <td colspan="2">{{activite?.naturePrestationLibelle}}</td>
+                                <td>{{activite?.modePassationLibelle}}</td>
+                                <td>{{activite?.ppmActivite?.periodeLancementAppel}}</td>
+                                <td>{{activite?.ppmActivite?.periodeRemiseOffre}}</td>
+                                <td>{{activite?.ppmActivite?.tempsNecessaireEvaluationOffre}}</td>
+                                <td>{{activite?.ppmActivite?.dateProblableDemaragePrestation}}</td>
+                                <td>{{activite?.ppmActivite?.delaiExecutionPrevu}}</td>
+                                <td>{{activite?.ppmActivite?.dateButtoire}}</td>
+                                <td>{{activite?.gestionnaireCredit}}</td>
+                                <td>
+                                    <button id="jh-delete-entity" type="button" pButton class="ui-button-secondary text-danger"
+                                            (click)="deleteReport(activite?.ppmActivite)"
+                                            icon="fa fa-trash" label="retirer"></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="rowexpansion" let-activite let-columns="columns">
+                            <tr>
+                                <td></td>
+                                <td class="td-header" colspan="3">Budget</td>
+                                <td class="td-header" colspan="3">Ligne crédit</td>
+                                <td class="td-header" colspan="3">AE/CE</td>
+                                <td class="td-header" colspan="4">Montant estimé</td>
+                            </tr>
+                            <tr *ngFor="let ligne of activite.besoinLignes">
+                                <td></td>
+                                <td colspan="3">{{ligne.budgetLigneBudget}}</td>
+                                <td colspan="3">{{ligne.ligneCreditLigneBudget}}</td>
+                                <td colspan="3">{{ligne.aecpLigneBudget}}</td>
+                                <td colspan="4">{{ligne.montantEstimeLigneBudget | formatTableValue:'number': true}}</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td colspan="9"><span class="font-weight-bold">Total</span></td>
+                                <td colspan="4"><span class="font-weight-bold">{{activite.total}}</span></td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </p-tabPanel>
+    </p-tabView>
+    <!--<div class="ui-toolbar-group-left">
+        <button id="report-ligne" type="button" pButton class="ui-button-secondary text-primary"
+                (click)="affichageLigne(false)" label="reporté une ligne PPM "></button>
+        <button id="report-list" type="button" pButton class="ui-button-secondary text-primary"
+                (click)="affichageLigne(true)" label="Liste des lignes reportés"></button>
+    </div>
+    <br><br>-->
+    <p-confirmDialog #cd class="text-warning" header="Confirmation" icon="pi pi-exclamation-triangle">
+        <p-footer>
+            <button (click)="cd.reject()" class="ui-button-secondary text-danger" icon="pi pi-times"
+                    label="NON"
+                    pButton
+                    type="button"></button>
+            <button (click)="cd.accept()" class="ui-button-secondary text-danger" icon="pi pi-check"
+                    label="OUI"
+                    pButton
+                    type="button"></button>
+        </p-footer>
+    </p-confirmDialog>
+    <p-toast [style]="{marginTop: '80px'}" key="myKey" position="top-center"></p-toast>
+</div>

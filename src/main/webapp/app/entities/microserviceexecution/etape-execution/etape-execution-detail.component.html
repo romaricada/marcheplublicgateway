@@ -1,0 +1,37 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="etapeExecution">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionEtapeExecution.detail.title">Etape Execution</span> {{etapeExecution.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionEtapeExecution.libelle">Libelle</span></dt>
+                <dd>
+                    <span>{{etapeExecution.libelle}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionEtapeExecution.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{etapeExecution.deleted}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionEtapeExecution.contrat">Contrat</span></dt>
+                <dd>
+                    <div *ngIf="etapeExecution.contrat">
+                        <a [routerLink]="['/contrat', etapeExecution.contrat?.id, 'view']">{{etapeExecution.contrat?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/etape-execution', etapeExecution.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

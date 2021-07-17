@@ -1,0 +1,29 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicegedServeur": {
+      "home": {
+        "title": "Serveurs",
+        "createLabel": "Créer un nouveau Serveur",
+        "createOrEditLabel": "Créer ou éditer un Serveur",
+        "notFound": "Aucun Serveur trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Serveur {{ id }} ?"
+      },
+      "detail": {
+        "title": "Serveur"
+      },
+      "adresse": "Adresse",
+      "port": "Port",
+      "nomServeur": "Nom Serveur",
+      "deleted": "Deleted"
+    }
+  },
+  "microservicegedApp": {
+    "microservicegedServeur": {
+      "created": "Un nouveau Serveur a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Serveur avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Serveur avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

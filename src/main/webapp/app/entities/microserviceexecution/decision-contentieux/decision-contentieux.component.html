@@ -1,0 +1,74 @@
+<div>
+    <h2 id="page-heading">
+        <span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.home.title">Decision Contentieuxes</span>
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-decision-contentieux" [routerLink]="['/decision-contentieux/new']">
+            <fa-icon [icon]="'plus'"></fa-icon>
+            <span  jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.home.createLabel">
+            Create a new Decision Contentieux
+            </span>
+        </button>
+    </h2>
+    <jhi-alert-error></jhi-alert-error>
+    <jhi-alert></jhi-alert>
+    <br/>
+    <div class="alert alert-warning" *ngIf="decisionContentieuxes?.length === 0">
+        <span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.home.notFound">No decisionContentieuxes found</span>
+    </div>
+    <div class="table-responsive" *ngIf="decisionContentieuxes?.length > 0">
+        <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+            <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
+            <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="decision"><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.decision">Decision</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="date"><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.date">Date</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="structure"><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.structure">Structure</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="referenceDecision"><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.referenceDecision">Reference Decision</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"  jhiSortBy="deleted"><span jhiTranslate="marchepublicgatewayApp.microserviceexecutionDecisionContentieux.deleted">Deleted</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let decisionContentieux of decisionContentieuxes ;trackBy: trackId">
+                <td><a [routerLink]="['/decision-contentieux', decisionContentieux.id, 'view' ]">{{decisionContentieux.id}}</a></td>
+                <td>{{decisionContentieux.decision}}</td>
+                <td>{{decisionContentieux.date | date:'mediumDate'}}</td>
+                <td>{{decisionContentieux.structure}}</td>
+                <td>{{decisionContentieux.referenceDecision}}</td>
+                <td>{{decisionContentieux.deleted}}</td>
+                <td class="text-right">
+                    <div class="btn-group">
+                        <button type="submit"
+                                [routerLink]="['/decision-contentieux', decisionContentieux.id, 'view' ]"
+                                class="btn btn-info btn-sm">
+                            <fa-icon [icon]="'eye'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/decision-contentieux', decisionContentieux.id, 'edit']"
+                                class="btn btn-primary btn-sm">
+                            <fa-icon [icon]="'pencil-alt'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/decision-contentieux', { outlets: { popup: decisionContentieux.id + '/delete'} }]"
+                                replaceUrl="true"
+                                queryParamsHandling="merge"
+                                class="btn btn-danger btn-sm">
+                            <fa-icon [icon]="'times'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div [hidden]="decisionContentieuxes?.length === 0">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+        </div>
+    </div>
+</div>

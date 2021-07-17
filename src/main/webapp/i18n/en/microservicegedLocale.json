@@ -1,0 +1,29 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicegedLocale": {
+      "home": {
+        "title": "Locales",
+        "createLabel": "Create a new Locale",
+        "createOrEditLabel": "Create or edit a Locale",
+        "notFound": "No Locales found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Locale {{ id }}?"
+      },
+      "detail": {
+        "title": "Locale"
+      },
+      "libelle": "Libelle",
+      "adresseLocale": "Adresse Locale",
+      "deleted": "Deleted",
+      "entrepots": "Entrepots"
+    }
+  },
+  "microservicegedApp": {
+    "microservicegedLocale": {
+      "created": "A new Locale is created with identifier {{ param }}",
+      "updated": "A Locale is updated with identifier {{ param }}",
+      "deleted": "A Locale is deleted with identifier {{ param }}"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+    "name": "PpmActivite",
+    "fields": [
+        {
+            "fieldName": "montantDepenseEngageNonLiquide",
+            "fieldType": "Double",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "creditDisponible",
+            "fieldType": "Double",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "periodeLancementAppel",
+            "fieldType": "LocalDate",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "periodeRemiseOffre",
+            "fieldType": "LocalDate",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "tempsNecessaireEvaluationOffre",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "dateProblableDemaragePrestation",
+            "fieldType": "LocalDate",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "delaiExecutionPrevu",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "dateButtoire",
+            "fieldType": "LocalDate",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "deleted",
+            "fieldType": "Boolean"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "etapeActivitePpm",
+            "otherEntityRelationshipName": "ppmActivite",
+            "relationshipName": "etapeActivitePpms"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "pPM",
+            "otherEntityRelationshipName": "ppmActivites",
+            "relationshipName": "ppm",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "activite",
+            "otherEntityRelationshipName": "ppmActivites",
+            "relationshipName": "activite",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "sourceFinancement",
+            "otherEntityRelationshipName": "ppmActivites",
+            "relationshipName": "sourceFinancement",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20200424175239",
+    "entityTableName": "ppm_activite",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "clientRootFolder": "",
+    "applications": [
+        "marchepublicgateway"
+    ],
+    "skipServer": true,
+    "microserviceName": "microserviceppm"
+}

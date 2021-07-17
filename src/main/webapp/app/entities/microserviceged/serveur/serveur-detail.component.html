@@ -1,0 +1,39 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="serveur">
+            <h2><span jhiTranslate="marchepublicgatewayApp.microservicegedServeur.detail.title">Serveur</span> {{serveur.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicegedServeur.adresse">Adresse</span></dt>
+                <dd>
+                    <span>{{serveur.adresse}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicegedServeur.port">Port</span></dt>
+                <dd>
+                    <span>{{serveur.port}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicegedServeur.nomServeur">Nom Serveur</span></dt>
+                <dd>
+                    <span>{{serveur.nomServeur}}</span>
+                </dd>
+                <dt><span jhiTranslate="marchepublicgatewayApp.microservicegedServeur.deleted">Deleted</span></dt>
+                <dd>
+                    <span>{{serveur.deleted}}</span>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/serveur', serveur.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

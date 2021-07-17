@@ -1,0 +1,292 @@
+
+<div>
+    <p-toolbar>
+        <div class="ui-g ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-md-7  pt-3 pl-3">
+                <label class="col-sm-7 font-weight-bold text-primary">GESTION DES SERVEURS</label>
+            </div>
+            <div class="ui-g-12 ui-md-5 p-2">
+                <div class="float-right">
+                    <button type="button" pButton class="ui-button-secondary text-primary"
+                            icon="fa fa-plus" label="Ajouter un serveur" *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_SERVEURS_ADD'" (click)="add(null)">
+                    </button>
+                    <button type="button" pButton class="ui-button-secondary text-danger"
+                            [disabled]="serveurSelected.length<1"
+                            icon="fa fa-times" label="Supprimer des serveurs" *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_SERVEURS_DELETEALL'" (click)="supprimer()">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </p-toolbar>
+
+    <p-table  #dataTable [responsive]="true" [value]="serveurs" [(selection)]="serveurSelected"  dataKey="id"
+              [globalFilterFields]="['nomServeur', 'adresse', 'port', 'motPasse']" [paginator]="true"  rows="20" >
+        <ng-template pTemplate="caption">
+            <div class="p-grid">
+                <div class="col-sm-12 pt-1 text-right">
+                    <input type="text" pInputText size="50" placeholder="Rechercher un serveur"
+                           (input)="dataTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                    <button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+                            [placement]="'top'" (click)="loadAll()">
+                    </button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th style="width: 3em">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th>Type</th>
+                <th>adresse Serveur</th>
+                <th>Port Serveur</th>
+                <th>Nom Utilisateur</th>
+                <th width="5%">Status</th>
+                <th>Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-serveur let-columns="columns">
+            <tr [pSelectableRow]="serveur">
+                <td>
+                    <p-tableCheckbox [value]="serveur"></p-tableCheckbox>
+                </td>
+                <td>{{serveur.typeServeur}}</td>
+                <td>{{serveur.adresse}}</td>
+                <td>{{serveur.port}}</td>
+                <td>{{serveur.nomServeur}}</td>
+                <td width="5%">
+                    <span *ngIf="serveur.active" class="badge badge-pill badge-success">En cours</span>
+                    <span *ngIf="!serveur.active" class="badge badge-pill badge-primary">Pas Actif</span>
+                </td>
+                <td class="text-center">
+                    <span *ngIf="serveur.active">
+                             <p-inputSwitch (onChange)="handleChange(serveur)"
+                                            [(ngModel)]="serveur.active" pTooltip="Désactiver"
+                                            tooltipPosition="top" class="mt-2">
+                            </p-inputSwitch>
+                        </span>
+                    <span *ngIf="!serveur.active">
+                            <p-inputSwitch (onChange)="handleChange(serveur)"
+                                           [(ngModel)]="serveur.active" pTooltip="Activer"
+                                           tooltipPosition="top" class="mt-2">
+                            </p-inputSwitch>
+                        </span>
+                    <button type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning"
+                            label="Modifier" *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_SERVEURS_EDIT'" (click)="add(serveur)">
+                    </button>
+                    <button  [disabled]="serveurSelected.length<1" type="button" label="Supprimer" class="ui-button-secondary text-danger"
+                             pButton icon="fa fa-remove" *jhiHasAnyAuthority="'ROLE_GED_GESTION_DES_SERVEURS_DELETE'" (click)="deleteElement(serveur)">
+                    </button>
+
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<p-dialog header="Création/Ajout d'un serveur" [(visible)]="display" [modal]="true" [responsive]="true" (onHide)="annuler()"
+          [style]="{width: '30%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+        <div>
+            <jhi-alert-error></jhi-alert-error>
+            <div class="form-group">
+                <label class="form-control-label" for="field_serveur">Type de serveur</label>
+                <select class="form-control" name="type_serveur" id="field_serveur"
+                        [(ngModel)]="serveur.typeServeur" required>
+                    <option value="FTP">FTP</option>
+                    <!-- <option value="RETRAIT">RETRAIT</option>-->
+                    <option value="SFTP">SFTP</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-control-label" for="field_adresse">Adresse du serveur</label>
+                <input type="text" pInputText  class="form-control" name="adresse" id="field_adresse"
+                       [(ngModel)]="serveur.adresse" required/>
+            </div>
+            <div class="form-group">
+                <label class="form-control-label" for="field_port">Port </label>
+                <input type="number" min="0" pInputText class="form-control" name="port" id="field_port"
+                       [(ngModel)]="serveur.port" required/>
+            </div>
+            <div class="form-group">
+
+                <label class="form-control-label" for="field_nomServeur">Nom Utilisateur </label>
+                <input type="text" pInputText class="form-control pi pi-user" style="line-height: 1.25;" name="nom_Serveur" id="field_nomServeur"
+                       [(ngModel)]="serveur.nomServeur" required/>
+            </div>
+            <!--<div class="form-group">
+                <label class="form-control-label" for="field_motPasse">mot de passe </label>
+                <input [type]="passvisible? 'text':'password'"  class="form-control" name="motPasse" id="field_motPasse"
+                       [(ngModel)]="serveur.motPasse" required/>
+            </div>-->
+            <div class="form-group mt-4 mb-4">
+                <label for="field_motPasse" class="font-weight-bold float-left">
+                    <i class="fa fa-key fa-2x mr-2"></i>
+                    <span>Mot de passe</span>
+                </label>
+                <div class="input-group">
+                    <input [type]="passvisible? 'text':'password'" class="form-control font-weight-bold bg-light inp" name="motPasse" id= "field_motPasse" placeholder="Votre mot de passe" [(ngModel)]="serveur.motPasse">
+                    <button type="button" class="border-0" (click)="handleVisibility()" [disabled]=" motPasse" style="
+                                                            max-height: 42px;
+                                                            background: lightgray;
+                                                            border-bottom: solid 0.10em #c8c8c8 !important;">
+                        <i class="fa fa-eye" *ngIf="!passvisible"></i>
+                        <i class="fa fa-eye-slash" *ngIf="passvisible"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </form>
+
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)='annuler()'></button>
+            <button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+                    [disabled]="editForm.invalid || isSaving"
+                    (click)='save()' class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+<p-dialog header="Supprimer prestation(s)" [(visible)]="displayDelete" [modal]="true" [responsive]="true" (onHide)="annuler()"
+          [style]="{width: '50%', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+    <p-table [value]="serveurSelected" dataKey="id">
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th>Nom Serveur</th>
+                <th>Adresse</th>
+                <th>Port</th>
+                <th>Mot de passe</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-serveur let-columns="columns">
+            <tr>
+                <td>{{serveur.nomServeur}}</td>
+                <td>{{serveur.adresse}}</td>
+                <td>{{serveur.port}}</td>
+                <td>{{serveur.motPasse}}</td>
+
+            </tr>
+        </ng-template>
+
+    </p-table>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-info"
+                    label="Fermer" (click)='annulerDelete()'>
+            </button>
+            <button type="button" pButton icon="fa fa-times"  class="ui-button-secondary text-danger" label="Confirmer"
+                    [disabled]="editForm.valid || isSaving" (click)="deleteAll()" >
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle" class="text-warning">
+    <p-footer>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON" (click)="cd.reject()"></button>
+        <button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-check" label="OUI" (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+<p-toast [style]="{marginTop: '80px'}" position="top-center"></p-toast>
+
+
+
+
+
+
+
+
+
+<!--
+
+<div [hidden]="serveurs?.length === 0">
+    <div class="row justify-content-center">
+        <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+    </div>
+    <div class="row justify-content-center">
+        <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+    </div>
+</div>
+
+    <div>
+        <h2 id="page-heading">
+            <span jhiTranslate="marchepublicgatewayApp.microservicegedServeur.home.title">Serveurs</span>
+            <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-serveur" [routerLink]="['/serveur/new']">
+                <fa-icon [icon]="'plus'"></fa-icon>
+                <span  jhiTranslate="marchepublicgatewayApp.microservicegedServeur.home.createLabel">
+                Create a new Serveur
+                </span>
+            </button>
+        </h2>
+        <jhi-alert-error></jhi-alert-error>
+        <jhi-alert></jhi-alert>
+        <br/>
+        <div class="alert alert-warning" *ngIf="serveurs?.length === 0">
+            <span jhiTranslate="marchepublicgatewayApp.microservicegedServeur.home.notFound">No serveurs found</span>
+        </div>
+        <div class="table-responsive" *ngIf="serveurs?.length > 0">
+            <table class="table table-striped" aria-describedby="page-heading">
+                <thead>
+                <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
+                <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+                <th scope="col"  jhiSortBy="adresse"><span jhiTranslate="marchepublicgatewayApp.microservicegedServeur.adresse">Adresse</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+                <th scope="col"  jhiSortBy="port"><span jhiTranslate="marchepublicgatewayApp.microservicegedServeur.port">Port</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+                <th scope="col"  jhiSortBy="nomServeur"><span jhiTranslate="marchepublicgatewayApp.microservicegedServeur.nomServeur">Nom Serveur</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+                <th scope="col"  jhiSortBy="deleted"><span jhiTranslate="marchepublicgatewayApp.microservicegedServeur.deleted">Deleted</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+                <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let serveur of serveurs ;trackBy: trackId">
+                    <td><a [routerLink]="['/serveur', serveur.id, 'view' ]">{{serveur.id}}</a></td>
+                    <td>{{serveur.adresse}}</td>
+                    <td>{{serveur.port}}</td>
+                    <td>{{serveur.nomServeur}}</td>
+                    <td>{{serveur.deleted}}</td>
+                    <td class="text-right">
+                        <div class="btn-group">
+                            <button type="submit"
+                                    [routerLink]="['/serveur', serveur.id, 'view' ]"
+                                    class="btn btn-info btn-sm">
+                                <fa-icon [icon]="'eye'"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                            </button>
+                            <button type="submit"
+                                    [routerLink]="['/serveur', serveur.id, 'edit']"
+                                    class="btn btn-primary btn-sm">
+                                <fa-icon [icon]="'pencil-alt'"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                            </button>
+                            <button type="submit"
+                                    [routerLink]="['/serveur', { outlets: { popup: serveur.id + '/delete'} }]"
+                                    replaceUrl="true"
+                                    queryParamsHandling="merge"
+                                    class="btn btn-danger btn-sm">
+                                <fa-icon [icon]="'times'"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div [hidden]="serveurs?.length === 0">
+            <div class="row justify-content-center">
+                <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+            </div>
+            <div class="row justify-content-center">
+                <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+            </div>
+        </div>
+    </div>
+
+-->

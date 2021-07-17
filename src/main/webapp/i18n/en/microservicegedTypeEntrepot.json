@@ -1,0 +1,28 @@
+{
+  "marchepublicgatewayApp": {
+    "microservicegedTypeEntrepot": {
+      "home": {
+        "title": "Type Entrepots",
+        "createLabel": "Create a new Type Entrepot",
+        "createOrEditLabel": "Create or edit a Type Entrepot",
+        "notFound": "No Type Entrepots found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Type Entrepot {{ id }}?"
+      },
+      "detail": {
+        "title": "Type Entrepot"
+      },
+      "libelle": "Libelle",
+      "deleted": "Deleted",
+      "entrepots": "Entrepots"
+    }
+  },
+  "microservicegedApp": {
+    "microservicegedTypeEntrepot": {
+      "created": "A new Type Entrepot is created with identifier {{ param }}",
+      "updated": "A Type Entrepot is updated with identifier {{ param }}",
+      "deleted": "A Type Entrepot is deleted with identifier {{ param }}"
+    }
+  }
+}

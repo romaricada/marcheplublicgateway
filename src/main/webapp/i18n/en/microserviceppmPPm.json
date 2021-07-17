@@ -1,0 +1,30 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceppmPPm": {
+      "home": {
+        "title": "PPMS",
+        "createLabel": "Create a new PPM",
+        "createOrEditLabel": "Create or edit a PPM",
+        "notFound": "No PPMS found"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete PPM {{ id }}?"
+      },
+      "detail": {
+        "title": "PPM"
+      },
+      "libellePpm": "Libelle Ppm",
+      "referencePlan": "Reference Plan",
+      "valid": "Valid",
+      "deleted": "Deleted",
+      "ppmActivites": "Ppm Activites"
+    }
+  },
+  "microserviceppmApp": {
+    "microserviceppmPPm": {
+      "created": "A new PPM is created with identifier {{ param }}",
+      "updated": "A PPM is updated with identifier {{ param }}",
+      "deleted": "A PPM is deleted with identifier {{ param }}"
+    }
+  }
+}

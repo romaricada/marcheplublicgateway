@@ -1,0 +1,32 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceexecutionStatutExecution": {
+      "home": {
+        "title": "StatutExecutions",
+        "createLabel": "Créer un nouveau Statut Execution",
+        "createOrEditLabel": "Créer ou éditer un Statut Execution",
+        "notFound": "Aucun Statut Execution trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Statut Execution {{ id }} ?"
+      },
+      "detail": {
+        "title": "Statut Execution"
+      },
+      "motif": "Motif",
+      "suspendu": "Suspendu",
+      "reprise": "Reprise",
+      "dateSuspendu": "Date Suspendu",
+      "dateReprise": "Date Reprise",
+      "deleted": "Deleted",
+      "contrat": "Contrat"
+    }
+  },
+  "microserviceexecutionApp": {
+    "microserviceexecutionStatutExecution": {
+      "created": "Un nouveau Statut Execution a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Statut Execution avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Statut Execution avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

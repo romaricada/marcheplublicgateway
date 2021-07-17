@@ -1,0 +1,28 @@
+{
+  "marchepublicgatewayApp": {
+    "microserviceexecutionPenalite": {
+      "home": {
+        "title": "Penalites",
+        "createLabel": "Créer un nouveau Penalite",
+        "createOrEditLabel": "Créer ou éditer un Penalite",
+        "notFound": "Aucun Penalite trouvé"
+      },
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Penalite {{ id }} ?"
+      },
+      "detail": {
+        "title": "Penalite"
+      },
+      "motifPenalite": "Motif Penalite",
+      "deleted": "Deleted",
+      "contrat": "Contrat"
+    }
+  },
+  "microserviceexecutionApp": {
+    "microserviceexecutionPenalite": {
+      "created": "Un nouveau Penalite a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Penalite avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Penalite avec l'identifiant {{ param }} a été supprimé"
+    }
+  }
+}

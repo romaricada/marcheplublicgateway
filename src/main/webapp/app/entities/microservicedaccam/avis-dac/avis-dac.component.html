@@ -1,0 +1,524 @@
+<p-toolbar>
+	<div class="ui-g ui-g-12 ui-g-nopad">
+		<div class="ui-g-12 ui-md-7  pt-3 pl-3">
+			<label class="col-sm-7 font-weight-bold text-primary">GESTION DES DAC</label>
+		</div>
+		<div class="ui-g-12 ui-md-5 p-2">
+			<div class="float-right">
+				<button type="button" pButton class="ui-button-secondary text-primary"
+				        icon="fa fa-plus" label="Ajouter" [disabled]="activite===null || avisDacs?.length!==0"
+				        *jhiHasAnyAuthority="'ROLE_DAC_GESTION_DES_ALLOTISSEMENTS_ADD'"
+				        (click)="add(null)">
+				</button>
+			</div>
+		</div>
+	</div>
+</p-toolbar>
+<p-toolbar>
+	<div class="ui-toolbar-group-left">
+		<div class="ui-g ui-g-12 ui-g-nopad">
+			<!--<div class="ui-inputgroup mr-1">
+				<span class="ui-inputgroup-addon"><span class="font-weight-bold">Exercice</span></span>
+				<p-dropdown [options]="exercices" [(ngModel)]="exercice" placeholder="Selectionner un exercice"
+				            [style]="{'width': '250px'}" filter="filter"
+				            showClear="showClear" optionLabel="annee" (onChange)="loadExercicice()" required>
+				</p-dropdown>
+			</div>-->
+			<div class="ui-inputgroup mr-1">
+				<span class="ui-inputgroup-addon"><span class="font-weight-bold">Activité</span></span>
+				<p-dropdown [options]="activites" [(ngModel)]="activite"
+				            placeholder="Selectionner une activitée" [style]="{'width': '320px'}"
+				            filter="filter" showClear="showClear" optionLabel="nomActivite" [disabled]="exercice===null"
+				            (onChange)="loadAllLotByActivite()" required>
+				</p-dropdown>
+			</div>
+		</div>
+	</div>
+	<div class="ui-toolbar-group-right">
+		<div class="text-right">
+			<input type="text" pInputText size="40" placeholder="Rechercher" style="width:auto"
+			       (input)="dataTable.filterGlobal($event.target.value, 'contains')">
+			<button type="button" pButton icon="fa fa-refresh" label="Actualiser" [ngbTooltip]="'Raffraichir'"
+			        [placement]="'top'" (click)="actualisation()">
+			</button>
+		</div>
+	</div>
+</p-toolbar>
+
+<div class="table-responsive">
+	<p-table #dataTable [value]="avisDacs" [(selection)]="selected" class="table table-striped"
+	         aria-describedby="page-heading" [paginator]="true" [rows]="20"
+	         selectionMode="single" dataKey="id"
+	         [globalFilterFields]="['libelle','activiteId','infructueux']">
+		<ng-template pTemplate="header">
+			<tr>
+				<th style="width: 3em">
+					<p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+				</th>
+				<th scope="col"><span>Numéro Avis</span></th>
+				<th scope="col"><span>Objet</span></th>
+				<!--<th scope="col"><span>Date de Lancement</span></th>
+				<th scope="col"><span>Date de depôt des offtres</span></th>-->
+
+				<th style="width: 30em" scope="col">Actions</th>
+			</tr>
+		</ng-template>
+		<ng-template pTemplate="body" let-rowData>
+			<tr>
+				<td style="width: 3em">
+					<p-tableCheckbox [value]="lot"></p-tableCheckbox>
+				</td>
+				<td>{{rowData.numeroAvis}}</td>
+				<td>{{rowData.objet}}</td>
+				<!--<td>{{rowData.dateLancement}}</td>
+				<td>{{rowData.dateDepotOffre}}</td>-->
+
+				<td class="text-right" style="width: 18em">
+					<div class="btn-group">
+
+                        <button type="button" class="ui-button-secondary text-info" pButton icon="fa fa-search"
+                                label="Visualiser" (click)="visualise(rowData)">
+                        </button>
+						<button type="button" pButton icon="fa fa-edit" class="ui-button-secondary text-warning mr-2"
+						        label="Modifier" [disabled]="activite===null" (click)="add(rowData)">
+						</button>
+                        <button type="button" pButton
+                                [disabled]="activite==null"
+                                class="ui-button-secondary text-warning" (click)="getFiles(avisDac)" [ngbTooltip]="'Fichier'"
+                                icon="fa fa-paperclip"></button>
+						<button type="button" label="Supprimer" class="ui-button-secondary text-danger"
+						        pButton icon="fa fa-remove" (click)="deleteElement(rowData)">
+						</button>
+
+					</div>
+				</td>
+			</tr>
+		</ng-template>
+		<ng-template pTemplate="emptymessage" let-columns>
+			<tr>
+				<td align="center" colspan="3"><span
+						class="text-danger text-center"> Aucun lot trouvé ! </span>
+				</td>
+			</tr>
+		</ng-template>
+	</p-table>
+</div>
+
+
+<p-dialog header="Visualisation d'un dac lié à l'activité :{{activite.nomActivite}}" *ngIf="activite !== null" [(visible)]="displayvisualise" [modal]="true" [responsive]="true"
+          (onHide)="annuler()"
+          [style]="{width: '70%', minWidth: '100px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+    <div class="container">
+        <form name="visualiseForm" role="form" novalidate #visualiseFormlot="ngForm">
+
+            <div class="ui-dialog-content" style="height: 500px">
+                <div class="container">
+
+                    <div class="row">
+
+                            <div class="col-sm-3">
+                               Date de Publication:
+                               <b> {{avisDac.dateLancement}} </b>
+
+
+
+
+                            </div>
+                            <div class="col-sm-4">
+                               Date de dépôt des offres:
+                                <b> {{avisDac.dateDepotOffre}}</b>
+
+                            </div>
+                            <div class="col-sm-3">
+                                Numéro de l'avis:
+                                <b>{{avisDac.numeroAvis}}</b>
+
+
+
+                            </div>
+                            <div class="col-sm-2">
+                               Validité:
+                                <b>{{avisDac.validite}}</b>
+
+                            </div>
+                        <br> <br>
+                         <div class="col-sm-12">
+
+                            Objet:
+                             <b>{{avisDac.objet}}</b>
+
+
+                        </div>
+                        <br><br>
+                        <div class="col-sm-6">
+
+                            <p-panel>
+                                <p-header>Les lots de l'avis</p-header>
+                                <p-table [responsive]="true" [value]="avisDac?.lots"
+                                         [(selection)]="lotSelected" dataKey="id">
+                                    <ng-template pTemplate="header" let-columns>
+                                        <tr>
+                                            <th>Numéro du lot</th>
+                                            <th>Description</th>
+                                            <th>Chiffre d'affaire</th>
+                                            <th>Caution de Soumission</th>
+                                            <th>Montant estimé du lot</th>
+                                            <th>Montant ligne Crédit</th>
+
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-l let-columns="columns" let-i="rowIndex">
+                                        <tr [pSelectableRow]="l">
+                                            <td>{{l?.libelle}}</td>
+                                            <td>{{l?.description}}</td>
+                                            <td>{{l?.chiffreAffaire | formatTableValue:'number': true}}</td>
+                                            <td>{{l?.cautionSoumission | formatTableValue:'number': true}}</td>
+                                            <td>{{l?.montantEstime | formatTableValue:'number': true}}</td>
+                                            <td>{{l?.montanLigneCredit | formatTableValue:'number': true}}</td>
+
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </p-panel>
+                        </div>
+
+                        <div class="col-sm-6">
+                                <p-panel>
+                                    <p-header>Information sur les lignes budgetaire</p-header>
+                                    <p-table [responsive]="true" [value]="besoinLigneBudgetaires"
+                                             dataKey="id">
+                                        <ng-template pTemplate="header" let-columns>
+                                            <tr>
+                                                <th>Ligne crédit</th>
+                                                <th >Budget estimé</th>
+
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-rowData let-columns="columns"
+                                                     let-i="rowIndex">
+                                            <tr>
+                                                <td>{{rowData?.ligneCredit}}</td>
+                                                <td >{{rowData?.montantEstime | formatTableValue:'number': true }}</td>
+
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="footer">
+                                            <tr>
+                                                <td>Total</td>
+                                                <td>{{totaTMontant | formatTableValue:'number': true}}</td>
+
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                </p-panel>
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+            <button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+                    label="Fermer" (click)='annulervisualiser()'></button>
+            <button type="submit" pButton icon="fa fa-save" label="Imprimer"
+                    [disabled]="visualiseFormlot.invalid || isSaving"
+                    (click)="ImprimerDac()" class="ui-button-secondary text-info">
+            </button>
+        </div>
+    </p-footer>
+</p-dialog>
+<p-dialog header="Création/Modification d'un dac" [(visible)]="display" [modal]="true" [responsive]="true"
+          (onHide)="annuler()"
+          [style]="{width: '70%', minWidth: '100px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+
+	<div class="container">
+		<form name="editForm" role="form" novalidate #editFormlot="ngForm">
+
+			<div class="ui-dialog-content" style="height: 500px">
+				<div class="container">
+
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="form-group">
+								<label class="form-control-label" for="field_libelle">Numéro de l'avis</label>
+								<input type="text" class="form-control" name="libelle" id="field_libelle"
+								       [(ngModel)]="avisDac.numeroAvis" required/>
+
+							</div>
+						</div>
+						<div class="col-sm-12">
+							<div class="form-group">
+								<label class="form-control-label" for="field_description">Objet</label>
+								<input type="text" pInputText class="form-control" name="description"
+								       id="field_description"
+								       [(ngModel)]="avisDac.objet" required/>
+							</div>
+						</div>
+						<div class="col-sm-4">
+							<div class="form-group">
+								<label class="form-control-label" for="validite">Validité</label>
+								<input type="number" pInputText class="form-control" name="validite"
+								       id="validite" min="0"
+								       [(ngModel)]="avisDac.validite"/>
+							</div>
+						</div>
+						<div class="col-sm-4">
+							<div class="form-group">
+								<label class="form-control-label" for="dateLancement">Date de Publication</label>
+								<input type="date" pInputText class="form-control" name="dateLancement"
+								       id="dateLancement"
+								       [(ngModel)]="avisDac.dateLancement"/>
+							</div>
+						</div>
+						<div class="col-sm-4">
+							<div class="form-group">
+								<label class="form-control-label" for="dateDepotOffre">Date d'ouverture des offres</label>
+								<input type="date" pInputText class="form-control" name="dateDepotOffre"
+								       id="dateDepotOffre"
+								       [(ngModel)]="avisDac.dateDepotOffre"/>
+							</div>
+						</div>
+						<div class="col-sm-12 text-right add">
+							<button class="ui-button-secondary text-primary mb-2" label="Ajouter un lot"
+							        type="button" pButton (click)="showLot()"
+							        icon="fa fa-plus">
+							</button>
+						</div>
+						<div class="col-sm-12">
+							<p-panel>
+								<p-header>Les lots de l'avis</p-header>
+								<p-table #dataTable [responsive]="true" [value]="avisDac?.lots"
+								         [(selection)]="lotSelected" dataKey="id">
+									<ng-template pTemplate="header" let-columns>
+										<tr>
+											<th width="110">Numéro</th>
+											<th>Description</th>
+											<!--<th>Chiffre d'affaire</th>
+											<th>Caution de Soumission</th>
+											<th>Montant ligne Crédit</th>-->
+											<th width="170">Action</th>
+										</tr>
+									</ng-template>
+									<ng-template pTemplate="body" let-l let-columns="columns" let-i="rowIndex">
+										<tr [pSelectableRow]="l">
+											<td>{{l?.libelle}}</td>
+											<td>{{l?.description}}</td>
+											<!--<td>{{l?.chiffreAffaire}}</td>
+											<td>{{l?.cautionSoumission}}</td>
+											<td>{{l?.montanLigneCredit}}</td>-->
+											<td>
+												<div class="col-sm-12 text-right add">
+													<button type="button" pButton icon="fa fa-edit"
+													        class="ui-button-secondary text-warning"
+													        [pTooltip]="'Modifier'"
+													        (click)="updateLot(l, i)">
+													</button>
+													<button type="button" pButton icon="fa fa-close"
+													        class="ui-button-secondary text-warning"
+													        [pTooltip]="'Rétirer'"
+													        (click)="retire(l, i)">
+													</button>
+												</div>
+											</td>
+										</tr>
+									</ng-template>
+								</p-table>
+							</p-panel>
+                            <br>
+                            <p-panel>
+                                <p-header>Joindre des fichiers</p-header>
+                                <div class="col-sm-12 mb-3">
+                                    <div class="form-group">
+                                        <label>Fichiers à joindre</label>
+                                        <input type="file" name="file" class="form-control" multiple
+                                               (change)="setFileData($event)">
+                                        <ul>
+                                            <li *ngFor="let file of fichiers">
+                                                <span class="mt-2">{{file?.name}}</span>
+                                                <span class="mt-2">{{file?.size}}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </p-panel>
+							<div class="mt-4">
+								<p-panel>
+									<p-header>Information sur les lignes budgetaire</p-header>
+									<p-table [responsive]="true" [value]="besoinLigneBudgetaires"
+									         dataKey="id">
+										<ng-template pTemplate="header" let-columns>
+											<tr>
+												<th>Ligne crédit</th>
+												<th>Budget estimé</th>
+												<th width="100">Action</th>
+											</tr>
+										</ng-template>
+										<ng-template pTemplate="body" let-rowData let-columns="columns"
+										             let-i="rowIndex">
+											<tr>
+												<td>{{rowData?.ligneCredit}}</td>
+												<td>{{rowData?.montantEstime | formatTableValue:'number': true }}</td>
+												<td width="100">
+													<p-inputSwitch [name]="'sletede'+i" [title]="'ligne crédit actif'"
+													               [(ngModel)]="rowData.selected" (onChange)="onChangeVal(rowData)"></p-inputSwitch>
+												</td>
+											</tr>
+										</ng-template>
+										<ng-template pTemplate="footer">
+											<tr>
+												<td>Total</td>
+												<td>{{totaTMontant | formatTableValue:'number': true}}</td>
+												<td width="100"></td>
+											</tr>
+										</ng-template>
+									</p-table>
+								</p-panel>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-helper-clearfix">
+
+			<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+			        label="Fermer" (click)='annuler()'></button>
+			<button type="submit" pButton icon="fa fa-save" label="Enregistrer"
+			        [disabled]="editFormlot.invalid || isSaving"
+			        (click)='save()' class="ui-button-secondary text-info">
+			</button>
+		</div>
+	</p-footer>
+</p-dialog>
+
+<p-dialog [(visible)]="showFicModal" [style]="{width: '50%', height: '200px'}">
+    <p-header>
+        Fichiers
+    </p-header>
+    <p-table [value]="dataFiles" [scrollable]="true" scrollHeight="200px">
+        <ng-template pTemplate="caption">
+            <div class="row">
+                <div class="col-sm-8">
+                    <input type="file" name="file" class="form-control" multiple
+                           (change)="setFileAddData($event)">
+                </div>
+                <div class="col-sm-4 text-right">
+                        <span *ngIf="isSaving">
+                            <img src="../../../../content/images/ajax-loader.gif"/>
+                        </span>
+                    <button type="button" class="ui-button-secondary text-primary"
+                            [disabled]="fileListe==undefined || isSaving"
+                            pButton (click)="addFile(fileListe)"
+                            label="Uploader" icon="fa fa-save">
+                    </button>
+                </div>
+                <span class="text-center" *ngIf="isLoading">
+                        <br>
+                        <img src="../../../../content/images/ajax-loader.gif"/> Chargement en cours...
+                    </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Name</th>
+                <th width="30%">Action</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-fichier>
+            <tr>
+                <td>{{fichier.fileName}}</td>
+                <td width="30%">
+                    <button type="button" class="ui-button-secondary text-primary" pButton
+                            (click)="dowloadFichier(fichier)"
+                            label="Télécharger" icon="fa fa-download"></button>
+                    <button type="button" class="ui-button-secondary text-danger" icon="fa fa-trash" pButton
+                            (click)="retirerFihier(fichier)"
+                            label="Retirer"></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>
+
+<p-dialog header="Ajouter un lot" [(visible)]="displayLigne" [modal]="true" [responsive]="true"
+          (onHide)="annulerLot()"
+          [style]="{width: '40%', minWidth: '150px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10000">
+	<form name="editForm" role="form" novalidate #editForm="ngForm">
+		<div class="ui-dialog-content">
+			<div class="col-sm-12">
+				<div class="form-group">
+					<label class="form-control-label" for="libelle">Numéro</label>
+					<input type="text" min="0" class="form-control" name="libelle" id="libelle"
+					       [(ngModel)]="lot.libelle" required/>
+				</div>
+			</div>
+			<div class="col-sm-12">
+				<div class="form-group">
+					<label class="form-control-label" for="description">Description du lot</label>
+					<input type="text" class="form-control" name="description" id="description"
+					       [(ngModel)]="lot.description" required/>
+				</div>
+			</div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-control-label">Caution de soumission</label>
+                    <p-spinner [(ngModel)]="lot.cautionSoumission" [formatInput]="true" thosandSeparator="," id="field_cautionSoumission"
+                               name="cautionSoumission" decimalSeparator="."></p-spinner>
+                </div>
+            </div>
+
+			<div class="col-sm-12">
+				<div class="form-group">
+					<label class="form-control-label">Montant Chiffre d'affaire</label>
+                    <p-spinner [(ngModel)]="lot.chiffreAffaire" [formatInput]="true" thosandSeparator="," id="field_chiffreAffaire"
+                               name="chiffreAffaire" decimalSeparator="."></p-spinner>
+				</div>
+			</div>
+            <div class="col-sm-12">
+				<div class="form-group">
+					<label class="form-control-label">Montant estimé du lot</label>
+                    <p-spinner [(ngModel)]="lot.montantEstime" [formatInput]="true" thosandSeparator="," id="field_montantEstime"
+                               name="montantEstime" decimalSeparator="."></p-spinner>
+				</div>
+			</div>
+			<div class="col-sm-12">
+				<div class="form-group">
+					<label class="form-control-label">Montant ligne de crédit</label>
+                    <p-spinner [(ngModel)]="lot.montanLigneCredit" [formatInput]="true" thosandSeparator="," id="field_montanLigneCredit"
+                               name="montanLigneCredit" decimalSeparator="."></p-spinner>
+				</div>
+			</div>
+		</div>
+	</form>
+	<p-footer>
+		<div class="ui-dialog-buttonpane ui-helper-clearfix">
+			<button type="button" pButton icon="fa fa-close" class="ui-button-secondary text-danger"
+			        label="Fermer" (click)='annulerLot()'></button>
+			<button type="button" pButton icon="fa fa-save" label="Enregistrer"
+			        [disabled]="editForm.invalid "
+			        (click)='addLot()' class="ui-button-secondary text-info">
+			</button>
+		</div>
+	</p-footer>
+
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '50%'}" #cd header="Confirmation" icon="pi pi-exclamation-triangle"
+                 class="text-warning">
+	<p-footer>
+		<button type="button" class="ui-button-secondary text-danger" pButton icon="pi pi-times" label="NON"
+		        (click)="cd.reject()"></button>
+		<button type="button" class="ui-button-secondary text-primary" pButton icon="pi pi-check" label="OUI"
+		        (click)="cd.accept()"></button>
+	</p-footer>
+</p-confirmDialog>
+<p-toast key="myKey1" [style]="{marginTop: '80px'}" position="top-right"></p-toast>

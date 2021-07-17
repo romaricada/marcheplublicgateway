@@ -1,0 +1,82 @@
+{
+    "name": "ReferentielDelai",
+    "fields": [
+        {
+            "fieldName": "norme",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "referentiel",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "normeMin",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "referentielMin",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "normeMax",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "referentielMax",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "observation",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "normeOuvrable",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "referentielOuvrable",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "deleted",
+            "fieldType": "Boolean"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "etape",
+            "otherEntityRelationshipName": "referentielDelais",
+            "relationshipName": "etape",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "acteur",
+            "otherEntityRelationshipName": "referentielDelais",
+            "relationshipName": "acteur",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "modePassation",
+            "otherEntityRelationshipName": "referentielDelais",
+            "relationshipName": "modePassation",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20200424175236",
+    "entityTableName": "referentiel_delai",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "clientRootFolder": "",
+    "applications": [
+        "marchepublicgateway"
+    ],
+    "skipServer": true,
+    "microserviceName": "microserviceppm"
+}
